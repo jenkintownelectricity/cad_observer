@@ -35,3 +35,4 @@ drop/*.7z
 drop/*.dwg
 drop/*.dxf
 drop/*.pdf
+drop/extracted/
