@@ -200,6 +200,19 @@ a.logo-text {
     color: var(--text-primary);
 }
 
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+}
+
 .nav {
     display: flex;
     gap: 0.5rem;
