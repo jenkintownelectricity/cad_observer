@@ -94,6 +94,12 @@ def phone():
     return render_template('phone.html')
 
 
+@app.route('/roofio')
+def roofio():
+    """Roofio - Division 07 AI Expert."""
+    return render_template('roofio.html')
+
+
 @app.route('/projects')
 def projects():
     """Project management page."""
@@ -462,6 +468,262 @@ def get_company_metrics():
         'roadblocks': roadblocks,
         'revenue_mtd': '$847K'  # Would calculate from actual data
     })
+
+
+# =============================================================================
+# ROUTES - Roofio AI API
+# =============================================================================
+
+# Try to import the architect AI rules engine
+try:
+    from architect_ai.rules_engine import route_query, handle_tier_0, Tier
+    ROOFIO_RULES_LOADED = True
+except ImportError:
+    ROOFIO_RULES_LOADED = False
+    print("Warning: Architect AI rules engine not loaded")
+
+
+@app.route('/api/roofio/ask', methods=['POST'])
+def roofio_ask():
+    """Roofio AI question endpoint - routes to appropriate tier."""
+    data = request.json
+    if not data or 'question' not in data:
+        return jsonify({'error': 'Question required'}), 400
+
+    question = data['question']
+    context = data.get('context', {})
+
+    # Try to use rules engine if available
+    if ROOFIO_RULES_LOADED:
+        try:
+            tier, reason, tier_context = route_query(question, context)
+
+            if tier == Tier.PYTHON:
+                # Handle with Python rules (free, fast)
+                result = handle_tier_0(question, tier_context)
+                return jsonify({
+                    'response': result['response'],
+                    'citations': result.get('citations', []),
+                    'tier': 'python',
+                    'cost': 0
+                })
+            else:
+                # For now, return a placeholder for higher tiers
+                return jsonify({
+                    'response': f"""🏗️ **Good question!**
+
+This query requires our {tier.name} tier for: {reason}
+
+I'm still being trained on this topic. Here's what I know so far:
+
+**Query Type**: {tier_context.get('query_type', 'general')}
+**Keywords Detected**: {', '.join(tier_context.get('keywords', ['roofing']))}
+
+*Full AI integration coming soon with Groq and Anthropic APIs.*""",
+                    'citations': [],
+                    'tier': tier.name.lower(),
+                    'cost': 0
+                })
+        except Exception as e:
+            print(f"Rules engine error: {e}")
+
+    # Fallback response if rules engine not available
+    return jsonify({
+        'response': generate_roofio_response(question),
+        'citations': get_relevant_citations(question),
+        'tier': 'fallback',
+        'cost': 0
+    })
+
+
+@app.route('/api/roofio/skills', methods=['GET'])
+def roofio_skills():
+    """List all available Roofio skills."""
+    skills = {
+        'codes': [
+            {'id': 'asce-7', 'name': 'ASCE 7 Wind & Hazard', 'status': 'ready'},
+            {'id': 'ibc', 'name': 'IBC Roofing', 'status': 'ready'},
+            {'id': 'irc', 'name': 'IRC Residential', 'status': 'planned'},
+            {'id': 'icc', 'name': 'ICC Standards', 'status': 'planned'},
+        ],
+        'standards': [
+            {'id': 'fm-global', 'name': 'FM Global', 'status': 'ready'},
+            {'id': 'nrca', 'name': 'NRCA Manual', 'status': 'ready'},
+            {'id': 'spri', 'name': 'SPRI', 'status': 'planned'},
+            {'id': 'iibec', 'name': 'IIBEC', 'status': 'planned'},
+        ],
+        'systems': [
+            {'id': 'tpo', 'name': 'TPO Membrane', 'status': 'ready'},
+            {'id': 'epdm', 'name': 'EPDM Rubber', 'status': 'ready'},
+            {'id': 'pvc', 'name': 'PVC Membrane', 'status': 'ready'},
+            {'id': 'mod-bit', 'name': 'Modified Bitumen', 'status': 'ready'},
+            {'id': 'bur', 'name': 'Built-Up Roofing', 'status': 'planned'},
+            {'id': 'metal', 'name': 'Metal Roofing', 'status': 'planned'},
+        ],
+        'manufacturers': [
+            {'id': 'carlisle', 'name': 'Carlisle SynTec', 'status': 'ready'},
+            {'id': 'firestone', 'name': 'Firestone BP', 'status': 'ready'},
+            {'id': 'gaf', 'name': 'GAF', 'status': 'ready'},
+            {'id': 'jm', 'name': 'Johns Manville', 'status': 'planned'},
+            {'id': 'sika', 'name': 'Sika Sarnafil', 'status': 'planned'},
+        ],
+        'tools': [
+            {'id': 'asce-hazard', 'name': 'ASCE 7 Hazard Tool', 'status': 'ready'},
+            {'id': 'uplift-calc', 'name': 'Uplift Calculator', 'status': 'ready'},
+            {'id': 'leak-detection', 'name': 'Leak Detection', 'status': 'ready'},
+        ]
+    }
+    return jsonify({'skills': skills})
+
+
+def generate_roofio_response(question):
+    """Generate a contextual Roofio response based on keywords."""
+    question_lower = question.lower()
+
+    # Wind uplift questions
+    if any(kw in question_lower for kw in ['wind', 'uplift', 'asce', 'rating']):
+        return """🏗️ **Wind Uplift Requirements**
+
+For wind uplift calculations, I need a few details:
+- **Building height** (affects exposure)
+- **Location** (for basic wind speed from ASCE 7)
+- **Roof zone** (field, perimeter, or corner)
+
+**Quick Reference - FM Ratings:**
+- **I-60**: Field zones, low wind areas
+- **I-90**: Standard commercial, most field areas
+- **I-120**: Perimeter zones, higher wind
+- **I-165**: Corners, coastal/hurricane zones
+- **I-240**: High-velocity hurricane zones (HVHZ)
+
+**Code Citations:**
+- ASCE 7-22, Chapter 30 - Components & Cladding
+- FM Global DS 1-29 - Roof Deck Securement
+- IBC 2021, Section 1504 - Performance Requirements
+
+*What's your building height and location? I can calculate the specific requirements.*"""
+
+    # TPO vs PVC questions
+    elif any(kw in question_lower for kw in ['tpo', 'pvc', 'compare', 'vs']):
+        return """🏗️ **TPO vs PVC Comparison**
+
+| Feature | TPO | PVC |
+|---------|-----|-----|
+| **Chemical Resistance** | Moderate | Excellent |
+| **Grease/Oil Resistance** | Poor | Excellent |
+| **Cost** | Lower | Higher |
+| **Weldability** | Good | Excellent |
+| **Best Use** | General commercial | Restaurants, chemical plants |
+
+**My Recommendation:**
+- **TPO**: Standard commercial, warehouses, retail
+- **PVC**: Kitchens, restaurants, chemical exposure, high-traffic
+
+**Spec Sections:**
+- 07 54 23 - Thermoplastic Polyolefin (TPO)
+- 07 54 19 - Polyvinyl Chloride (PVC)
+
+*What type of building is this for?*"""
+
+    # Code/IBC questions
+    elif any(kw in question_lower for kw in ['ibc', 'code', 'drainage', 'slope']):
+        return """🏗️ **IBC Roofing Requirements**
+
+**Drainage (IBC 1502, 1503):**
+- Minimum slope: 1/4" per foot (1:48)
+- Secondary drainage required when parapet height > 6"
+- Overflow drains: 2" above primary drain
+
+**Fire Classification (IBC 1505):**
+- Class A, B, or C per ASTM E108
+- Class A required within 3' of lot line
+- Fire-retardant treatment for wood decks
+
+**Wind Resistance (IBC 1504):**
+- Must resist design wind loads per ASCE 7
+- Edge securement per manufacturer specs
+
+**Code Citations:**
+- IBC 2021, Chapter 15 - Roof Assemblies
+- ASCE 7-22, Chapter 30 - Wind Loads
+
+*Which specific code requirement do you need help with?*"""
+
+    # Leak detection
+    elif any(kw in question_lower for kw in ['leak', 'detection', 'moisture', 'survey']):
+        return """🏗️ **Leak Detection Methods**
+
+**Non-Destructive Testing:**
+1. **Electronic Leak Detection (ELD)**
+   - Best for single-ply membranes
+   - Pinpoints exact breach location
+   - Requires wet roof surface
+
+2. **Infrared (IR) Thermography**
+   - Detects trapped moisture
+   - Best performed at night after sunny day
+   - Shows moisture patterns, not leak source
+
+3. **Nuclear Moisture Gauge**
+   - Quantifies moisture content
+   - Grid pattern survey
+   - Requires calibration
+
+**Destructive Testing:**
+4. **Core Cuts**
+   - Confirms insulation condition
+   - Visual moisture assessment
+   - Patch required after
+
+**Recommendation:**
+Start with IR survey → ELD for pinpoint → Core cut to confirm
+
+*What type of roof system are you investigating?*"""
+
+    # Default response
+    else:
+        return f"""🏗️ **I can help with that!**
+
+I'm Roofio, your Division 07 expert. I specialize in:
+
+- **Codes**: ASCE 7, IBC, IRC, FM Global
+- **Systems**: TPO, EPDM, PVC, Mod-Bit, BUR, Metal
+- **Manufacturers**: Carlisle, Firestone, GAF (expanding weekly)
+- **Calculations**: Wind uplift, drainage, R-values
+- **Inspections**: Leak detection, moisture surveys, core analysis
+- **Details**: Flashing, terminations, transitions
+
+Your question: *"{question}"*
+
+Could you provide more context? For example:
+- Building location and height
+- Roof system type
+- Specific code or standard needed
+
+*The more details you share, the better I can help!*"""
+
+
+def get_relevant_citations(question):
+    """Return relevant code citations based on question keywords."""
+    question_lower = question.lower()
+    citations = []
+
+    if any(kw in question_lower for kw in ['wind', 'uplift', 'asce']):
+        citations.extend(['ASCE 7-22', 'FM DS 1-29', 'IBC 1504'])
+
+    if any(kw in question_lower for kw in ['tpo', 'pvc', 'membrane']):
+        citations.extend(['ASTM D6878 (TPO)', 'ASTM D4434 (PVC)', 'SPRI'])
+
+    if any(kw in question_lower for kw in ['ibc', 'code', 'building']):
+        citations.extend(['IBC 2021 Ch.15', 'IRC R905'])
+
+    if any(kw in question_lower for kw in ['fm', 'factory mutual']):
+        citations.extend(['FM 4470', 'FM DS 1-28', 'FM DS 1-29'])
+
+    if any(kw in question_lower for kw in ['nrca', 'manual']):
+        citations.extend(['NRCA Roofing Manual'])
+
+    return citations[:5] if citations else ['NRCA Manual', 'IBC 2021']
 
 
 # =============================================================================
