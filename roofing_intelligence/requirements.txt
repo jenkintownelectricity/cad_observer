@@ -1,0 +1,17 @@
+# Roofing Intelligence Platform
+# Core Dependencies
+
+# Web Framework
+Flask>=2.0
+
+# PDF Processing
+PyPDF2>=3.0
+
+# DXF Generation (AutoCAD drawings)
+ezdxf>=1.0
+
+# Optional: For Excel exports
+# openpyxl>=3.0
+
+# Optional: For image processing
+# Pillow>=9.0
