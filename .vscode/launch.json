@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Click Capture",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/click_capture.py",
+      "args": ["-p", "Current Project"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Floating Toolbar",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/floating_toolbar.py",
+      "args": ["-p", "Current Project"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Research Capture",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/research_capture.py",
+      "args": ["-p", "Current Project"],
+      "console": "integratedTerminal"
+    }
+  ]
+}
