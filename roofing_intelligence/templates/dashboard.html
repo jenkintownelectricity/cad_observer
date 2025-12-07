@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Dashboard - Roofing Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header glass">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <span class="logo-text">Roofing<span class="accent">OS</span></span>
+            </div>
+
+            <nav class="nav">
+                <a href="/dashboard" class="nav-link active">Dashboard</a>
+                <a href="/" class="nav-link">Analysis</a>
+                <a href="/projects" class="nav-link">Projects</a>
+                <a href="/phone" class="nav-link">Phone</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="company-status">
+                    <span class="status-indicator online"></span>
+                    <span>All Systems Operational</span>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Company Overview -->
+        <section class="company-overview">
+            <div class="overview-header">
+                <div class="overview-title">
+                    <h1>Company Dashboard</h1>
+                    <p>Real-time visibility across all operations</p>
+                </div>
+                <div class="overview-actions">
+                    <button class="action-btn" onclick="refreshDashboard()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button class="action-btn primary" onclick="openNewProject()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        New Project
+                    </button>
+                </div>
+            </div>
+
+            <!-- Company Metrics -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-icon green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="metric-data">
+                        <span class="metric-value" id="active-projects">12</span>
+                        <span class="metric-label">Active Projects</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <div class="metric-data">
+                        <span class="metric-value" id="pending-bids">5</span>
+                        <span class="metric-label">Pending Bids</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="metric-data">
+                        <span class="metric-value" id="roadblocks">3</span>
+                        <span class="metric-label">Roadblocks</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="metric-data">
+                        <span class="metric-value" id="revenue-mtd">$847K</span>
+                        <span class="metric-label">Revenue MTD</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Role-Based Seats Grid -->
+        <section class="seats-section">
+            <h2 class="section-title">Team Seats</h2>
+            <div class="seats-grid">
+                <!-- Project Manager Seat -->
+                <div class="seat-card" data-role="pm" onclick="openSeatDetail('pm')">
+                    <div class="seat-header">
+                        <div class="seat-avatar pm">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>Project Manager</h3>
+                            <span class="seat-user">Active User</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">2</span>
+                                <span class="label">Urgent</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">5</span>
+                                <span class="label">Pending</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">8</span>
+                                <span class="label">Done Today</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item urgent">
+                            <span class="traffic-light red"></span>
+                            <span class="queue-text">JHU Library - RFI Response Overdue</span>
+                        </div>
+                        <div class="queue-item warning">
+                            <span class="traffic-light yellow"></span>
+                            <span class="queue-text">UMass - Submittal Review</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">Hartford Plaza - On Track</span>
+                        </div>
+                    </div>
+                    <div class="seat-skills">
+                        <span class="skill-tag">Estimating</span>
+                        <span class="skill-tag">RFIs</span>
+                        <span class="skill-tag">Scheduling</span>
+                    </div>
+                </div>
+
+                <!-- Estimator Seat -->
+                <div class="seat-card" data-role="estimator" onclick="openSeatDetail('estimator')">
+                    <div class="seat-header">
+                        <div class="seat-avatar estimator">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                <line x1="4" y1="10" x2="20" y2="10"></line>
+                                <line x1="10" y1="4" x2="10" y2="20"></line>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>Estimator</h3>
+                            <span class="seat-user">Active User</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">1</span>
+                                <span class="label">Due Today</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">3</span>
+                                <span class="label">In Progress</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">2</span>
+                                <span class="label">Submitted</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item urgent">
+                            <span class="traffic-light red"></span>
+                            <span class="queue-text">Boston Medical - Bid Due 5PM</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">MIT Dorm - Takeoff Complete</span>
+                        </div>
+                    </div>
+                    <div class="seat-skills">
+                        <span class="skill-tag">Takeoffs</span>
+                        <span class="skill-tag">Pricing</span>
+                        <span class="skill-tag">Bid Prep</span>
+                    </div>
+                </div>
+
+                <!-- Operations Seat -->
+                <div class="seat-card" data-role="operations" onclick="openSeatDetail('operations')">
+                    <div class="seat-header">
+                        <div class="seat-avatar operations">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>Operations</h3>
+                            <span class="seat-user">Active User</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">0</span>
+                                <span class="label">Urgent</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">4</span>
+                                <span class="label">Scheduling</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">6</span>
+                                <span class="label">Dispatched</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item warning">
+                            <span class="traffic-light yellow"></span>
+                            <span class="queue-text">Crew 3 - Weather Hold Tomorrow</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">Material Delivery - Confirmed</span>
+                        </div>
+                    </div>
+                    <div class="seat-skills">
+                        <span class="skill-tag">Scheduling</span>
+                        <span class="skill-tag">Dispatch</span>
+                        <span class="skill-tag">Safety</span>
+                    </div>
+                </div>
+
+                <!-- Accounting Seat -->
+                <div class="seat-card" data-role="accounting" onclick="openSeatDetail('accounting')">
+                    <div class="seat-header">
+                        <div class="seat-avatar accounting">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>Accounting</h3>
+                            <span class="seat-user">Active User</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">1</span>
+                                <span class="label">Overdue AR</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">8</span>
+                                <span class="label">Invoices</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">$124K</span>
+                                <span class="label">Collected</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item urgent">
+                            <span class="traffic-light red"></span>
+                            <span class="queue-text">Hartford - 60 Days Overdue</span>
+                        </div>
+                        <div class="queue-item warning">
+                            <span class="traffic-light yellow"></span>
+                            <span class="queue-text">Payroll Due Friday</span>
+                        </div>
+                    </div>
+                    <div class="seat-skills">
+                        <span class="skill-tag">AR</span>
+                        <span class="skill-tag">AP</span>
+                        <span class="skill-tag">Payroll</span>
+                    </div>
+                </div>
+
+                <!-- Field/Superintendent Seat -->
+                <div class="seat-card" data-role="field" onclick="openSeatDetail('field')">
+                    <div class="seat-header">
+                        <div class="seat-avatar field">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>Superintendent</h3>
+                            <span class="seat-user">3 Active Crews</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">0</span>
+                                <span class="label">Safety Issues</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">3</span>
+                                <span class="label">Daily Reports</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">12</span>
+                                <span class="label">Sq Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">JHU - Membrane 80% Complete</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">UMass - Flashing Day 2</span>
+                        </div>
+                    </div>
+                    <div class="seat-skills">
+                        <span class="skill-tag">Daily Reports</span>
+                        <span class="skill-tag">Safety</span>
+                        <span class="skill-tag">QC</span>
+                    </div>
+                </div>
+
+                <!-- Shop Drawings Seat -->
+                <div class="seat-card" data-role="shop-drawings" onclick="openSeatDetail('shop-drawings')">
+                    <div class="seat-header">
+                        <div class="seat-avatar shop-drawings">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>Shop Drawings</h3>
+                            <span class="seat-user">CAD Queue</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">1</span>
+                                <span class="label">Rush</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">4</span>
+                                <span class="label">In Progress</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">2</span>
+                                <span class="label">Submitted</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item urgent">
+                            <span class="traffic-light red"></span>
+                            <span class="queue-text">Boston Medical - Details Due Mon</span>
+                        </div>
+                        <div class="queue-item warning">
+                            <span class="traffic-light yellow"></span>
+                            <span class="queue-text">MIT - Parapet Details Review</span>
+                        </div>
+                    </div>
+                    <div class="seat-skills">
+                        <span class="skill-tag">AutoCAD</span>
+                        <span class="skill-tag">Details</span>
+                        <span class="skill-tag">Submittals</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Projects Section -->
+        <section class="projects-section">
+            <div class="section-header">
+                <h2 class="section-title">Active Projects</h2>
+                <div class="section-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="red">Critical</button>
+                    <button class="filter-btn" data-filter="yellow">Attention</button>
+                    <button class="filter-btn" data-filter="green">On Track</button>
+                </div>
+            </div>
+            <div class="projects-grid" id="projects-grid">
+                <!-- Projects will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Recent Activity Feed -->
+        <section class="activity-section glass">
+            <div class="activity-header">
+                <h2>Recent Activity</h2>
+                <button class="view-all-btn">View All</button>
+            </div>
+            <div class="activity-feed" id="activity-feed">
+                <!-- Activity items will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Seat Detail Modal -->
+    <div class="modal hidden" id="seat-modal">
+        <div class="modal-backdrop" onclick="closeSeatModal()"></div>
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3 id="modal-title">Role Details</h3>
+                <button class="modal-close" onclick="closeSeatModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- New Project Modal -->
+    <div class="modal hidden" id="new-project-modal">
+        <div class="modal-backdrop" onclick="closeNewProjectModal()"></div>
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3>New Project</h3>
+                <button class="modal-close" onclick="closeNewProjectModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="new-project-form" onsubmit="createProject(event)">
+                    <div class="form-group">
+                        <label for="project-name">Project Name</label>
+                        <input type="text" id="project-name" required placeholder="e.g., JHU Library Roofing">
+                    </div>
+                    <div class="form-group">
+                        <label for="project-client">Client</label>
+                        <input type="text" id="project-client" placeholder="e.g., Turner Construction">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="project-value">Contract Value</label>
+                            <input type="text" id="project-value" placeholder="e.g., $250,000">
+                        </div>
+                        <div class="form-group">
+                            <label for="project-start">Start Date</label>
+                            <input type="date" id="project-start">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-pm">Assigned PM</label>
+                        <select id="project-pm">
+                            <option value="">Select PM...</option>
+                            <option value="pm1">Project Manager 1</option>
+                            <option value="pm2">Project Manager 2</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeNewProjectModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Create Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
