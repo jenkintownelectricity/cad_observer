@@ -106,24 +106,36 @@ def analyze_documents():
     """
     session_id = f"session_{int(time.time() * 1000)}"
 
-    # Collect files
-    files_data = {
-        'drawings': request.files.getlist('drawings'),
-        'assemblies': request.files.getlist('assemblies'),
-        'specs': request.files.getlist('specs'),
-        'scopes': request.files.getlist('scopes')
+    # Collect and SAVE files immediately (before thread starts)
+    saved_files = {
+        'drawings': [],
+        'assemblies': [],
+        'specs': [],
+        'scopes': []
     }
 
-    # Filter out empty file lists
-    files_data = {k: v for k, v in files_data.items() if v and v[0].filename}
+    for file_type in saved_files.keys():
+        files = request.files.getlist(file_type)
+        for file in files:
+            if file and file.filename:
+                # Save file to disk immediately
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+                file.save(filepath)
+                saved_files[file_type].append({
+                    'filename': file.filename,
+                    'filepath': filepath
+                })
 
-    if not files_data:
+    # Filter out empty file lists
+    saved_files = {k: v for k, v in saved_files.items() if v}
+
+    if not saved_files:
         return jsonify({'error': 'No files uploaded'}), 400
 
-    # Start background processing
+    # Start background processing with saved file paths (not file objects)
     thread = threading.Thread(
         target=process_documents_async,
-        args=(session_id, files_data, app.config['UPLOAD_FOLDER'])
+        args=(session_id, saved_files, app.config['UPLOAD_FOLDER'])
     )
     thread.start()
 
@@ -315,7 +327,11 @@ def export_csv():
 # =============================================================================
 
 def process_documents_async(session_id, files_data, upload_folder):
-    """Process documents in background with progress updates."""
+    """Process documents in background with progress updates.
+
+    files_data format: {'drawings': [{'filename': 'x.pdf', 'filepath': '/path/to/x.pdf'}, ...], ...}
+    Files are already saved to disk before this function is called.
+    """
     results = {
         'drawings': [],
         'assemblies': [],
@@ -336,44 +352,43 @@ def process_documents_async(session_id, files_data, upload_folder):
         if 'drawings' in files_data:
             send_progress(session_id, 'drawings', 0, 'Starting drawing analysis...')
 
-            for i, file in enumerate(files_data['drawings']):
-                if file and file.filename:
-                    filepath = os.path.join(upload_folder, file.filename)
-                    file.save(filepath)
+            for i, file_info in enumerate(files_data['drawings']):
+                filename = file_info['filename']
+                filepath = file_info['filepath']
 
-                    send_progress(
-                        session_id, 'drawings',
-                        int((i / len(files_data['drawings'])) * 100),
-                        f'Analyzing {file.filename}...'
-                    )
+                send_progress(
+                    session_id, 'drawings',
+                    int((i / len(files_data['drawings'])) * 100),
+                    f'Analyzing {filename}...'
+                )
 
-                    # Run filter first
-                    filter_result = filter_roof_pages(filepath, threshold=10, verbose=False)
-                    results['filter_stats']['total_pages_scanned'] += filter_result['total_pages']
-                    results['filter_stats']['roof_pages_found'] += filter_result['pages_to_process']
+                # Run filter first
+                filter_result = filter_roof_pages(filepath, threshold=10, verbose=False)
+                results['filter_stats']['total_pages_scanned'] += filter_result['total_pages']
+                results['filter_stats']['roof_pages_found'] += filter_result['pages_to_process']
 
-                    if filter_result['pages_to_process'] > 0:
-                        # Extract only roof pages
-                        roof_page_nums = [p['page_num'] for p in filter_result['roof_pages']]
-                        text = extract_text_from_pdf_filtered(filepath, roof_page_nums)
+                if filter_result['pages_to_process'] > 0:
+                    # Extract only roof pages
+                    roof_page_nums = [p['page_num'] for p in filter_result['roof_pages']]
+                    text = extract_text_from_pdf_filtered(filepath, roof_page_nums)
 
-                        # Parse
-                        parsed = parse_architectural_drawing(text)
-                        parsed['filename'] = file.filename
-                        parsed['filter_stats'] = {
-                            'total_pages': filter_result['total_pages'],
-                            'roof_pages': filter_result['pages_to_process'],
-                            'savings_percent': filter_result['savings_percent']
-                        }
-                        results['drawings'].append(parsed)
-                    else:
-                        results['drawings'].append({
-                            'filename': file.filename,
-                            'filtered_out': True,
-                            'message': 'No roof content detected'
-                        })
+                    # Parse
+                    parsed = parse_architectural_drawing(text)
+                    parsed['filename'] = filename
+                    parsed['filter_stats'] = {
+                        'total_pages': filter_result['total_pages'],
+                        'roof_pages': filter_result['pages_to_process'],
+                        'savings_percent': filter_result['savings_percent']
+                    }
+                    results['drawings'].append(parsed)
+                else:
+                    results['drawings'].append({
+                        'filename': filename,
+                        'filtered_out': True,
+                        'message': 'No roof content detected'
+                    })
 
-                    processed += 1
+                processed += 1
 
             # Calculate overall savings
             if results['filter_stats']['total_pages_scanned'] > 0:
@@ -386,61 +401,62 @@ def process_documents_async(session_id, files_data, upload_folder):
         if 'assemblies' in files_data:
             send_progress(session_id, 'assemblies', 0, 'Parsing assembly letters...')
 
-            for i, file in enumerate(files_data['assemblies']):
-                if file and file.filename:
-                    filepath = os.path.join(upload_folder, file.filename)
-                    file.save(filepath)
+            for i, file_info in enumerate(files_data['assemblies']):
+                filename = file_info['filename']
+                filepath = file_info['filepath']
 
-                    send_progress(
-                        session_id, 'assemblies',
-                        int((i / len(files_data['assemblies'])) * 100),
-                        f'Parsing {file.filename}...'
-                    )
+                send_progress(
+                    session_id, 'assemblies',
+                    int((i / len(files_data['assemblies'])) * 100),
+                    f'Parsing {filename}...'
+                )
 
-                    text = extract_text_from_pdf(filepath)
-                    parsed = parse_assembly_letter(text)
-                    parsed['filename'] = file.filename
-                    results['assemblies'].append(parsed)
+                text = extract_text_from_pdf(filepath)
+                parsed = parse_assembly_letter(text)
+                parsed['filename'] = filename
+                results['assemblies'].append(parsed)
 
-                    processed += 1
+                processed += 1
 
         # Process specs
         if 'specs' in files_data:
             send_progress(session_id, 'specs', 0, 'Analyzing specifications...')
 
-            for i, file in enumerate(files_data['specs']):
-                if file and file.filename:
-                    filepath = os.path.join(upload_folder, file.filename)
-                    file.save(filepath)
+            for i, file_info in enumerate(files_data['specs']):
+                filename = file_info['filename']
+                filepath = file_info['filepath']
 
-                    text = extract_text_from_pdf(filepath)
-                    parsed = parse_specification(text)
-                    parsed['filename'] = file.filename
-                    results['specs'].append(parsed)
+                text = extract_text_from_pdf(filepath)
+                parsed = parse_specification(text)
+                parsed['filename'] = filename
+                results['specs'].append(parsed)
 
-                    processed += 1
+                processed += 1
 
         # Process scopes
         if 'scopes' in files_data:
             send_progress(session_id, 'scopes', 0, 'Analyzing scope of work...')
 
-            for i, file in enumerate(files_data['scopes']):
-                if file and file.filename:
-                    filepath = os.path.join(upload_folder, file.filename)
-                    file.save(filepath)
+            for i, file_info in enumerate(files_data['scopes']):
+                filename = file_info['filename']
+                filepath = file_info['filepath']
 
-                    text = extract_text_from_pdf(filepath)
-                    parsed = parse_scope_of_work(text)
-                    parsed['filename'] = file.filename
-                    results['scopes'].append(parsed)
+                text = extract_text_from_pdf(filepath)
+                parsed = parse_scope_of_work(text)
+                parsed['filename'] = filename
+                results['scopes'].append(parsed)
 
-                    processed += 1
+                processed += 1
 
         # Complete
         send_progress(session_id, 'complete', 100, 'Analysis complete!', results)
 
     except Exception as e:
-        send_progress(session_id, 'error', 0, f'Error: {str(e)}')
+        import traceback
+        error_msg = f'Error: {str(e)}'
+        print(f"Processing error: {error_msg}")
+        traceback.print_exc()
+        send_progress(session_id, 'error', 0, error_msg)
 
 
 # =============================================================================
