@@ -482,6 +482,15 @@ except ImportError:
     ROOFIO_RULES_LOADED = False
     print("Warning: Architect AI rules engine not loaded")
 
+# Try to import Groq client
+try:
+    from roofio.groq_client import ask_groq, GROQ_AVAILABLE
+    GROQ_CLIENT_LOADED = True
+except ImportError:
+    GROQ_CLIENT_LOADED = False
+    GROQ_AVAILABLE = False
+    print("Warning: Groq client not loaded")
+
 
 @app.route('/api/roofio/ask', methods=['POST'])
 def roofio_ask():
@@ -507,21 +516,23 @@ def roofio_ask():
                     'tier': 'python',
                     'cost': 0
                 })
-            else:
-                # For now, return a placeholder for higher tiers
+            elif GROQ_CLIENT_LOADED and GROQ_AVAILABLE:
+                # Use Groq for GROQ tier (fast, cheap)
+                result = ask_groq(question, tier_context)
                 return jsonify({
-                    'response': f"""🏗️ **Good question!**
-
-This query requires our {tier.name} tier for: {reason}
-
-I'm still being trained on this topic. Here's what I know so far:
-
-**Query Type**: {tier_context.get('query_type', 'general')}
-**Keywords Detected**: {', '.join(tier_context.get('keywords', ['roofing']))}
-
-*Full AI integration coming soon with Groq and Anthropic APIs.*""",
-                    'citations': [],
-                    'tier': tier.name.lower(),
+                    'response': result['response'],
+                    'citations': result.get('citations', []),
+                    'tier': 'groq',
+                    'cost': result.get('cost', 0),
+                    'model': result.get('model'),
+                    'tokens': result.get('tokens')
+                })
+            else:
+                # Groq not available, use fallback
+                return jsonify({
+                    'response': generate_roofio_response(question),
+                    'citations': get_relevant_citations(question),
+                    'tier': 'fallback',
                     'cost': 0
                 })
         except Exception as e:
