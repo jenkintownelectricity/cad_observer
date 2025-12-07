@@ -27,3 +27,11 @@ research/
 *.bak
 *.dwl
 *.dwl2
+
+# Drop folder (temporary files)
+drop/*.zip
+drop/*.rar
+drop/*.7z
+drop/*.dwg
+drop/*.dxf
+drop/*.pdf
