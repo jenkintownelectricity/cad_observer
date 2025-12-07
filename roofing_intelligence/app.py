@@ -72,8 +72,20 @@ def send_progress(session_id, step, progress, message, data=None):
 
 @app.route('/')
 def index():
-    """Main dashboard."""
+    """Document analysis page."""
     return render_template('index.html')
+
+
+@app.route('/dashboard')
+def dashboard():
+    """Company dashboard with role-based seats."""
+    return render_template('dashboard.html')
+
+
+@app.route('/phone')
+def phone():
+    """Phone integration page (Hive 215)."""
+    return render_template('phone.html')
 
 
 @app.route('/projects')
@@ -320,6 +332,130 @@ def export_csv():
         mimetype='text/csv',
         headers={'Content-Disposition': 'attachment; filename=roofing_analysis.csv'}
     )
+
+
+# =============================================================================
+# ROUTES - Company Dashboard API
+# =============================================================================
+
+# In-memory storage for company data (would be database in production)
+COMPANY_DATA = {
+    'projects': [],
+    'activities': [],
+    'seats': {
+        'pm': {'user': 'Active', 'status': 'online'},
+        'estimator': {'user': 'Active', 'status': 'online'},
+        'operations': {'user': 'Active', 'status': 'online'},
+        'accounting': {'user': 'Active', 'status': 'online'},
+        'field': {'user': '3 Crews', 'status': 'online'},
+        'shop-drawings': {'user': 'CAD Queue', 'status': 'online'}
+    }
+}
+
+
+@app.route('/api/company/projects', methods=['GET'])
+def get_company_projects():
+    """Get all company projects."""
+    return jsonify({'projects': COMPANY_DATA['projects']})
+
+
+@app.route('/api/company/projects', methods=['POST'])
+def create_company_project():
+    """Create a new company project."""
+    data = request.json
+    if not data or 'name' not in data:
+        return jsonify({'error': 'Project name required'}), 400
+
+    project = {
+        'id': len(COMPANY_DATA['projects']) + 1,
+        'name': data['name'],
+        'client': data.get('client', ''),
+        'value': data.get('value', ''),
+        'status': 'yellow',
+        'progress': 0,
+        'phase': 'Bidding',
+        'assignee': data.get('pm', 'Unassigned'),
+        'created': datetime.now().isoformat()
+    }
+
+    COMPANY_DATA['projects'].append(project)
+
+    # Log activity
+    COMPANY_DATA['activities'].insert(0, {
+        'type': 'info',
+        'text': f'New project created: {project["name"]}',
+        'time': datetime.now().isoformat(),
+        'project': project['name']
+    })
+
+    return jsonify({'success': True, 'project': project})
+
+
+@app.route('/api/company/projects/<int:project_id>', methods=['PUT'])
+def update_company_project(project_id):
+    """Update a company project."""
+    data = request.json
+    for project in COMPANY_DATA['projects']:
+        if project['id'] == project_id:
+            project.update(data)
+            return jsonify({'success': True, 'project': project})
+    return jsonify({'error': 'Project not found'}), 404
+
+
+@app.route('/api/company/activity', methods=['GET'])
+def get_company_activity():
+    """Get company activity feed."""
+    limit = request.args.get('limit', 20, type=int)
+    return jsonify({'activities': COMPANY_DATA['activities'][:limit]})
+
+
+@app.route('/api/company/activity', methods=['POST'])
+def log_company_activity():
+    """Log a new activity."""
+    data = request.json
+    if not data or 'text' not in data:
+        return jsonify({'error': 'Activity text required'}), 400
+
+    activity = {
+        'type': data.get('type', 'info'),
+        'text': data['text'],
+        'time': datetime.now().isoformat(),
+        'project': data.get('project', 'System')
+    }
+
+    COMPANY_DATA['activities'].insert(0, activity)
+    return jsonify({'success': True, 'activity': activity})
+
+
+@app.route('/api/company/seats', methods=['GET'])
+def get_company_seats():
+    """Get all seat statuses."""
+    return jsonify({'seats': COMPANY_DATA['seats']})
+
+
+@app.route('/api/company/seats/<role>', methods=['PUT'])
+def update_seat_status(role):
+    """Update a seat's status."""
+    data = request.json
+    if role in COMPANY_DATA['seats']:
+        COMPANY_DATA['seats'][role].update(data)
+        return jsonify({'success': True, 'seat': COMPANY_DATA['seats'][role]})
+    return jsonify({'error': 'Role not found'}), 404
+
+
+@app.route('/api/company/metrics', methods=['GET'])
+def get_company_metrics():
+    """Get company dashboard metrics."""
+    active_projects = len([p for p in COMPANY_DATA['projects'] if p.get('status') != 'completed'])
+    pending_bids = len([p for p in COMPANY_DATA['projects'] if p.get('phase') in ['Bidding', 'Estimating']])
+    roadblocks = len([p for p in COMPANY_DATA['projects'] if p.get('status') == 'red'])
+
+    return jsonify({
+        'active_projects': active_projects,
+        'pending_bids': pending_bids,
+        'roadblocks': roadblocks,
+        'revenue_mtd': '$847K'  # Would calculate from actual data
+    })
 
 
 # =============================================================================
