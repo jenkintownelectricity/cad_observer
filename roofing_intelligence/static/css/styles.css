@@ -340,6 +340,7 @@ body {
     transition: var(--transition-normal);
     position: relative;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .upload-card::before {

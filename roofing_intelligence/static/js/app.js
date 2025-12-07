@@ -58,14 +58,42 @@ function initFileInputs() {
 
     types.forEach(type => {
         const input = document.getElementById(type);
+        const label = document.querySelector(`label[for="${type}"]`);
+
         if (input) {
+            // Handle file selection
             input.addEventListener('change', (e) => {
                 const newFiles = Array.from(e.target.files);
                 AppState.files[type] = [...AppState.files[type], ...newFiles];
                 updateFileList(type);
                 updateAnalyzeButton();
+                showToast(`${newFiles.length} file(s) added`, 'success');
             });
         }
+
+        // Explicit click handler for the label/button (fixes browser compatibility)
+        if (label && input) {
+            label.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                input.click();
+            });
+        }
+    });
+
+    // Also make entire card clickable
+    document.querySelectorAll('.upload-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking on file list or remove button
+            if (e.target.closest('.file-list') || e.target.closest('.remove')) {
+                return;
+            }
+            const type = card.dataset.type;
+            const input = document.getElementById(type);
+            if (input) {
+                input.click();
+            }
+        });
     });
 }
 
