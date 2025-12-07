@@ -11,7 +11,7 @@ Features:
 - Project management and export
 """
 
-from flask import Flask, render_template, request, jsonify, Response, send_file
+from flask import Flask, render_template, request, jsonify, Response, send_file, redirect
 import os
 import json
 import time
@@ -71,15 +71,21 @@ def send_progress(session_id, step, progress, message, data=None):
 # =============================================================================
 
 @app.route('/')
-def index():
-    """Document analysis page."""
-    return render_template('index.html')
+def home():
+    """Redirect to dashboard as the main page."""
+    return redirect('/dashboard')
 
 
 @app.route('/dashboard')
 def dashboard():
     """Company dashboard with role-based seats."""
     return render_template('dashboard.html')
+
+
+@app.route('/analysis')
+def analysis():
+    """Document analysis page."""
+    return render_template('index.html')
 
 
 @app.route('/phone')
