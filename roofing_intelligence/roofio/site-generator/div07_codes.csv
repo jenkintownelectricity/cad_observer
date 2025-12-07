@@ -1,0 +1,52 @@
+code,name,description,category,manufacturer_hook,related_sections,tags
+07 01 00,Operation and Maintenance of Thermal and Moisture Protection,Maintenance procedures and schedules for all Division 07 systems including inspections and repairs.,Accessories,Industry Standard,07 00 00 Overview,maintenance,inspections,warranties
+07 05 00,Common Work Results for Thermal and Moisture Protection,General requirements applicable to all Division 07 sections including quality assurance and coordination.,Accessories,Industry Standard,All Division 07 sections,general,coordination,quality
+07 10 00,Dampproofing and Waterproofing,Below-grade and above-grade waterproofing systems to prevent water infiltration into building structures.,Coatings,Carlisle CCW / Tremco,07 11 00;07 12 00;07 13 00,waterproofing,below-grade,foundations
+07 11 00,Dampproofing,Coatings and treatments to resist moisture penetration but not hydrostatic pressure.,Coatings,Carlisle CCW,07 10 00 Waterproofing,dampproofing,coatings,moisture
+07 12 00,Built-up Bituminous Waterproofing,Hot-applied or cold-applied bituminous membrane systems for waterproofing applications.,Membranes,Carlisle CCW / Tremco,07 10 00 Waterproofing,bituminous,hot-mopped,waterproofing
+07 13 00,Sheet Waterproofing,Prefabricated sheet membrane waterproofing for below-grade and plaza deck applications.,Membranes,Carlisle CCW / Grace,07 10 00 Waterproofing,sheet membrane,below-grade,plaza
+07 14 00,Fluid-Applied Waterproofing,Liquid-applied waterproofing membranes including hot rubberized asphalt and cold-applied systems.,Coatings,Tremco / Carlisle,07 10 00 Waterproofing,fluid-applied,liquid,seamless
+07 16 00,Cementitious and Reactive Waterproofing,Crystalline and cementitious waterproofing systems for concrete substrates.,Coatings,Xypex / Kryton,07 10 00 Waterproofing,crystalline,cementitious,concrete
+07 17 00,Bentonite Waterproofing,Clay-based waterproofing systems that swell upon contact with water for self-sealing protection.,Membranes,CETCO / Volclay,07 10 00 Waterproofing,bentonite,clay,self-sealing
+07 18 00,Traffic Coatings,Waterproof traffic-bearing coatings for parking decks and vehicular surfaces.,Coatings,Tremco / Sika,07 10 00 Waterproofing,traffic,parking deck,vehicular
+07 19 00,Water Repellents,Penetrating sealers and water repellent coatings for masonry and concrete surfaces.,Coatings,Prosoco / Sikagard,07 10 00 Waterproofing,water repellent,sealer,masonry
+07 20 00,Thermal Protection,Insulation systems for thermal control including board rigid and spray-applied types.,Insulation,Johns Manville / Carlisle,07 21 00;07 22 00,insulation,thermal,R-value
+07 21 00,Thermal Insulation,Board and batt insulation for walls ceilings and roof assemblies.,Insulation,Johns Manville / Owens Corning,07 20 00 Thermal Protection,board insulation,batt,walls
+07 22 00,Roof and Deck Insulation,Rigid board insulation for roof assemblies including polyiso EPS XPS and mineral wool.,Insulation,Johns Manville / Carlisle / GAF,07 20 00 Thermal Protection;07 50 00 Membrane Roofing,polyiso,EPS,roof insulation
+07 24 00,Exterior Insulation and Finish Systems,EIFS cladding systems with insulation and synthetic stucco finish.,Insulation,Dryvit / Sto,07 20 00 Thermal Protection,EIFS,stucco,cladding
+07 25 00,Weather Barriers,Air barriers and weather-resistive barriers for building enclosure continuity.,Membranes,Carlisle CCW / Henry,07 27 00 Air Barriers,weather barrier,WRB,housewrap
+07 26 00,Vapor Retarders,Sheet and fluid-applied vapor retarders to control moisture migration through assemblies.,Membranes,Carlisle / Tremco,07 25 00 Weather Barriers,vapor retarder,moisture control,VR
+07 27 00,Air Barriers,Continuous air barrier systems to control air leakage through building enclosure.,Membranes,Carlisle CCW / Henry / Tremco,07 25 00 Weather Barriers;07 26 00 Vapor Retarders,air barrier,air leakage,continuity
+07 30 00,Steep Slope Roofing,Roofing systems for slopes 3:12 and greater including shingles tiles and metal panels.,Membranes,GAF / CertainTeed / Owens Corning,07 31 00;07 32 00;07 41 00,steep slope,shingles,residential
+07 31 00,Shingles and Shakes,Asphalt fiberglass wood and synthetic shingle roofing systems.,Membranes,GAF / CertainTeed / Owens Corning,07 30 00 Steep Slope Roofing,shingles,asphalt,wood shake
+07 32 00,Roof Tiles,Clay concrete and synthetic roof tile systems for steep slope applications.,Membranes,Boral / Eagle / Ludowici,07 30 00 Steep Slope Roofing,tile,clay,concrete
+07 33 00,Natural Roof Coverings,Slate and natural stone roofing systems for premium steep slope applications.,Membranes,Vermont Structural Slate,07 30 00 Steep Slope Roofing,slate,natural stone,premium
+07 40 00,Roofing and Siding Panels,Metal and composite panel systems for roofing and wall cladding applications.,Membranes,MBCI / Firestone Metal,07 41 00;07 42 00,metal panels,siding,cladding
+07 41 00,Roof Panels,Metal roof panels including standing seam and exposed fastener systems.,Membranes,MBCI / Firestone Metal / Fabral,07 40 00 Roofing Panels,standing seam,metal roof,panels
+07 42 00,Wall Panels,Metal and composite wall panel systems for exterior cladding.,Membranes,MBCI / Centria / Kingspan,07 40 00 Roofing Panels,wall panels,metal,cladding
+07 46 00,Siding,Exterior siding systems including vinyl fiber cement and wood.,Membranes,James Hardie / CertainTeed,07 40 00 Roofing Panels,siding,fiber cement,vinyl
+07 50 00,Membrane Roofing,Low-slope roofing membrane systems including single-ply modified bitumen and built-up roofing.,Membranes,Carlisle / Firestone / GAF,07 51 00;07 52 00;07 54 00;07 55 00,membrane,low-slope,commercial
+07 51 00,Built-Up Bituminous Roofing,Multi-ply asphalt and coal tar roofing systems with aggregate or smooth surfacing.,Membranes,Johns Manville / GAF,07 50 00 Membrane Roofing,BUR,bituminous,multi-ply
+07 52 00,Modified Bituminous Membrane Roofing,SBS and APP modified bitumen roofing systems with various application methods.,Membranes,GAF / Firestone / Soprema,07 50 00 Membrane Roofing,mod bit,SBS,APP
+07 53 00,Elastomeric Membrane Roofing,EPDM and other elastomeric single-ply roofing membranes.,Membranes,Firestone / Carlisle / Johns Manville,07 50 00 Membrane Roofing,EPDM,elastomeric,rubber
+07 54 00,Thermoplastic Membrane Roofing,TPO and PVC single-ply roofing systems with heat-welded seams.,Membranes,Carlisle / Firestone / GAF,07 50 00 Membrane Roofing,TPO,PVC,thermoplastic
+07 55 00,Protected Membrane Roofing,Inverted roof membrane assemblies with insulation above membrane (IRMA/PMR).,Membranes,Dow / Carlisle,07 50 00 Membrane Roofing,PMR,IRMA,inverted
+07 56 00,Fluid-Applied Roofing,Liquid-applied roofing systems including silicone acrylic and polyurethane coatings.,Coatings,GAF / Tremco / Sika,07 50 00 Membrane Roofing,fluid-applied,silicone,coating
+07 57 00,Coated Foamed Roofing,Spray polyurethane foam roofing systems with protective elastomeric coatings.,Coatings,BASF / Carlisle,07 50 00 Membrane Roofing,SPF,foam,spray
+07 58 00,Roll Roofing,Mineral-surfaced and smooth roll roofing for low-slope and steep-slope applications.,Membranes,GAF / CertainTeed,07 50 00 Membrane Roofing,roll roofing,mineral surface,economy
+07 60 00,Flashing and Sheet Metal,Sheet metal flashing fabrications and membrane flashing for weatherproofing transitions.,Flashings,Firestone Metal-Era / Carlisle,07 62 00;07 65 00,flashing,sheet metal,transitions
+07 62 00,Sheet Metal Flashing and Trim,Fabricated sheet metal flashings including copings edge metal and counter flashings.,Flashings,Firestone Metal-Era / Carlisle / Custom,07 60 00 Flashing,coping,edge metal,counter flashing
+07 63 00,Sheet Metal Roofing Specialties,Prefabricated metal roofing accessories including expansion joints and hatches.,Flashings,Firestone Metal-Era / Bilco,07 62 00 Sheet Metal Flashing,expansion joints,hatches,specialties
+07 65 00,Flexible Flashing,Membrane flashings and self-adhering flashing for waterproofing details.,Flashings,Carlisle / Firestone / Grace,07 60 00 Flashing,membrane flashing,self-adhered,flexible
+07 70 00,Roof and Wall Specialties and Accessories,Roof-mounted equipment supports drainage components and specialty items.,Accessories,PHP / Roof Products,07 71 00;07 72 00,accessories,supports,equipment
+07 71 00,Roof Specialties,Roof hatches smoke vents and other penetrating roof accessories.,Accessories,Bilco / Milcor,07 70 00 Specialties,roof hatch,smoke vent,penetrations
+07 72 00,Roof Accessories,Walkway systems roof anchors and fall protection equipment.,Accessories,PHP / Garlock,07 70 00 Specialties,walkways,fall protection,anchors
+07 76 00,Roof Pavers,Concrete and composite paver systems for protected membrane and ballasted roofs.,Accessories,Hanover / Bison,07 70 00 Specialties,pavers,ballast,PMR
+07 77 00,Wall Specialties,Wall-mounted louvers vents and penetration accessories.,Accessories,Ruskin / Construction Specialties,07 70 00 Specialties,louvers,vents,wall
+07 80 00,Fire and Smoke Protection,Firestopping systems and smoke containment for maintaining compartmentalization.,Sealants,Hilti / STI / 3M,07 84 00;07 86 00,firestopping,smoke,fire-rated
+07 84 00,Firestopping,Through-penetration and joint firestop systems for fire-rated assemblies.,Sealants,Hilti / STI / 3M,07 80 00 Fire Protection,firestop,penetrations,fire-rated
+07 86 00,Smoke Containment,Smoke seals and barriers for maintaining smoke compartmentalization.,Sealants,Hilti / STI,07 80 00 Fire Protection,smoke seals,containment,life safety
+07 90 00,Joint Protection,Sealants expansion joints and joint covers for movement accommodation.,Sealants,Tremco / Sika / Dow,07 91 00;07 92 00;07 95 00,joints,sealants,movement
+07 91 00,Preformed Joint Seals,Precompressed foam and preformed joint seals for expansion joints.,Sealants,Emseal / BASF,07 90 00 Joint Protection,preformed,expansion,compression
+07 92 00,Joint Sealants,Elastomeric sealants for weatherproofing joints including silicone urethane and hybrid types.,Sealants,Tremco / Sika / Dow / Pecora,07 90 00 Joint Protection,sealant,silicone,urethane
+07 95 00,Expansion Joint Cover Assemblies,Architectural and structural expansion joint covers for floors walls and roofs.,Sealants,Inpro / Construction Specialties / Balco,07 90 00 Joint Protection,expansion joint,covers,movement

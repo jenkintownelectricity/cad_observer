@@ -44,31 +44,33 @@
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
-| `codes/asce-7` | ASCE 7 Wind & Hazard | 📋 | Wind uplift, seismic, climate zones |
-| `codes/ibc` | International Building Code | 📋 | IBC roofing sections |
-| `codes/irc` | International Residential Code | 📋 | IRC roofing requirements |
-| `codes/icc` | ICC Standards | 📋 | ICC evaluation reports |
+| `codes/asce-7` | ASCE 7 Wind & Hazard | ✅ | Wind uplift, seismic, climate zones |
+| `codes/ibc` | International Building Code | ✅ | IBC roofing sections |
+| `codes/irc` | International Residential Code | ✅ | IRC roofing requirements |
+| `codes/icc` | ICC Standards | ✅ | ICC evaluation reports |
 | `codes/nfpa` | NFPA Fire Codes | 📋 | Fire ratings, assemblies |
+| `standards/hierarchy` | Standards Hierarchy | ✅ | Layered system: Code→Test→Enforce→Method→Money |
 
 ### Industry Standards
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
-| `standards/nrca` | NRCA Manual | 📋 | Roofing manual, best practices |
-| `standards/fm-global` | FM Global | 📋 | FM approvals, loss prevention |
-| `standards/spri` | SPRI | 📋 | Single-ply industry standards |
-| `standards/iibec` | IIBEC | 📋 | Building enclosure standards |
+| `standards/nrca` | NRCA Manual | ✅ | Roofing manual, best practices |
+| `standards/fm-global` | FM Global | ✅ | FM approvals, loss prevention |
+| `standards/spri` | SPRI | ✅ | Single-ply industry standards |
+| `standards/iibec` | IIBEC | ✅ | Building enclosure standards |
 | `standards/astm` | ASTM Testing | 📋 | Test methods, specifications |
 
 ### Roofing Systems
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
-| `systems/tpo` | TPO Membrane | 📋 | Thermoplastic polyolefin expert |
-| `systems/epdm` | EPDM Membrane | 📋 | Rubber membrane expert |
-| `systems/pvc` | PVC Membrane | 📋 | Vinyl membrane expert |
-| `systems/mod-bit` | Modified Bitumen | 📋 | SBS/APP systems |
-| `systems/bur` | Built-Up Roofing | 📋 | Traditional BUR systems |
+| `systems/roofing-systems` | All Roofing Systems | ✅ | Comprehensive overview |
+| `systems/tpo` | TPO Membrane | ✅ | Thermoplastic polyolefin expert |
+| `systems/epdm` | EPDM Membrane | ✅ | Rubber membrane expert |
+| `systems/pvc` | PVC Membrane | ✅ | Vinyl membrane expert |
+| `systems/mod-bit` | Modified Bitumen | ✅ | SBS/APP systems |
+| `systems/bur` | Built-Up Roofing | ✅ | Traditional BUR systems |
 | `systems/metal` | Metal Roofing | 📋 | Standing seam, panels |
 | `systems/shingles` | Asphalt Shingles | 📋 | Residential shingles |
 | `systems/coatings` | Roof Coatings | 📋 | Restoration, maintenance |
@@ -78,9 +80,10 @@
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
-| `manufacturers/carlisle` | Carlisle SynTec | 📋 | Technical library |
-| `manufacturers/firestone` | Firestone BP | 📋 | Technical library |
-| `manufacturers/gaf` | GAF | 📋 | Technical library |
+| `manufacturers/general` | Manufacturer Overview | ✅ | Product data, comparison |
+| `manufacturers/carlisle` | Carlisle SynTec | 🔄 | Technical library |
+| `manufacturers/firestone` | Firestone BP | 🔄 | Technical library |
+| `manufacturers/gaf` | GAF | 🔄 | Technical library |
 | `manufacturers/johns-manville` | Johns Manville | ⬜ | Week 1 expansion |
 | `manufacturers/sika-sarnafil` | Sika Sarnafil | ⬜ | Week 2 expansion |
 | `manufacturers/tremco` | Tremco | ⬜ | Week 3 expansion |
@@ -90,28 +93,31 @@
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
-| `inspections/visual` | Visual Inspection | 📋 | Inspection protocols |
+| `inspections/div07-inspections` | Div 07 Inspections | ✅ | Full inspection protocols |
+| `inspections/div07-testing` | Div 07 Testing | ✅ | Test methods, standards |
+| `inspections/leak-detection` | Leak Detection | ✅ | ELD, flood testing, IR |
+| `inspections/visual` | Visual Inspection | ✅ | Visual protocols |
 | `inspections/core-cuts` | Core Cut Analysis | 📋 | Core sampling procedures |
-| `inspections/leak-detection` | Leak Detection | 📋 | ELD, flood testing, IR |
-| `inspections/wind-uplift` | Wind Uplift Testing | 📋 | FM, UL testing |
+| `inspections/wind-uplift` | Wind Uplift Testing | ✅ | FM, UL testing |
 | `inspections/moisture` | Moisture Survey | 📋 | IR, nuclear, capacitance |
 
 ### Tools & Calculations
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
-| `tools/asce-hazard` | ASCE 7 Hazard Tool | 📋 | Wind speed, seismic lookup |
-| `tools/uplift-calc` | Uplift Calculator | 📋 | Wind uplift calculations |
+| `tools/asce-hazard` | ASCE 7 Hazard Tool | ✅ | Wind speed, seismic lookup |
+| `tools/uplift-calc` | Uplift Calculator | ✅ | Wind uplift calculations |
 | `tools/r-value` | R-Value Calculator | 📋 | Insulation thermal calc |
 | `tools/drainage` | Drainage Calculator | 📋 | Drain sizing, slope |
 | `tools/estimating` | Estimating Tools | 📋 | Takeoff, pricing |
+| `tools/web-scraper` | Div 07 Web Scraper | ✅ | Database building tool |
 
 ### Drafting & Details
 
 | Skill ID | Name | Status | Description |
 |----------|------|--------|-------------|
 | `drafting/standard-details` | Standard Details | 📋 | Common detail library |
-| `drafting/innovations` | Detail Innovations | 📋 | Armand's innovations |
+| `drafting/innovations` | Detail Innovations | ✅ | Armand's innovations |
 | `drafting/cad-standards` | CAD Standards | 📋 | Layer, linetype standards |
 
 ---
@@ -291,3 +297,56 @@ POST /api/roofio/calculate/uplift # Wind uplift calc
 GET  /api/roofio/manufacturers # List manufacturers
 GET  /api/roofio/assemblies    # FM approved assemblies
 ```
+
+---
+
+## Site Generator
+
+The Division 07 Specification Website generator is located at `site-generator/`:
+
+```bash
+# Generate the spec website
+cd site-generator
+python roofio_site_generator.py
+
+# Output
+build/index.html              # Master index with search
+build/07-XX-XX-*.html        # Individual spec pages
+```
+
+**Data Source**: `div07_codes.csv` - Contains all Division 07 spec sections with metadata.
+
+**Generated Pages**: 50+ specification pages covering all Division 07 sections.
+
+---
+
+## Partnership Package
+
+See `PARTNERSHIP-PACKAGE.md` for:
+- NRCA Partnership email template
+- IIBEC Technical Advisory Committee abstract
+- Manufacturer partnership request templates
+- Barrett Roofing pilot pitch
+- ICC Code Connect application
+- Technical data specification requirements
+- Platform integrations (Procore, PlanGrid, etc.)
+- Execution timeline
+
+**Pitch Materials**:
+- `roofio-pitch.html` - Interactive presentation
+- `roofio-spec-index.html` - Spec database demo
+
+---
+
+## Current Skill Count
+
+| Category | Complete | In Progress | Planned |
+|----------|----------|-------------|---------|
+| Codes & Standards | 5 | 0 | 1 |
+| Industry Standards | 4 | 0 | 1 |
+| Roofing Systems | 6 | 0 | 4 |
+| Manufacturers | 1 | 3 | 4 |
+| Inspections | 5 | 0 | 2 |
+| Tools | 3 | 0 | 2 |
+| Drafting | 1 | 0 | 2 |
+| **Total** | **25** | **3** | **16** |

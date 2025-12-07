@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOFIO | Division 07 Specification Database</title>
+    <meta name="description" content="The world's most comprehensive Division 07 specification database. Thermal and Moisture Protection standards from NRCA, FM Global, and industry leaders.">
+    
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #f97316;
+            --accent-dark: #ea580c;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); 
+            color: #1a202c; 
+            margin: 0; 
+        }
+        
+        .hero { 
+            background: linear-gradient(135deg, var(--primary) 0%, #1e293b 100%);
+            color: white; 
+            padding: 80px 20px; 
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 { 
+            margin: 0; 
+            font-size: 3.5rem; 
+            letter-spacing: -2px;
+            font-weight: 900;
+        }
+        
+        .hero h1 span { color: var(--accent); }
+        
+        .hero p { 
+            color: #94a3b8; 
+            font-size: 1.3rem; 
+            max-width: 700px; 
+            margin: 20px auto 0;
+            line-height: 1.6;
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: -50px auto 60px; 
+            padding: 0 20px; 
+            position: relative;
+            z-index: 2;
+        }
+        
+        .search-box { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 40px;
+            align-items: center;
+        }
+        
+        .search-input { 
+            flex: 1; 
+            padding: 18px 20px; 
+            border: 2px solid var(--border); 
+            border-radius: 10px; 
+            font-size: 1.1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .filter-btn {
+            padding: 18px 25px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            background: white;
+            border-color: var(--accent);
+        }
+        
+        .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .cat-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .cat-tab:hover {
+            border-color: var(--accent);
+        }
+        
+        .cat-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        .card { 
+            background: white; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 25px; 
+            transition: all 0.2s; 
+            text-decoration: none; 
+            color: inherit; 
+            display: block;
+            position: relative;
+        }
+        
+        .card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08); 
+            border-color: var(--accent); 
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .code-badge { 
+            background: var(--primary); 
+            color: white; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            font-family: monospace; 
+            font-size: 0.9rem; 
+        }
+        
+        .category-badge { 
+            color: var(--accent); 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #fff7ed;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        
+        .card h3 { 
+            margin: 0 0 10px; 
+            font-size: 1.15rem;
+            color: var(--primary);
+        }
+        
+        .card p { 
+            color: #64748b; 
+            font-size: 0.9rem; 
+            margin: 0; 
+            line-height: 1.6; 
+        }
+        
+        .card-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .card-tag {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            background: var(--bg);
+            border-radius: 4px;
+            color: #64748b;
+        }
+        
+        footer {
+            background: var(--primary);
+            color: #64748b;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero-stats { flex-direction: column; gap: 20px; }
+            .search-box { flex-direction: column; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="hero-content">
+        <h1>ROOF<span>IO</span></h1>
+        <p>The world's most comprehensive Division 07 specification database. Thermal and Moisture Protection standards built by a 20-year journeyman, verified by industry leaders.</p>
+        
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number" id="specCount">0</div>
+                <div class="stat-label">Specifications</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">14</div>
+                <div class="stat-label">Technical Skills</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Manufacturer Partners</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="search-box">
+        <input type="text" class="search-input" placeholder="Search specs (e.g., '07 54 00', 'TPO', 'flashing')..." onkeyup="filterList()" id="searchInput">
+    </div>
+    
+    <div class="category-tabs">
+        <button class="cat-tab active" onclick="filterCategory('all')">All Specs</button>
+        <button class="cat-tab" onclick="filterCategory('Membranes')">Membranes</button>
+        <button class="cat-tab" onclick="filterCategory('Flashings')">Flashings</button>
+        <button class="cat-tab" onclick="filterCategory('Insulation')">Insulation</button>
+        <button class="cat-tab" onclick="filterCategory('Coatings')">Coatings</button>
+        <button class="cat-tab" onclick="filterCategory('Sealants')">Sealants</button>
+        <button class="cat-tab" onclick="filterCategory('Accessories')">Accessories</button>
+    </div>
+
+    <div class="grid" id="specGrid">
+
+            <a href="07-01-00-operation-and-maintenance-of-thermal-and-moisture-protection.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 01 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Operation and Maintenance of Thermal and Moisture Protection</h3>
+                <p>Maintenance procedures and schedules for all Division 07 systems including inspections and repairs.</p>
+                <div class="card-footer">
+                    <span class="card-tag">maintenance</span>
+                </div>
+            </a>
+            
+            <a href="07-05-00-common-work-results-for-thermal-and-moisture-protection.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 05 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Common Work Results for Thermal and Moisture Protection</h3>
+                <p>General requirements applicable to all Division 07 sections including quality assurance and coordination.</p>
+                <div class="card-footer">
+                    <span class="card-tag">general</span>
+                </div>
+            </a>
+            
+            <a href="07-10-00-dampproofing-and-waterproofing.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 10 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Dampproofing and Waterproofing</h3>
+                <p>Below-grade and above-grade waterproofing systems to prevent water infiltration into building structures.</p>
+                <div class="card-footer">
+                    <span class="card-tag">waterproofing</span>
+                </div>
+            </a>
+            
+            <a href="07-11-00-dampproofing.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 11 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Dampproofing</h3>
+                <p>Coatings and treatments to resist moisture penetration but not hydrostatic pressure.</p>
+                <div class="card-footer">
+                    <span class="card-tag">dampproofing</span>
+                </div>
+            </a>
+            
+            <a href="07-12-00-built-up-bituminous-waterproofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 12 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Built-up Bituminous Waterproofing</h3>
+                <p>Hot-applied or cold-applied bituminous membrane systems for waterproofing applications.</p>
+                <div class="card-footer">
+                    <span class="card-tag">bituminous</span>
+                </div>
+            </a>
+            
+            <a href="07-13-00-sheet-waterproofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 13 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Sheet Waterproofing</h3>
+                <p>Prefabricated sheet membrane waterproofing for below-grade and plaza deck applications.</p>
+                <div class="card-footer">
+                    <span class="card-tag">sheet membrane</span>
+                </div>
+            </a>
+            
+            <a href="07-14-00-fluid-applied-waterproofing.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 14 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Fluid-Applied Waterproofing</h3>
+                <p>Liquid-applied waterproofing membranes including hot rubberized asphalt and cold-applied systems.</p>
+                <div class="card-footer">
+                    <span class="card-tag">fluid-applied</span>
+                </div>
+            </a>
+            
+            <a href="07-16-00-cementitious-and-reactive-waterproofing.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 16 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Cementitious and Reactive Waterproofing</h3>
+                <p>Crystalline and cementitious waterproofing systems for concrete substrates.</p>
+                <div class="card-footer">
+                    <span class="card-tag">crystalline</span>
+                </div>
+            </a>
+            
+            <a href="07-17-00-bentonite-waterproofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 17 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Bentonite Waterproofing</h3>
+                <p>Clay-based waterproofing systems that swell upon contact with water for self-sealing protection.</p>
+                <div class="card-footer">
+                    <span class="card-tag">bentonite</span>
+                </div>
+            </a>
+            
+            <a href="07-18-00-traffic-coatings.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 18 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Traffic Coatings</h3>
+                <p>Waterproof traffic-bearing coatings for parking decks and vehicular surfaces.</p>
+                <div class="card-footer">
+                    <span class="card-tag">traffic</span>
+                </div>
+            </a>
+            
+            <a href="07-19-00-water-repellents.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 19 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Water Repellents</h3>
+                <p>Penetrating sealers and water repellent coatings for masonry and concrete surfaces.</p>
+                <div class="card-footer">
+                    <span class="card-tag">water repellent</span>
+                </div>
+            </a>
+            
+            <a href="07-20-00-thermal-protection.html" class="card" data-category="Insulation">
+                <div class="card-header">
+                    <span class="code-badge">07 20 00</span>
+                    <span class="category-badge">Insulation</span>
+                </div>
+                <h3>Thermal Protection</h3>
+                <p>Insulation systems for thermal control including board rigid and spray-applied types.</p>
+                <div class="card-footer">
+                    <span class="card-tag">insulation</span>
+                </div>
+            </a>
+            
+            <a href="07-21-00-thermal-insulation.html" class="card" data-category="Insulation">
+                <div class="card-header">
+                    <span class="code-badge">07 21 00</span>
+                    <span class="category-badge">Insulation</span>
+                </div>
+                <h3>Thermal Insulation</h3>
+                <p>Board and batt insulation for walls ceilings and roof assemblies.</p>
+                <div class="card-footer">
+                    <span class="card-tag">board insulation</span>
+                </div>
+            </a>
+            
+            <a href="07-22-00-roof-and-deck-insulation.html" class="card" data-category="Insulation">
+                <div class="card-header">
+                    <span class="code-badge">07 22 00</span>
+                    <span class="category-badge">Insulation</span>
+                </div>
+                <h3>Roof and Deck Insulation</h3>
+                <p>Rigid board insulation for roof assemblies including polyiso EPS XPS and mineral wool.</p>
+                <div class="card-footer">
+                    <span class="card-tag">polyiso</span>
+                </div>
+            </a>
+            
+            <a href="07-24-00-exterior-insulation-and-finish-systems.html" class="card" data-category="Insulation">
+                <div class="card-header">
+                    <span class="code-badge">07 24 00</span>
+                    <span class="category-badge">Insulation</span>
+                </div>
+                <h3>Exterior Insulation and Finish Systems</h3>
+                <p>EIFS cladding systems with insulation and synthetic stucco finish.</p>
+                <div class="card-footer">
+                    <span class="card-tag">EIFS</span>
+                </div>
+            </a>
+            
+            <a href="07-25-00-weather-barriers.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 25 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Weather Barriers</h3>
+                <p>Air barriers and weather-resistive barriers for building enclosure continuity.</p>
+                <div class="card-footer">
+                    <span class="card-tag">weather barrier</span>
+                </div>
+            </a>
+            
+            <a href="07-26-00-vapor-retarders.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 26 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Vapor Retarders</h3>
+                <p>Sheet and fluid-applied vapor retarders to control moisture migration through assemblies.</p>
+                <div class="card-footer">
+                    <span class="card-tag">vapor retarder</span>
+                </div>
+            </a>
+            
+            <a href="07-27-00-air-barriers.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 27 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Air Barriers</h3>
+                <p>Continuous air barrier systems to control air leakage through building enclosure.</p>
+                <div class="card-footer">
+                    <span class="card-tag">air barrier</span>
+                </div>
+            </a>
+            
+            <a href="07-30-00-steep-slope-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 30 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Steep Slope Roofing</h3>
+                <p>Roofing systems for slopes 3:12 and greater including shingles tiles and metal panels.</p>
+                <div class="card-footer">
+                    <span class="card-tag">steep slope</span>
+                </div>
+            </a>
+            
+            <a href="07-31-00-shingles-and-shakes.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 31 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Shingles and Shakes</h3>
+                <p>Asphalt fiberglass wood and synthetic shingle roofing systems.</p>
+                <div class="card-footer">
+                    <span class="card-tag">shingles</span>
+                </div>
+            </a>
+            
+            <a href="07-32-00-roof-tiles.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 32 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Roof Tiles</h3>
+                <p>Clay concrete and synthetic roof tile systems for steep slope applications.</p>
+                <div class="card-footer">
+                    <span class="card-tag">tile</span>
+                </div>
+            </a>
+            
+            <a href="07-33-00-natural-roof-coverings.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 33 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Natural Roof Coverings</h3>
+                <p>Slate and natural stone roofing systems for premium steep slope applications.</p>
+                <div class="card-footer">
+                    <span class="card-tag">slate</span>
+                </div>
+            </a>
+            
+            <a href="07-40-00-roofing-and-siding-panels.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 40 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Roofing and Siding Panels</h3>
+                <p>Metal and composite panel systems for roofing and wall cladding applications.</p>
+                <div class="card-footer">
+                    <span class="card-tag">metal panels</span>
+                </div>
+            </a>
+            
+            <a href="07-41-00-roof-panels.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 41 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Roof Panels</h3>
+                <p>Metal roof panels including standing seam and exposed fastener systems.</p>
+                <div class="card-footer">
+                    <span class="card-tag">standing seam</span>
+                </div>
+            </a>
+            
+            <a href="07-42-00-wall-panels.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 42 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Wall Panels</h3>
+                <p>Metal and composite wall panel systems for exterior cladding.</p>
+                <div class="card-footer">
+                    <span class="card-tag">wall panels</span>
+                </div>
+            </a>
+            
+            <a href="07-46-00-siding.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 46 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Siding</h3>
+                <p>Exterior siding systems including vinyl fiber cement and wood.</p>
+                <div class="card-footer">
+                    <span class="card-tag">siding</span>
+                </div>
+            </a>
+            
+            <a href="07-50-00-membrane-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 50 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Membrane Roofing</h3>
+                <p>Low-slope roofing membrane systems including single-ply modified bitumen and built-up roofing.</p>
+                <div class="card-footer">
+                    <span class="card-tag">membrane</span>
+                </div>
+            </a>
+            
+            <a href="07-51-00-built-up-bituminous-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 51 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Built-Up Bituminous Roofing</h3>
+                <p>Multi-ply asphalt and coal tar roofing systems with aggregate or smooth surfacing.</p>
+                <div class="card-footer">
+                    <span class="card-tag">BUR</span>
+                </div>
+            </a>
+            
+            <a href="07-52-00-modified-bituminous-membrane-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 52 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Modified Bituminous Membrane Roofing</h3>
+                <p>SBS and APP modified bitumen roofing systems with various application methods.</p>
+                <div class="card-footer">
+                    <span class="card-tag">mod bit</span>
+                </div>
+            </a>
+            
+            <a href="07-53-00-elastomeric-membrane-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 53 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Elastomeric Membrane Roofing</h3>
+                <p>EPDM and other elastomeric single-ply roofing membranes.</p>
+                <div class="card-footer">
+                    <span class="card-tag">EPDM</span>
+                </div>
+            </a>
+            
+            <a href="07-54-00-thermoplastic-membrane-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 54 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Thermoplastic Membrane Roofing</h3>
+                <p>TPO and PVC single-ply roofing systems with heat-welded seams.</p>
+                <div class="card-footer">
+                    <span class="card-tag">TPO</span>
+                </div>
+            </a>
+            
+            <a href="07-55-00-protected-membrane-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 55 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Protected Membrane Roofing</h3>
+                <p>Inverted roof membrane assemblies with insulation above membrane (IRMA/PMR).</p>
+                <div class="card-footer">
+                    <span class="card-tag">PMR</span>
+                </div>
+            </a>
+            
+            <a href="07-56-00-fluid-applied-roofing.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 56 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Fluid-Applied Roofing</h3>
+                <p>Liquid-applied roofing systems including silicone acrylic and polyurethane coatings.</p>
+                <div class="card-footer">
+                    <span class="card-tag">fluid-applied</span>
+                </div>
+            </a>
+            
+            <a href="07-57-00-coated-foamed-roofing.html" class="card" data-category="Coatings">
+                <div class="card-header">
+                    <span class="code-badge">07 57 00</span>
+                    <span class="category-badge">Coatings</span>
+                </div>
+                <h3>Coated Foamed Roofing</h3>
+                <p>Spray polyurethane foam roofing systems with protective elastomeric coatings.</p>
+                <div class="card-footer">
+                    <span class="card-tag">SPF</span>
+                </div>
+            </a>
+            
+            <a href="07-58-00-roll-roofing.html" class="card" data-category="Membranes">
+                <div class="card-header">
+                    <span class="code-badge">07 58 00</span>
+                    <span class="category-badge">Membranes</span>
+                </div>
+                <h3>Roll Roofing</h3>
+                <p>Mineral-surfaced and smooth roll roofing for low-slope and steep-slope applications.</p>
+                <div class="card-footer">
+                    <span class="card-tag">roll roofing</span>
+                </div>
+            </a>
+            
+            <a href="07-60-00-flashing-and-sheet-metal.html" class="card" data-category="Flashings">
+                <div class="card-header">
+                    <span class="code-badge">07 60 00</span>
+                    <span class="category-badge">Flashings</span>
+                </div>
+                <h3>Flashing and Sheet Metal</h3>
+                <p>Sheet metal flashing fabrications and membrane flashing for weatherproofing transitions.</p>
+                <div class="card-footer">
+                    <span class="card-tag">flashing</span>
+                </div>
+            </a>
+            
+            <a href="07-62-00-sheet-metal-flashing-and-trim.html" class="card" data-category="Flashings">
+                <div class="card-header">
+                    <span class="code-badge">07 62 00</span>
+                    <span class="category-badge">Flashings</span>
+                </div>
+                <h3>Sheet Metal Flashing and Trim</h3>
+                <p>Fabricated sheet metal flashings including copings edge metal and counter flashings.</p>
+                <div class="card-footer">
+                    <span class="card-tag">coping</span>
+                </div>
+            </a>
+            
+            <a href="07-63-00-sheet-metal-roofing-specialties.html" class="card" data-category="Flashings">
+                <div class="card-header">
+                    <span class="code-badge">07 63 00</span>
+                    <span class="category-badge">Flashings</span>
+                </div>
+                <h3>Sheet Metal Roofing Specialties</h3>
+                <p>Prefabricated metal roofing accessories including expansion joints and hatches.</p>
+                <div class="card-footer">
+                    <span class="card-tag">expansion joints</span>
+                </div>
+            </a>
+            
+            <a href="07-65-00-flexible-flashing.html" class="card" data-category="Flashings">
+                <div class="card-header">
+                    <span class="code-badge">07 65 00</span>
+                    <span class="category-badge">Flashings</span>
+                </div>
+                <h3>Flexible Flashing</h3>
+                <p>Membrane flashings and self-adhering flashing for waterproofing details.</p>
+                <div class="card-footer">
+                    <span class="card-tag">membrane flashing</span>
+                </div>
+            </a>
+            
+            <a href="07-70-00-roof-and-wall-specialties-and-accessories.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 70 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Roof and Wall Specialties and Accessories</h3>
+                <p>Roof-mounted equipment supports drainage components and specialty items.</p>
+                <div class="card-footer">
+                    <span class="card-tag">accessories</span>
+                </div>
+            </a>
+            
+            <a href="07-71-00-roof-specialties.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 71 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Roof Specialties</h3>
+                <p>Roof hatches smoke vents and other penetrating roof accessories.</p>
+                <div class="card-footer">
+                    <span class="card-tag">roof hatch</span>
+                </div>
+            </a>
+            
+            <a href="07-72-00-roof-accessories.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 72 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Roof Accessories</h3>
+                <p>Walkway systems roof anchors and fall protection equipment.</p>
+                <div class="card-footer">
+                    <span class="card-tag">walkways</span>
+                </div>
+            </a>
+            
+            <a href="07-76-00-roof-pavers.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 76 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Roof Pavers</h3>
+                <p>Concrete and composite paver systems for protected membrane and ballasted roofs.</p>
+                <div class="card-footer">
+                    <span class="card-tag">pavers</span>
+                </div>
+            </a>
+            
+            <a href="07-77-00-wall-specialties.html" class="card" data-category="Accessories">
+                <div class="card-header">
+                    <span class="code-badge">07 77 00</span>
+                    <span class="category-badge">Accessories</span>
+                </div>
+                <h3>Wall Specialties</h3>
+                <p>Wall-mounted louvers vents and penetration accessories.</p>
+                <div class="card-footer">
+                    <span class="card-tag">louvers</span>
+                </div>
+            </a>
+            
+            <a href="07-80-00-fire-and-smoke-protection.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 80 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Fire and Smoke Protection</h3>
+                <p>Firestopping systems and smoke containment for maintaining compartmentalization.</p>
+                <div class="card-footer">
+                    <span class="card-tag">firestopping</span>
+                </div>
+            </a>
+            
+            <a href="07-84-00-firestopping.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 84 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Firestopping</h3>
+                <p>Through-penetration and joint firestop systems for fire-rated assemblies.</p>
+                <div class="card-footer">
+                    <span class="card-tag">firestop</span>
+                </div>
+            </a>
+            
+            <a href="07-86-00-smoke-containment.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 86 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Smoke Containment</h3>
+                <p>Smoke seals and barriers for maintaining smoke compartmentalization.</p>
+                <div class="card-footer">
+                    <span class="card-tag">smoke seals</span>
+                </div>
+            </a>
+            
+            <a href="07-90-00-joint-protection.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 90 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Joint Protection</h3>
+                <p>Sealants expansion joints and joint covers for movement accommodation.</p>
+                <div class="card-footer">
+                    <span class="card-tag">joints</span>
+                </div>
+            </a>
+            
+            <a href="07-91-00-preformed-joint-seals.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 91 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Preformed Joint Seals</h3>
+                <p>Precompressed foam and preformed joint seals for expansion joints.</p>
+                <div class="card-footer">
+                    <span class="card-tag">preformed</span>
+                </div>
+            </a>
+            
+            <a href="07-92-00-joint-sealants.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 92 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Joint Sealants</h3>
+                <p>Elastomeric sealants for weatherproofing joints including silicone urethane and hybrid types.</p>
+                <div class="card-footer">
+                    <span class="card-tag">sealant</span>
+                </div>
+            </a>
+            
+            <a href="07-95-00-expansion-joint-cover-assemblies.html" class="card" data-category="Sealants">
+                <div class="card-header">
+                    <span class="code-badge">07 95 00</span>
+                    <span class="category-badge">Sealants</span>
+                </div>
+                <h3>Expansion Joint Cover Assemblies</h3>
+                <p>Architectural and structural expansion joint covers for floors walls and roofs.</p>
+                <div class="card-footer">
+                    <span class="card-tag">expansion joint</span>
+                </div>
+            </a>
+            
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 <a href="#">Lefebvre Design Solutions</a>. ROOFIO - The Division 07 Digital Journeyman.</p>
+    <p style="margin-top: 10px; font-size: 0.85rem;">Built with 20+ years of roofing expertise. Union proud.</p>
+</footer>
+
+<script>
+// Count specs
+document.addEventListener('DOMContentLoaded', function() {
+    var cards = document.getElementsByClassName('card');
+    document.getElementById('specCount').textContent = cards.length;
+});
+
+// Search filter
+function filterList() {
+    var input = document.getElementById('searchInput');
+    var filter = input.value.toUpperCase();
+    var grid = document.getElementById("specGrid");
+    var cards = grid.getElementsByClassName('card');
+
+    for (var i = 0; i < cards.length; i++) {
+        var txtValue = cards[i].textContent || cards[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            cards[i].style.display = "";
+        } else {
+            cards[i].style.display = "none";
+        }
+    }
+}
+
+// Category filter
+function filterCategory(category) {
+    var tabs = document.getElementsByClassName('cat-tab');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
+    event.target.classList.add('active');
+    
+    var grid = document.getElementById("specGrid");
+    var cards = grid.getElementsByClassName('card');
+    
+    for (var i = 0; i < cards.length; i++) {
+        if (category === 'all') {
+            cards[i].style.display = "";
+        } else {
+            var cardCategory = cards[i].getAttribute('data-category');
+            if (cardCategory === category) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+
+</body>
+</html>

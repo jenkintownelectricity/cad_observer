@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOFIO | The Division 07 Digital Journeyman</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #334155;
+            --accent: #f97316;
+            --accent-dark: #ea580c;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --info: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin: 0;
+            text-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 1.4rem;
+            font-weight: 300;
+            margin-top: 15px;
+        }
+
+        .hero-creds {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hero-cred {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .hero-cred svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--accent);
+        }
+
+        /* SECTIONS */
+        main {
+            background: #f1f5f9;
+            padding: 40px 0 60px;
+        }
+
+        section {
+            background: white;
+            margin: 30px auto;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 1100px;
+        }
+
+        h2 {
+            border-left: 5px solid var(--accent);
+            padding-left: 20px;
+            margin: 0 0 25px 0;
+            color: var(--secondary);
+            font-size: 1.8rem;
+        }
+
+        h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        /* PROBLEM SECTION */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .problem-card {
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .problem-card.bad {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #fecaca;
+        }
+
+        .problem-card.good {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #bbf7d0;
+        }
+
+        .problem-card h4 {
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .problem-card.bad h4 { color: #dc2626; }
+        .problem-card.good h4 { color: #16a34a; }
+
+        /* CREDENTIALS */
+        .cred-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .cred-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 4px solid var(--primary);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cred-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .cred-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0;
+        }
+
+        .cred-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cred-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        /* ARCHITECTURE */
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-top: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .flow-box {
+            flex: 1;
+            min-width: 200px;
+            background: var(--light);
+            border: 2px solid var(--border);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .flow-box.highlight {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border-color: #93c5fd;
+        }
+
+        .flow-box strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .flow-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: left;
+        }
+
+        .flow-box ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flow-box ul li:last-child {
+            border-bottom: none;
+        }
+
+        .flow-box ul li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 2.5rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* INTERFACE MOCKUP */
+        .mockup-window {
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin-top: 30px;
+        }
+
+        .mockup-header {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #10b981; }
+
+        .mockup-title {
+            margin-left: 15px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-family: 'Consolas', monospace;
+        }
+
+        .mockup-body {
+            display: flex;
+            background: white;
+            min-height: 450px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            padding: 25px;
+        }
+
+        .sidebar-title {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: #64748b;
+            font-size: 0.7rem;
+            margin-bottom: 15px;
+        }
+
+        .active-skill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .project-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .project-info p {
+            margin: 5px 0;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 18px 22px;
+            border-radius: 16px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary) 0%, #1e293b 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-msg {
+            align-self: flex-start;
+            background: #f1f5f9;
+            color: var(--secondary);
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ai-msg strong {
+            color: var(--primary);
+        }
+
+        .citation-box {
+            margin-top: 15px;
+            padding: 12px 15px;
+            background: white;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+        }
+
+        .citation-box strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .citation-box a {
+            color: var(--info);
+            text-decoration: none;
+            display: block;
+            margin: 4px 0;
+        }
+
+        .citation-box a:hover {
+            text-decoration: underline;
+        }
+
+        /* PARTNERS */
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .partner-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .partner-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .partner-card.active {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .partner-card h4 {
+            margin: 0 0 5px 0;
+            color: var(--primary);
+        }
+
+        .partner-card p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .partner-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .partner-status.target { background: #fef3c7; color: #92400e; }
+        .partner-status.active { background: #d1fae5; color: #065f46; }
+        .partner-status.api { background: #dbeafe; color: #1e40af; }
+
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e293b 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 30px auto;
+            max-width: 1100px;
+        }
+
+        .cta-section h2 {
+            border: none;
+            color: white;
+            padding: 0;
+            text-align: center;
+        }
+
+        .cta-section p {
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 16px 40px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        }
+
+        .cta-button:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--primary);
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .problem-grid { grid-template-columns: 1fr; }
+            .flow-diagram { flex-direction: column; }
+            .arrow { transform: rotate(90deg); justify-content: center; }
+            .mockup-body { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            section { padding: 25px; margin: 20px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1 class="logo">ROOF<span>IO</span> <span class="badge">BETA v1.0</span></h1>
+        <p class="tagline">The First Division 07 "Digital Journeyman"</p>
+        
+        <div class="hero-creds">
+            <div class="hero-cred">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Built by Lefebvre Design Solutions
+            </div>
+            <div class="hero-cred">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Union Instructor Led
+            </div>
+            <div class="hero-cred">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                20+ Years Field Experience
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+
+        <!-- THE PROBLEM -->
+        <section>
+            <h2>The Industry Problem</h2>
+            <p>Apprentices and junior PMs are already using generic AI for technical roofing questions. The results are dangerous.</p>
+            
+            <div class="problem-grid">
+                <div class="problem-card bad">
+                    <h4>❌ Generic AI (ChatGPT)</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #991b1b;">
+                        <li>Hallucinates code requirements</li>
+                        <li>No access to NRCA Manual</li>
+                        <li>Invents non-existent products</li>
+                        <li>Ignores regional wind codes</li>
+                        <li>Voids manufacturer warranties</li>
+                        <li>Creates liability for contractors</li>
+                    </ul>
+                </div>
+                <div class="problem-card good">
+                    <h4>✓ Roofio (Verified AI)</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #166534;">
+                        <li>Cites NRCA/IIBEC standards</li>
+                        <li>Uses manufacturer specs only</li>
+                        <li>Calculates ASCE 7 wind loads</li>
+                        <li>Checks FM/UL compliance</li>
+                        <li>Links to source documents</li>
+                        <li>Union Instructor approved</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY TRUST US -->
+        <section>
+            <h2>Why Trust Roofio?</h2>
+            <p>Built by someone who has set foot on a roof—thousands of times.</p>
+            
+            <div class="cred-grid">
+                <div class="cred-card">
+                    <h3>
+                        <div class="cred-icon">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        Shop Drawing Authority
+                    </h3>
+                    <p>President of Lefebvre Design Solutions. 20+ years creating Division 07 shop drawings for Johns Hopkins, Saint-Gobain, and major contractors.</p>
+                </div>
+                <div class="cred-card">
+                    <h3>
+                        <div class="cred-icon">
+                            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        Union Standards
+                    </h3>
+                    <p>Active Union Apprentice Instructor (Local 30). Roofio is designed to reinforce the Master/Apprentice model, not replace it.</p>
+                </div>
+                <div class="cred-card">
+                    <h3>
+                        <div class="cred-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        </div>
+                        Dual Degrees
+                    </h3>
+                    <p>Degrees in both Construction Management and Facilities Management. Understanding both installation AND long-term building performance.</p>
+                </div>
+                <div class="cred-card">
+                    <h3>
+                        <div class="cred-icon">
+                            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                        </div>
+                        Field Experience
+                    </h3>
+                    <p>20+ years as a journeyman roofer and waterproofer. Every detail in Roofio has been validated against real-world installation conditions.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ARCHITECTURE -->
+        <section>
+            <h2>System Architecture</h2>
+            <p>How Roofio ensures compliance and accuracy in every Division 07 response.</p>
+            
+            <div class="flow-diagram">
+                <div class="flow-box">
+                    <strong>1. INGEST</strong>
+                    <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 15px 0;">Trusted Sources Only</p>
+                    <ul>
+                        <li>NRCA Roofing Manual</li>
+                        <li>FM Global Data Sheets</li>
+                        <li>IIBEC Advisories</li>
+                        <li>ICC Codes (API)</li>
+                        <li>Manufacturer Specs</li>
+                    </ul>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="flow-box highlight">
+                    <strong>2. ROOFIO CORE</strong>
+                    <p style="font-size: 0.8rem; color: #1e40af; margin: 0 0 15px 0;">The Engine</p>
+                    <ul>
+                        <li>Vector Database (RAG)</li>
+                        <li>ASCE 7 Calculator</li>
+                        <li>FM Rating Lookup</li>
+                        <li>Source Verification</li>
+                        <li>Tiered AI Processing</li>
+                    </ul>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="flow-box">
+                    <strong>3. INTERFACE</strong>
+                    <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 15px 0;">User Experience</p>
+                    <ul>
+                        <li>Shop Drawing Assistant</li>
+                        <li>Field Inspection App</li>
+                        <li>Code Compliance Check</li>
+                        <li>Detail Generator</li>
+                        <li>Warranty Validator</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERFACE PREVIEW -->
+        <section>
+            <h2>Interface Preview</h2>
+            <p>A demonstration of Roofio answering a manufacturer-specific compliance query.</p>
+            
+            <div class="mockup-window">
+                <div class="mockup-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                    <span class="mockup-title">roofio_session_047.ts — Division 07 Assistant</span>
+                </div>
+                <div class="mockup-body">
+                    <div class="sidebar">
+                        <div class="sidebar-title">Active Skills</div>
+                        <div class="active-skill">
+                            <div class="status-dot"></div>
+                            <span>ASCE 7 Hazard Tool</span>
+                        </div>
+                        <div class="active-skill">
+                            <div class="status-dot"></div>
+                            <span>FM Global RoofNav</span>
+                        </div>
+                        <div class="active-skill">
+                            <div class="status-dot"></div>
+                            <span>NRCA Manual</span>
+                        </div>
+                        <div class="active-skill">
+                            <div class="status-dot"></div>
+                            <span>Carlisle Library</span>
+                        </div>
+                        
+                        <div class="project-info">
+                            <div class="sidebar-title">Project Context</div>
+                            <p><strong>Job:</strong> JHU Science Center</p>
+                            <p><strong>Location:</strong> Baltimore, MD</p>
+                            <p><strong>Wind Speed:</strong> 115 MPH</p>
+                            <p><strong>Exposure:</strong> Category B</p>
+                            <p><strong>System:</strong> TPO 60 mil</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-area">
+                        <div class="message user-msg">
+                            I have a Carlisle 60-mil TPO assembly. I need to detail the parapet flashing. The wall is 24" high. What is the requirement for the base flashing height and termination?
+                        </div>
+
+                        <div class="message ai-msg">
+                            Based on the <strong>Carlisle SynTec Technical Manual (2025)</strong> and <strong>NRCA Roofing Manual</strong>, here is the required detail:
+
+                            <p><strong>1. Base Flashing Height:</strong> Must extend a minimum of <strong>8"</strong> above the finished roof surface (NRCA Table 1). Since your wall is 24", the flashing should run up and over the coping.</p>
+                            
+                            <p><strong>2. Termination:</strong> Because the wall exceeds 18", you cannot simply terminate on the face. The membrane must be fully adhered up the vertical and wrap over the top edge of the parapet wall under the metal coping cap.</p>
+
+                            <p><strong>3. Wind Zone:</strong> For Baltimore at 115 mph Exposure B, your corner zones require FM 1-120 minimum. Verify your edge metal is ES-1 rated.</p>
+
+                            <div class="citation-box">
+                                <strong>📚 Sources Verified:</strong>
+                                <a href="#">• Carlisle Detail TPO-FL-03 (Parapet Flashing)</a>
+                                <a href="#">• NRCA Manual: Vol 2, Membrane Roofing, Pg 455</a>
+                                <a href="#">• ANSI/SPRI ES-1 Edge Metal Standard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTEGRATION TARGETS -->
+        <section>
+            <h2>Integration Partners</h2>
+            <p>Building the verified Division 07 knowledge base with official partnerships.</p>
+            
+            <div class="partner-grid">
+                <div class="partner-card">
+                    <h4>NRCA</h4>
+                    <p>Roofing Manual</p>
+                    <span class="partner-status target">Target</span>
+                </div>
+                <div class="partner-card">
+                    <h4>FM Global</h4>
+                    <p>RoofNav / Data Sheets</p>
+                    <span class="partner-status target">Target</span>
+                </div>
+                <div class="partner-card">
+                    <h4>IIBEC</h4>
+                    <p>Technical Advisories</p>
+                    <span class="partner-status target">Target</span>
+                </div>
+                <div class="partner-card">
+                    <h4>ICC</h4>
+                    <p>Code Connect API</p>
+                    <span class="partner-status api">API Ready</span>
+                </div>
+                <div class="partner-card active">
+                    <h4>Carlisle</h4>
+                    <p>Technical Library</p>
+                    <span class="partner-status active">Integrated</span>
+                </div>
+                <div class="partner-card active">
+                    <h4>Firestone</h4>
+                    <p>Technical Library</p>
+                    <span class="partner-status active">Integrated</span>
+                </div>
+                <div class="partner-card active">
+                    <h4>GAF</h4>
+                    <p>Commercial Specs</p>
+                    <span class="partner-status active">Integrated</span>
+                </div>
+                <div class="partner-card">
+                    <h4>Barrett</h4>
+                    <p>Technical Library</p>
+                    <span class="partner-status target">Pilot</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <h2>Partner with the Future of Division 07</h2>
+        <p>We are currently onboarding select Manufacturer and Institutional partners for the 2025 Pilot Program. Be part of the industry's first compliant AI system.</p>
+        <a href="mailto:contact@lefebvredesign.com" class="cta-button">Request Pilot Access →</a>
+    </div>
+
+</main>
+
+<footer>
+    <p>© 2025 <a href="#">Lefebvre Design Solutions</a>. All Rights Reserved.</p>
+    <p style="margin-top: 5px;">Built with 20+ years of roofing expertise. Union proud.</p>
+</footer>
+
+</body>
+</html>
