@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roofio | Division 07 AI Expert</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        /* Roofio Specific Styles */
+        .roofio-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.5rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        @media (max-width: 1024px) {
+            .roofio-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar - Skills Panel */
+        .skills-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .skills-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .skills-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .skill-category {
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-category-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .skill-category-title svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .skill-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .skill-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .skill-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .skill-status.ready { background: var(--success); }
+        .skill-status.loading { background: var(--warning); }
+        .skill-status.planned { background: var(--text-muted); }
+
+        /* Main Chat Area */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+
+        /* Roofio Header */
+        .roofio-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .roofio-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+
+        .roofio-info h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .roofio-info h2 span {
+            background: linear-gradient(135deg, #f97316, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .roofio-info p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .roofio-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .roofio-badge {
+            padding: 0.375rem 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .roofio-badge.expert { color: #f97316; }
+        .roofio-badge.codes { color: #22c55e; }
+        .roofio-badge.div07 { color: #00d4ff; }
+
+        /* Messages Area */
+        .messages-area {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-height: 400px;
+            max-height: 500px;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 85%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .message.roofio .message-avatar {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+        }
+
+        .message.user .message-avatar {
+            background: var(--accent);
+        }
+
+        .message-content {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-lg);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .message.roofio .message-content {
+            background: var(--bg-tertiary);
+        }
+
+        .message.user .message-content {
+            background: var(--accent);
+            color: white;
+        }
+
+        .message-content h4 {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .message-content ul {
+            margin: 0.75rem 0;
+            padding-left: 1.25rem;
+        }
+
+        .message-content li {
+            margin-bottom: 0.375rem;
+        }
+
+        .message-content code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            font-family: monospace;
+        }
+
+        .message-content .citation {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--glass-border);
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1.5rem 2rem;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            resize: none;
+            min-height: 52px;
+            max-height: 150px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            border: none;
+            border-radius: var(--radius-lg);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .send-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .quick-action:hover {
+            border-color: #f97316;
+            color: #f97316;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .welcome-message h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-message p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .feature-card:hover {
+            background: rgba(249, 115, 22, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .feature-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #f97316;
+        }
+
+        .feature-card p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header glass">
+        <div class="header-content">
+            <div class="logo">
+                <a href="/dashboard" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="APPIO" class="logo-img">
+                </a>
+            </div>
+
+            <nav class="nav">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/analysis" class="nav-link">Analysis</a>
+                <a href="/roofio" class="nav-link active">Roofio</a>
+                <a href="/projects" class="nav-link">Projects</a>
+                <a href="/phone" class="nav-link">Phone</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="company-status">
+                    <span class="status-indicator online"></span>
+                    <span>All Systems Operational</span>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="roofio-container">
+            <!-- Skills Sidebar -->
+            <aside class="skills-panel">
+                <div class="skills-header">
+                    <h3>Skills</h3>
+                    <span class="skill-count">24 Loaded</span>
+                </div>
+
+                <!-- Codes & Standards -->
+                <div class="skill-category">
+                    <div class="skill-category-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        Codes & Standards
+                    </div>
+                    <div class="skill-list">
+                        <div class="skill-item" data-skill="asce-7">
+                            <span class="skill-status ready"></span>
+                            ASCE 7 Wind & Hazard
+                        </div>
+                        <div class="skill-item" data-skill="ibc">
+                            <span class="skill-status ready"></span>
+                            IBC Roofing
+                        </div>
+                        <div class="skill-item" data-skill="fm-global">
+                            <span class="skill-status ready"></span>
+                            FM Global
+                        </div>
+                        <div class="skill-item" data-skill="nrca">
+                            <span class="skill-status ready"></span>
+                            NRCA Manual
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roofing Systems -->
+                <div class="skill-category">
+                    <div class="skill-category-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                        Roofing Systems
+                    </div>
+                    <div class="skill-list">
+                        <div class="skill-item" data-skill="tpo">
+                            <span class="skill-status ready"></span>
+                            TPO Membrane
+                        </div>
+                        <div class="skill-item" data-skill="epdm">
+                            <span class="skill-status ready"></span>
+                            EPDM Rubber
+                        </div>
+                        <div class="skill-item" data-skill="pvc">
+                            <span class="skill-status ready"></span>
+                            PVC Membrane
+                        </div>
+                        <div class="skill-item" data-skill="mod-bit">
+                            <span class="skill-status ready"></span>
+                            Modified Bitumen
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manufacturers -->
+                <div class="skill-category">
+                    <div class="skill-category-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                        Manufacturers
+                    </div>
+                    <div class="skill-list">
+                        <div class="skill-item" data-skill="carlisle">
+                            <span class="skill-status ready"></span>
+                            Carlisle SynTec
+                        </div>
+                        <div class="skill-item" data-skill="firestone">
+                            <span class="skill-status ready"></span>
+                            Firestone BP
+                        </div>
+                        <div class="skill-item" data-skill="gaf">
+                            <span class="skill-status ready"></span>
+                            GAF
+                        </div>
+                        <div class="skill-item" data-skill="jm">
+                            <span class="skill-status planned"></span>
+                            Johns Manville
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools -->
+                <div class="skill-category">
+                    <div class="skill-category-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        Tools
+                    </div>
+                    <div class="skill-list">
+                        <div class="skill-item" data-skill="asce-hazard">
+                            <span class="skill-status ready"></span>
+                            ASCE 7 Hazard Tool
+                        </div>
+                        <div class="skill-item" data-skill="uplift-calc">
+                            <span class="skill-status ready"></span>
+                            Uplift Calculator
+                        </div>
+                        <div class="skill-item" data-skill="leak-detection">
+                            <span class="skill-status ready"></span>
+                            Leak Detection
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <!-- Roofio Header -->
+                <div class="roofio-header">
+                    <div class="roofio-avatar">🏗️</div>
+                    <div class="roofio-info">
+                        <h2><span>ROOFIO</span></h2>
+                        <p>Division 07 AI Expert - The World's Smartest Roofer</p>
+                    </div>
+                    <div class="roofio-badges">
+                        <span class="roofio-badge expert">Expert</span>
+                        <span class="roofio-badge codes">Codes</span>
+                        <span class="roofio-badge div07">Div 07</span>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="messages-area" id="messages">
+                    <!-- Welcome Message -->
+                    <div class="welcome-message">
+                        <h3>Ask me anything about roofing</h3>
+                        <p>I'm an expert in Division 07 specifications, codes, and all roofing systems</p>
+                        <div class="feature-grid">
+                            <div class="feature-card" onclick="askQuestion('What wind uplift rating do I need for a 50ft building in Miami?')">
+                                <h4>Wind Uplift</h4>
+                                <p>ASCE 7, FM ratings, zone calculations</p>
+                            </div>
+                            <div class="feature-card" onclick="askQuestion('Compare TPO vs PVC for a chemical plant roof')">
+                                <h4>System Comparison</h4>
+                                <p>TPO, EPDM, PVC, Mod-Bit analysis</p>
+                            </div>
+                            <div class="feature-card" onclick="askQuestion('What are the IBC requirements for roof drainage?')">
+                                <h4>Code Lookup</h4>
+                                <p>IBC, IRC, FM Global citations</p>
+                            </div>
+                            <div class="feature-card" onclick="askQuestion('How do I detail a parapet to curb transition?')">
+                                <h4>Detail Help</h4>
+                                <p>Flashing, terminations, transitions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-container">
+                        <textarea
+                            class="chat-input"
+                            id="chatInput"
+                            placeholder="Ask Roofio anything about roofing, waterproofing, or Division 07..."
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                        ></textarea>
+                        <button class="send-btn" onclick="sendMessage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="quick-action" onclick="askQuestion('What spec section covers TPO membrane?')">Spec Sections</button>
+                        <button class="quick-action" onclick="askQuestion('Calculate materials for 10,000 SF TPO roof')">Material Calc</button>
+                        <button class="quick-action" onclick="askQuestion('FM approved assembly for 1-90 wind zone')">FM Assemblies</button>
+                        <button class="quick-action" onclick="askQuestion('How to detect a roof leak?')">Leak Detection</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Theme
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        // Chat functionality
+        const messagesArea = document.getElementById('messages');
+        const chatInput = document.getElementById('chatInput');
+        let isFirstMessage = true;
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function askQuestion(question) {
+            chatInput.value = question;
+            sendMessage();
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Clear welcome message on first message
+            if (isFirstMessage) {
+                const welcome = messagesArea.querySelector('.welcome-message');
+                if (welcome) welcome.remove();
+                isFirstMessage = false;
+            }
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            // Send to API
+            fetch('/api/roofio/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: message })
+            })
+            .then(res => res.json())
+            .then(data => {
+                hideTyping();
+                addMessage(data.response, 'roofio', data.citations);
+            })
+            .catch(err => {
+                hideTyping();
+                addMessage("I'm having trouble connecting. Let me try again...", 'roofio');
+            });
+        }
+
+        function addMessage(content, type, citations = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+
+            const avatar = type === 'roofio' ? '🏗️' : '👤';
+
+            let citationHtml = '';
+            if (citations && citations.length > 0) {
+                citationHtml = `
+                    <div class="citation">
+                        <strong>Sources:</strong> ${citations.join(', ')}
+                    </div>
+                `;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    ${content}
+                    ${citationHtml}
+                </div>
+            `;
+
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message roofio';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🏗️</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messagesArea.appendChild(typingDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+        });
+
+        // Skill selection
+        document.querySelectorAll('.skill-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const skill = item.dataset.skill;
+                showToast(`Loaded ${item.textContent.trim()} skill`, 'info');
+            });
+        });
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

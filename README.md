@@ -1,74 +1,162 @@
-# CAD Observer
+# APPIO - Intelligent Construction Platform
 
-AI-powered CAD workflow observation and learning system for AutoCAD. Works with Claude Code to learn your drafting patterns and assist with roofing/waterproofing shop drawings.
+**AI-powered roofing company operating system with role-based dashboards, document analysis, and tiered AI processing.**
 
-## Quick Start
+---
 
-### 1. Install Dependencies
+## Features
+
+### Company Dashboard (`/dashboard`)
+- **Role-Based Seats**: PM, Estimator, Operations, Accounting, Superintendent, Shop Drawings
+- **Traffic Light Status**: Red/Yellow/Green indicators for project health
+- **Task Queues**: Urgent, pending, and completed tasks per role
+- **Company Metrics**: Active projects, pending bids, roadblocks, revenue MTD
+- **Project Cards**: Contract value, phase, progress bars, assignees
+- **Activity Feed**: Real-time updates across all operations
+- **New Project Modal**: Quick project creation with form validation
+
+### Document Analysis (`/analysis`)
+- **Multi-File Upload**: Drag & drop for drawings, assemblies, specs, scopes
+- **Smart Roof Filter**: AI identifies roofing-relevant pages (saves 60-80% processing)
+- **Real-Time Progress**: Server-Sent Events (SSE) for live status updates
+- **DXF Generation**: Auto-generate AutoCAD-ready detail drawings
+- **PDF Parsing**: Extract and categorize content from construction documents
+
+### Project Management (`/projects`)
+- **Saved Projects**: View all analyzed projects with metadata
+- **Project Details Modal**: Full analysis results, document counts, cost savings
+- **View/Delete Actions**: Manage projects with confirmation dialogs
+- **Filter Options**: All, Active, Completed project views
+
+### Phone Integration (`/phone`)
+- **Coming Soon**: Hive 215 business phone integration
+- **Planned Features**: Click-to-call, AI transcription, automatic project linking
+
+### Architect AI (Backend)
+- **Tiered Query Routing**:
+  - **Tier 0 (Python)**: Direct lookups, calculations - FREE, <50ms
+  - **Tier 1 (Groq)**: NLP tasks, document generation - $0.0001/query
+  - **Tier 2 (Anthropic)**: Complex reasoning - $0.01/query
+- **Industry Data Tables**: Production rates, material coverage, waste factors
+- **Cost Optimization**: Target 95% savings vs all-Tier-2
+
+---
+
+## Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Backend | Flask (Python) |
+| Frontend | Vanilla JS, CSS3 |
+| UI Design | Glass morphism, dark/light themes |
+| Real-time | Server-Sent Events (SSE) |
+| PDF Processing | PyPDF2 |
+| CAD Generation | ezdxf |
+
+---
+
+## Installation
+
 ```bash
-pip install pillow pynput keyboard pyperclip
+# Clone repository
+git clone https://github.com/jenkintownelectricity/cad_observer.git
+cd cad_observer/roofing_intelligence
+
+# Install dependencies
+pip install flask PyPDF2 ezdxf
+
+# Run application
+python app.py
 ```
 
-### 2. Run Setup (Windows)
+Open **http://127.0.0.1:5000** in your browser.
+
+---
+
+## Project Structure
+
+```
+cad_observer/
+├── roofing_intelligence/
+│   ├── app.py                    # Main Flask application
+│   ├── architect_ai/
+│   │   ├── __init__.py
+│   │   └── rules_engine.py       # Tiered AI routing
+│   ├── parsers/                  # Document parsers
+│   ├── generators/               # DXF generators
+│   ├── static/
+│   │   ├── css/                  # Stylesheets
+│   │   ├── js/                   # JavaScript
+│   │   └── images/               # Logo and assets
+│   └── templates/                # HTML templates
+├── drop/                         # Skill packages
+│   ├── architect-ai-skill/
+│   ├── roofing-pm-skills.zip
+│   ├── roofing skills.zip
+│   └── shop-drawing-skill.zip
+├── scripts/                      # CAD Observer scripts
+├── CLAUDE.md                     # Claude Code instructions
+└── CLAUDE_SESSION.md             # Session continuation guide
+```
+
+---
+
+## Routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Redirects to `/dashboard` |
+| `/dashboard` | Company dashboard with role seats |
+| `/analysis` | Document upload and analysis |
+| `/projects` | Saved project management |
+| `/phone` | Phone integration (coming soon) |
+
+---
+
+## Changelog (v2.0)
+
+### Added
+- APPIO branding with new logo
+- Company Dashboard with 6 role-based seats
+- Traffic light status indicators (red/yellow/green)
+- Task queue components per role
+- Project cards with progress tracking
+- Activity feed with real-time updates
+- Architect AI rules engine foundation
+- Tiered query routing system
+- Production rates and material coverage data
+- Consistent navigation across all pages
+
+### Fixed
+- Navigation inconsistency between pages
+- Project click redirecting to wrong page
+- File upload button click handlers
+- "Read of closed files" threading error
+- Logo not clickable on some pages
+
+### Changed
+- `/` now redirects to `/dashboard`
+- Rebranded from "RoofingOS" to "APPIO"
+- Unified header design across all templates
+
+---
+
+## CAD Observer (Original Feature)
+
+AI-powered CAD workflow observation system for AutoCAD:
+
 ```bash
-cd scripts
-setup_windows.bat
+# Start click capture
+python scripts/click_capture.py -p "Project Name"
+
+# AutoCAD commands
+CAD-OBSERVER-START   # Start logging
+CAD-OBSERVER-STOP    # Stop logging
+CAD-OBSERVER-TASK    # Check for Claude tasks
 ```
 
-### 3. Load LISP in AutoCAD
-1. Open AutoCAD
-2. Type `APPLOAD`
-3. Browse to `scripts/cad-observer.lsp` → Load
-4. Type `CAD-OBSERVER-START`
-
-### 4. Start Capture
-```bash
-python scripts/click_capture.py -p "Your Project Name"
-```
-
-## Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `click_capture.py` | Capture screenshots on every click with XY coordinates |
-| `floating_toolbar.py` | All-in-one control panel |
-| `research_capture.py` | Capture specs/literature you're reading |
-| `cad_task.py` | Send commands from Claude to AutoCAD |
-| `cad-observer.lsp` | AutoCAD plugin for command logging |
-
-## Controls
-
-### Click Capture
-- **Mouse Click** → Capture screenshot with XY coordinates
-- **Ctrl+Shift+R** → Toggle Research mode
-- **Ctrl+Shift+Q** → Stop
-
-### AutoCAD Commands
-```
-CAD-OBSERVER-START   - Start logging
-CAD-OBSERVER-STOP    - Stop logging
-CAD-OBSERVER-STATUS  - Show status
-CAD-OBSERVER-TASK    - Check for Claude tasks
-CAD-OBSERVER-AUTO    - Toggle auto-task execution
-```
-
-## Storage Locations
-
-- Sessions: `~/.cad-observer/sessions/`
-- Research: `~/.cad-observer/research/`
-- Observations: `~/.cad-observer/observations.jsonl`
-- AutoCAD logs: `C:/CADObserver/logs/`
-
-## Using with Claude Code
-
-This project includes `CLAUDE.md` which gives Claude Code context about:
-- Your drafting background and preferences
-- Question-first observation protocol
-- How to log observations properly
-- How to send tasks to AutoCAD
-
-Just run `claude` in this directory and start sharing screenshots.
+---
 
 ## License
 
-MIT
+Proprietary - Lefebvre Design Solutions
