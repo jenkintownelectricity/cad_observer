@@ -253,6 +253,59 @@ NEGATIVE_KEYWORDS = [
     r'\bMECHANICAL\s+PLAN\b(?!.*ROOF)',
     r'\bFIRE\s+PROTECTION\b',
     r'\bSPRINKLER\b',
+    r'\bREFLECTED\s+CEILING\b',
+    r'\bCEILING\s+PLAN\b',
+    r'\bFURNITURE\s+PLAN\b',
+    r'\bFINISH\s+PLAN\b',
+    r'\bDEMOLITION\s+PLAN\b',
+    r'\bSITE\s+PLAN\b',
+    r'\bLANDSCAPE\b',
+    r'\bCIVIL\b',
+]
+
+# FALSE POSITIVE patterns - "roof" mentioned but NOT a roof sheet
+# These cancel out generic "ROOF" mentions
+FALSE_POSITIVE_PATTERNS = [
+    # Legend/keynote mentions on floor plans
+    r'\bROOF\s+ABOVE\b',
+    r'\bROOF\s+BEYOND\b',
+    r'\bROOF\s+OVER\b',
+    r'\bSEE\s+ROOF\s+PLAN\b',
+    r'\bREFER\s+TO\s+ROOF\b',
+    r'\bROOF\s+LINE\s+ABOVE\b',
+    r'\bROOF\s+OUTLINE\b',
+    r'\bROOF\s+EDGE\s+ABOVE\b',
+    r'\bHIGH\s+ROOF\b(?!.*PLAN)',  # "High roof" reference without "plan"
+    r'\bLOW\s+ROOF\b(?!.*PLAN)',
+    r'\bROOF\s+AT\s+\d',  # "Roof at 42'-0"" elevation note
+    r'\bT\.?O\.?\s*ROOF\b',  # Top of roof elevation
+    r'\bB\.?O\.?\s*ROOF\b',  # Bottom of roof
+    r'\bEL\.?\s*ROOF\b',  # Elevation roof
+
+    # Sheet index mentions
+    r'A-?\d+\s+ROOF\s+PLAN',  # Sheet index listing "A-501 ROOF PLAN"
+    r'SHEET\s+INDEX',
+    r'DRAWING\s+INDEX',
+    r'DRAWING\s+LIST',
+]
+
+# Patterns that indicate this IS definitely a roof sheet (override false positives)
+DEFINITE_ROOF_PATTERNS = [
+    r'\bROOF\s+PLAN\b.*\bSCALE\b',  # "ROOF PLAN" with scale = actual drawing
+    r'\bROOF\s+DETAIL\b.*\bSCALE\b',
+    r'\bDRAIN\b.*\bSCHEDULE\b',
+    r'\bROOFING\b.*\bASSEMBLY\b',
+    r'\bMEMBRANE\b.*\bFLASHING\b',
+    r'\bPARAPET\b.*\bDETAIL\b',
+    r'\bCURB\b.*\bDETAIL\b',
+    r'\bSCUPPER\b.*\bDETAIL\b',
+    r'\bCOPING\b.*\bDETAIL\b',
+    r'\bREGLET\b',  # Reglet = definitely roofing
+    r'\bCOUNTER\s*FLASH\b',  # Counterflashing = definitely roofing
+    r'\bBASE\s+FLASH\b',
+    r'\bTPO\b.*\bMEMBRANE\b',
+    r'\bEPDM\b.*\bMEMBRANE\b',
+    r'\b07\s*5[0-4]\s*00\b',  # Membrane roofing spec sections
 ]
 
 
@@ -264,6 +317,11 @@ def score_page(text: str) -> Dict:
     """
     Score a page for roof/waterproofing relevance.
     Returns score and matched keywords.
+
+    Key logic:
+    - Requires HIGH value match OR multiple relevant matches
+    - False positives (legend mentions) cancel out generic "ROOF" matches
+    - Definite roof patterns override false positive penalties
     """
     text_upper = text.upper()
 
@@ -273,7 +331,9 @@ def score_page(text: str) -> Dict:
         'medium': [],
         'low': [],
         'sheet_patterns': [],
-        'negative': []
+        'negative': [],
+        'false_positives': [],
+        'definite_roof': []
     }
 
     # Check high-value keywords (+10 points each)
@@ -311,10 +371,43 @@ def score_page(text: str) -> Dict:
             score -= 15 * len(found)
             matches['negative'].extend(found)
 
+    # Check false positive patterns (-8 points each)
+    # These indicate "roof" is mentioned in legend/reference context, not actual roof content
+    false_positive_count = 0
+    for pattern in FALSE_POSITIVE_PATTERNS:
+        found = re.findall(pattern, text_upper, re.IGNORECASE)
+        if found:
+            false_positive_count += len(found)
+            matches['false_positives'].extend(found)
+
+    # If false positives found, reduce score significantly
+    # But only penalize if we don't have definite roof patterns
+    has_definite_roof = False
+    for pattern in DEFINITE_ROOF_PATTERNS:
+        found = re.findall(pattern, text_upper, re.IGNORECASE)
+        if found:
+            has_definite_roof = True
+            matches['definite_roof'].extend(found)
+            score += 15  # Bonus for definite roof content
+
+    if false_positive_count > 0 and not has_definite_roof:
+        # Count how many generic "ROOF" matches we have
+        generic_roof_count = len(re.findall(r'\bROOF\b', text_upper))
+        # If most roof mentions are false positives, heavily penalize
+        if false_positive_count >= generic_roof_count * 0.5:
+            score -= 20  # Heavy penalty - likely just a floor plan with legend
+
+    # Final qualification check:
+    # Must have at least one HIGH value match OR 3+ medium/low matches
+    has_high = len(matches['high']) > 0
+    has_enough_medium_low = (len(matches['medium']) + len(matches['low'])) >= 3
+
+    qualified = has_high or has_enough_medium_low or has_definite_roof
+
     return {
         'score': max(0, score),  # Don't go negative
         'matches': matches,
-        'is_roof_page': score >= 10  # Threshold
+        'is_roof_page': score >= 10 and qualified  # Must meet threshold AND qualify
     }
 
 
