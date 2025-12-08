@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROOFIO Digital Foreman</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header .project-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Gatekeeper Lock Screen */
+        .gatekeeper-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .lock-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .gatekeeper-screen h2 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .gatekeeper-screen p {
+            color: #9ca3af;
+            margin-bottom: 32px;
+            max-width: 300px;
+        }
+
+        .safety-badge {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .unlock-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.2s;
+        }
+
+        .unlock-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .locked-features {
+            margin-top: 32px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            text-align: left;
+        }
+
+        .locked-features h3 {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .locked-features ul {
+            list-style: none;
+        }
+
+        .locked-features li {
+            padding: 8px 0;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main Dashboard (Unlocked) */
+        .main-dashboard {
+            display: none;
+            padding: 20px;
+        }
+
+        .main-dashboard.visible {
+            display: block;
+        }
+
+        /* Weather Bar */
+        .weather-bar {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .weather-data {
+            display: flex;
+            gap: 20px;
+        }
+
+        .weather-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .weather-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .weather-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .weather-auto {
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* Big Buttons Grid */
+        .big-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .big-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 24px 16px;
+            border-radius: 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .big-btn:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+
+        .big-btn .icon {
+            font-size: 36px;
+        }
+
+        .big-btn .label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .big-btn .badge {
+            font-size: 11px;
+            background: var(--primary);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #22c55e);
+            border-radius: 12px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .progress-controls button {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Voice Note */
+        .voice-section {
+            background: rgba(255,255,255,0.05);
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .voice-section p {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .voice-btn {
+            background: var(--primary);
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            position: sticky;
+            bottom: 20px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--success), #22c55e);
+            border: none;
+            padding: 20px;
+            border-radius: 16px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4);
+        }
+
+        /* JHA Form Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--dark);
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .modal.visible {
+            display: block;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .modal-header p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .hazard-list {
+            margin-bottom: 24px;
+        }
+
+        .hazard-item {
+            background: rgba(255,255,255,0.05);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .hazard-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .hazard-control {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .ppe-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .ppe-tag {
+            background: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .checklist {
+            margin-bottom: 24px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checklist-item.checked {
+            background: rgba(22, 163, 74, 0.2);
+            border: 1px solid var(--success);
+        }
+
+        .checklist-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #4b5563;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .checklist-item.checked .checklist-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checklist-text {
+            flex: 1;
+        }
+
+        .required-badge {
+            font-size: 10px;
+            background: var(--danger);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        /* Signature Section */
+        .signature-section {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .signature-section h3 {
+            margin-bottom: 12px;
+        }
+
+        .signature-pad {
+            background: white;
+            height: 150px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .signature-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .signature-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .clear-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .sign-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Risk Shield Status */
+        .risk-shield-status {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .shield-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .shield-icon {
+            font-size: 24px;
+        }
+
+        .shield-info {
+            flex: 1;
+        }
+
+        .shield-title {
+            font-weight: 500;
+        }
+
+        .shield-status {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .shield-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .shield-badge.complete {
+            background: var(--success);
+        }
+
+        .shield-badge.pending {
+            background: var(--warning);
+        }
+
+        .shield-badge.locked {
+            background: var(--danger);
+        }
+
+        /* Material Scan Modal */
+        .scan-area {
+            background: #000;
+            height: 250px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .scan-frame {
+            width: 200px;
+            height: 200px;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+        }
+
+        .scan-result {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .match-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .match-status.verified {
+            color: var(--success);
+        }
+
+        .match-status.mismatch {
+            color: var(--danger);
+        }
+
+        .material-details {
+            font-size: 14px;
+        }
+
+        .material-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .material-label {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>ROOFIO Digital Foreman</h1>
+        <div class="project-badge">
+            <span>📍</span>
+            <span id="projectName">JHU Library - Roof A</span>
+        </div>
+    </header>
+
+    <!-- Gatekeeper Lock Screen -->
+    <div class="gatekeeper-screen" id="gatekeeperScreen">
+        <div class="lock-icon">🔒</div>
+        <h2>Daily Log Locked</h2>
+        <p>Complete the Daily Job Hazard Analysis (JHA) to unlock all features.</p>
+
+        <div class="safety-badge">⚠️ Safety First</div>
+
+        <button class="unlock-btn" onclick="openJHAModal()">
+            <span>🔓</span>
+            <span>Complete JHA to Unlock</span>
+        </button>
+
+        <div class="locked-features">
+            <h3>Features locked until JHA complete:</h3>
+            <ul>
+                <li>🔒 📸 Photo capture</li>
+                <li>🔒 📝 Daily log</li>
+                <li>🔒 📦 Material verification</li>
+                <li>🔒 ⚠️ Issue reporting</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (shown after JHA complete) -->
+    <div class="main-dashboard" id="mainDashboard">
+        <!-- Weather Bar -->
+        <div class="weather-bar">
+            <div class="weather-data">
+                <div class="weather-item">
+                    <span class="weather-value">52°F</span>
+                </div>
+                <div class="weather-item">
+                    <span>💨</span>
+                    <span class="weather-value">8mph</span>
+                </div>
+                <div class="weather-item">
+                    <span>☀️</span>
+                    <span class="weather-label">Clear</span>
+                </div>
+            </div>
+            <div class="weather-auto">Auto: 12:00 PM</div>
+        </div>
+
+        <!-- Risk Shield Status -->
+        <div class="risk-shield-status">
+            <div class="shield-item">
+                <span class="shield-icon">🛡️</span>
+                <div class="shield-info">
+                    <div class="shield-title">JHA Verified</div>
+                    <div class="shield-status">Signed by Mike Johnson at 7:15 AM</div>
+                </div>
+                <span class="shield-badge complete">✓</span>
+            </div>
+            <div class="shield-item">
+                <span class="shield-icon">🌤️</span>
+                <div class="shield-info">
+                    <div class="shield-title">Weather Truth Agent</div>
+                    <div class="shield-status">Next capture: 4:00 PM</div>
+                </div>
+                <span class="shield-badge complete">Normal</span>
+            </div>
+            <div class="shield-item" id="silicaStatus">
+                <span class="shield-icon">🫁</span>
+                <div class="shield-info">
+                    <div class="shield-title">Silica Tracker</div>
+                    <div class="shield-status">1/2 verifications today</div>
+                </div>
+                <span class="shield-badge pending">1 more</span>
+            </div>
+        </div>
+
+        <!-- Big Buttons -->
+        <div class="big-buttons">
+            <button class="big-btn" onclick="openPhotoCapture()">
+                <span class="icon">📸</span>
+                <span class="label">PHOTO</span>
+                <span class="badge">GPS+Time</span>
+            </button>
+            <button class="big-btn" onclick="showCrewPanel()">
+                <span class="icon">👷</span>
+                <span class="label">CREW</span>
+                <span class="badge" id="crewCount">6</span>
+            </button>
+            <button class="big-btn" onclick="openMaterialScan()">
+                <span class="icon">📦</span>
+                <span class="label">MATERIAL</span>
+                <span class="badge">Scan</span>
+            </button>
+            <button class="big-btn" onclick="reportBlocker()">
+                <span class="icon">⚠️</span>
+                <span class="label">BLOCKER</span>
+            </button>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span>PROGRESS</span>
+                <span id="progressPercent">35%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 35%"></div>
+            </div>
+            <div class="progress-controls">
+                <button onclick="adjustProgress(-5)">−</button>
+                <button onclick="adjustProgress(5)">+</button>
+            </div>
+        </div>
+
+        <!-- Voice Note -->
+        <div class="voice-section">
+            <p>🎤 VOICE NOTE: Tap to record work description</p>
+            <button class="voice-btn" id="voiceBtn" onmousedown="startVoice()" onmouseup="stopVoice()">
+                HOLD TO RECORD
+            </button>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-section">
+            <button class="submit-btn" onclick="submitDailyLog()">
+                <span>✅</span>
+                <span>SUBMIT DAILY LOG & SIGN</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- JHA Form Modal -->
+    <div class="modal" id="jhaModal">
+        <div class="modal-header">
+            <h2>⚠️ Job Hazard Analysis</h2>
+            <p>TPO Membrane Installation - 07 54 00</p>
+        </div>
+        <div class="modal-content">
+            <!-- Hazards -->
+            <h3 style="margin-bottom: 16px;">Hazards Identified</h3>
+            <div class="hazard-list">
+                <div class="hazard-item">
+                    <div class="hazard-title">Fall from height (>6ft)</div>
+                    <div class="hazard-control">Control: 100% tie-off, warning line system</div>
+                    <div class="ppe-tags">
+                        <span class="ppe-tag">harness</span>
+                        <span class="ppe-tag">hard_hat</span>
+                    </div>
+                </div>
+                <div class="hazard-item">
+                    <div class="hazard-title">Chemical fumes (adhesive/primer)</div>
+                    <div class="hazard-control">Control: Ventilation, work upwind</div>
+                    <div class="ppe-tags">
+                        <span class="ppe-tag">respirator</span>
+                        <span class="ppe-tag">safety_glasses</span>
+                    </div>
+                </div>
+                <div class="hazard-item">
+                    <div class="hazard-title">Hot surface (heat welding)</div>
+                    <div class="hazard-control">Control: Proper training, hot work permit</div>
+                    <div class="ppe-tags">
+                        <span class="ppe-tag">gloves</span>
+                        <span class="ppe-tag">long_sleeves</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklist -->
+            <h3 style="margin-bottom: 16px;">Safety Checklist</h3>
+            <div class="checklist">
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="checklist-checkbox"></div>
+                    <span class="checklist-text">Fall protection anchor points verified</span>
+                    <span class="required-badge">REQ</span>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="checklist-checkbox"></div>
+                    <span class="checklist-text">Hot work permit obtained (if welding)</span>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="checklist-checkbox"></div>
+                    <span class="checklist-text">First aid kit on roof</span>
+                    <span class="required-badge">REQ</span>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="checklist-checkbox"></div>
+                    <span class="checklist-text">Fire extinguisher within 25ft</span>
+                    <span class="required-badge">REQ</span>
+                </div>
+                <div class="checklist-item" onclick="toggleCheck(this)">
+                    <div class="checklist-checkbox"></div>
+                    <span class="checklist-text">Ladder secured at top and bottom</span>
+                    <span class="required-badge">REQ</span>
+                </div>
+            </div>
+
+            <!-- Signature -->
+            <div class="signature-section">
+                <h3>Superintendent Signature</h3>
+                <div class="signature-pad" id="signaturePad">
+                    Tap to sign
+                </div>
+                <div class="signature-actions">
+                    <button class="clear-btn" onclick="clearSignature()">Clear</button>
+                    <button class="sign-btn" onclick="signJHA()">Sign & Complete JHA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Scan Modal -->
+    <div class="modal" id="materialModal">
+        <div class="modal-header" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
+            <h2>📦 Material Verification</h2>
+            <p>Scan barcode to verify against submittal</p>
+        </div>
+        <div class="modal-content">
+            <div class="scan-area">
+                <div class="scan-frame"></div>
+            </div>
+
+            <div class="scan-result" id="scanResult" style="display: none;">
+                <div class="match-status verified">
+                    <span style="font-size: 24px;">✅</span>
+                    <span style="font-size: 18px; font-weight: 600;">MATERIAL VERIFIED</span>
+                </div>
+                <div class="material-details">
+                    <div class="material-row">
+                        <span class="material-label">Manufacturer</span>
+                        <span>Carlisle</span>
+                    </div>
+                    <div class="material-row">
+                        <span class="material-label">Product</span>
+                        <span>TPO 60mil White</span>
+                    </div>
+                    <div class="material-row">
+                        <span class="material-label">Lot #</span>
+                        <span>2025-1207-A</span>
+                    </div>
+                    <div class="material-row">
+                        <span class="material-label">Submittal</span>
+                        <span>SUB-001 ✓</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="voice-btn" style="background: rgba(255,255,255,0.1);" onclick="closeMaterialModal()">Cancel</button>
+                <button class="voice-btn" onclick="confirmMaterial()">📸 Photo & Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let progress = 35;
+        let jhaComplete = false;
+        let checklistComplete = {};
+
+        // Check gatekeeper status on load
+        async function checkGatekeeper() {
+            try {
+                const response = await fetch('/api/digital-foreman/projects/test/jobs/test/gatekeeper-status');
+                const data = await response.json();
+
+                if (!data.locked) {
+                    unlockDashboard();
+                }
+            } catch (e) {
+                console.log('Using demo mode');
+            }
+        }
+
+        // Open JHA Modal
+        function openJHAModal() {
+            document.getElementById('jhaModal').classList.add('visible');
+        }
+
+        // Toggle checklist item
+        function toggleCheck(item) {
+            item.classList.toggle('checked');
+            if (item.classList.contains('checked')) {
+                item.querySelector('.checklist-checkbox').innerHTML = '✓';
+            } else {
+                item.querySelector('.checklist-checkbox').innerHTML = '';
+            }
+        }
+
+        // Clear signature
+        function clearSignature() {
+            document.getElementById('signaturePad').innerHTML = 'Tap to sign';
+        }
+
+        // Sign JHA
+        function signJHA() {
+            // Check required items
+            const requiredItems = document.querySelectorAll('.checklist-item');
+            let allRequired = true;
+
+            requiredItems.forEach(item => {
+                if (item.querySelector('.required-badge') && !item.classList.contains('checked')) {
+                    allRequired = false;
+                    item.style.borderColor = 'var(--danger)';
+                }
+            });
+
+            if (!allRequired) {
+                alert('Complete all required checklist items');
+                return;
+            }
+
+            // Simulate signature
+            document.getElementById('signaturePad').innerHTML = '<i>Mike Johnson</i>';
+            document.getElementById('signaturePad').style.color = '#1f2937';
+
+            setTimeout(() => {
+                unlockDashboard();
+            }, 500);
+        }
+
+        // Unlock dashboard
+        function unlockDashboard() {
+            jhaComplete = true;
+            document.getElementById('jhaModal').classList.remove('visible');
+            document.getElementById('gatekeeperScreen').style.display = 'none';
+            document.getElementById('mainDashboard').classList.add('visible');
+        }
+
+        // Adjust progress
+        function adjustProgress(delta) {
+            progress = Math.max(0, Math.min(100, progress + delta));
+            document.getElementById('progressPercent').textContent = progress + '%';
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Photo capture
+        function openPhotoCapture() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then(stream => {
+                        alert('Camera access granted! In production, photo would be captured with GPS + timestamp');
+                        stream.getTracks().forEach(track => track.stop());
+                    })
+                    .catch(err => {
+                        alert('Camera simulation: Photo captured with GPS (39.2904, -76.6122) at ' + new Date().toLocaleTimeString());
+                    });
+            } else {
+                alert('Camera simulation: Photo captured with GPS (39.2904, -76.6122) at ' + new Date().toLocaleTimeString());
+            }
+        }
+
+        // Material scan
+        function openMaterialScan() {
+            document.getElementById('materialModal').classList.add('visible');
+
+            // Simulate scan after 2 seconds
+            setTimeout(() => {
+                document.getElementById('scanResult').style.display = 'block';
+            }, 2000);
+        }
+
+        function closeMaterialModal() {
+            document.getElementById('materialModal').classList.remove('visible');
+            document.getElementById('scanResult').style.display = 'none';
+        }
+
+        function confirmMaterial() {
+            alert('Material verified and logged!');
+            closeMaterialModal();
+        }
+
+        // Crew panel
+        function showCrewPanel() {
+            alert('Crew Panel: 6 workers on site\n- Mike Johnson (Foreman)\n- John Smith\n- Bob Williams\n- Tom Davis\n- Jim Brown\n- Steve Miller');
+        }
+
+        // Report blocker
+        function reportBlocker() {
+            const description = prompt('Describe the blocker:');
+            if (description) {
+                alert('Blocker logged! RFI will be generated if needed.');
+            }
+        }
+
+        // Voice recording
+        function startVoice() {
+            document.getElementById('voiceBtn').textContent = '🔴 RECORDING...';
+            document.getElementById('voiceBtn').style.background = 'var(--danger)';
+        }
+
+        function stopVoice() {
+            document.getElementById('voiceBtn').textContent = 'HOLD TO RECORD';
+            document.getElementById('voiceBtn').style.background = 'var(--primary)';
+            alert('Voice note recorded! Will be transcribed and added to daily log.');
+        }
+
+        // Submit daily log
+        function submitDailyLog() {
+            if (!jhaComplete) {
+                alert('Complete JHA first!');
+                return;
+            }
+
+            const confirm = window.confirm('Submit daily log with your signature?');
+            if (confirm) {
+                alert('Daily log submitted!\n\n✓ JHA verified\n✓ Weather auto-captured\n✓ GPS: 39.2904, -76.6122\n✓ Time: ' + new Date().toLocaleTimeString() + '\n✓ Progress: ' + progress + '%\n\nRisk Shield: ACTIVE');
+            }
+        }
+
+        // Init
+        checkGatekeeper();
+    </script>
+</body>
+</html>

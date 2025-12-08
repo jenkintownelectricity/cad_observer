@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOFIO Control Center - All Positions</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --purple: #7c3aed;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #1d4ed8);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { font-size: 24px; }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .header .project-select {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .header .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value { font-size: 28px; font-weight: 700; }
+        .stat-label { font-size: 12px; color: #9ca3af; }
+
+        .positions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .position-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .position-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .position-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .position-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .position-name { font-size: 18px; font-weight: 600; }
+        .position-forms-count { font-size: 12px; color: #9ca3af; }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .mode-btn {
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            color: white;
+        }
+
+        .mode-btn.active.full-ai { background: var(--success); }
+        .mode-btn.active.assist { background: var(--purple); }
+        .mode-btn.active.off { background: #4b5563; }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-full-ai { background: var(--success); }
+        .badge-assist { background: var(--purple); }
+        .badge-off { background: #4b5563; }
+        .badge-paused { background: var(--warning); }
+
+        /* Confidence Bar */
+        .confidence-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .confidence-fill.high { background: var(--success); }
+        .confidence-fill.medium { background: var(--warning); }
+        .confidence-fill.low { background: var(--danger); }
+
+        /* Functions List */
+        .functions-list {
+            padding: 16px 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .function-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .function-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .function-info {
+            flex: 1;
+        }
+
+        .function-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .function-trigger {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .function-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .function-confidence {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .function-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .function-action.execute { background: var(--primary); color: white; }
+        .function-action.review { background: var(--warning); color: black; }
+        .function-action.view { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Forms Section */
+        .forms-section {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .form-chip {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-chip:hover { background: rgba(255,255,255,0.15); }
+        .form-chip.active { background: var(--primary); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.visible { display: flex; }
+
+        .modal {
+            background: var(--dark);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body { padding: 20px; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-group .prefilled {
+            background: rgba(37, 99, 235, 0.2);
+            border-color: var(--primary);
+        }
+
+        .ssot-badge {
+            display: inline-block;
+            font-size: 10px;
+            background: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Activity Feed */
+        .activity-feed {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 350px;
+            max-height: 300px;
+            background: rgba(0,0,0,0.9);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+
+        .activity-header {
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .activity-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .activity-content { flex: 1; }
+        .activity-title { font-size: 13px; margin-bottom: 2px; }
+        .activity-time { font-size: 11px; color: #9ca3af; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🛠️ ROOFIO Control Center</h1>
+        <div class="header-actions">
+            <a href="/digital-foreman" class="nav-btn">📱 Digital Foreman</a>
+            <a href="/integrations" class="nav-btn">🔌 Integrations</a>
+            <select class="project-select" id="projectSelect" onchange="changeProject()">
+                <option value="proj1">JHU Sheridan Libraries - Active</option>
+                <option value="proj2">UMass Amherst - Bidding</option>
+                <option value="proj3">Boston Medical - Closeout</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-value" style="color: var(--success)">5</div>
+            <div class="stat-label">FULL AI POSITIONS</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" style="color: var(--purple)">2</div>
+            <div class="stat-label">AI ASSIST POSITIONS</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" style="color: var(--warning)">3</div>
+            <div class="stat-label">PENDING REVIEW</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">94%</div>
+            <div class="stat-label">AVG CONFIDENCE</div>
+        </div>
+    </div>
+
+    <!-- Positions Grid -->
+    <div class="positions-grid" id="positionsGrid">
+        <!-- Cards generated by JavaScript -->
+    </div>
+
+    <!-- Form Modal -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Bid Proposal</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Form content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveForm()">Save Draft</button>
+                <button class="btn btn-success" onclick="submitForm()">Submit & Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="activity-feed">
+        <div class="activity-header">⚡ Live Activity</div>
+        <div class="activity-list" id="activityList">
+            <!-- Activities generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // =============================================================================
+        // TEST DATA - 8 Positions with Functions and Forms
+        // =============================================================================
+
+        const positions = [
+            {
+                id: "estimator",
+                name: "Estimator",
+                icon: "📊",
+                color: "#2563eb",
+                mode: "full_ai",
+                confidence: 96,
+                formsCount: 10,
+                functions: [
+                    { id: "parse_rfp", name: "Parse RFP/ITB", trigger: "Document uploaded", confidence: 98, status: "ready" },
+                    { id: "takeoff", name: "Generate Takeoff", trigger: "Drawings received", confidence: 94, status: "ready" },
+                    { id: "price_labor", name: "Price Labor", trigger: "Takeoff complete", confidence: 92, status: "pending_review" },
+                    { id: "build_bid", name: "Build Bid Proposal", trigger: "All pricing done", confidence: 97, status: "ready" }
+                ],
+                forms: ["Bid Proposal", "Scope of Work", "Material Takeoff", "Unit Price Schedule", "Subcontractor Quote", "Alternates", "Exclusions", "Bond Request", "Insurance Cert", "Bid Bond"]
+            },
+            {
+                id: "project_manager",
+                name: "Project Manager",
+                icon: "📋",
+                color: "#7c3aed",
+                mode: "assist",
+                confidence: 91,
+                formsCount: 11,
+                functions: [
+                    { id: "create_sov", name: "Create Schedule of Values", trigger: "Contract signed", confidence: 95, status: "ready" },
+                    { id: "gen_submittal", name: "Generate Submittal", trigger: "SOV approved", confidence: 93, status: "ready" },
+                    { id: "draft_rfi", name: "Draft RFI", trigger: "Issue identified", confidence: 88, status: "pending_review" },
+                    { id: "track_co", name: "Track Change Order", trigger: "CO requested", confidence: 96, status: "ready" }
+                ],
+                forms: ["Contract", "SOV", "Submittal", "RFI", "Change Order", "Meeting Minutes", "Progress Report", "Schedule Update", "Transmittal", "Closeout Docs", "Warranty"]
+            },
+            {
+                id: "detailer",
+                name: "Detailer",
+                icon: "📐",
+                color: "#16a34a",
+                mode: "full_ai",
+                confidence: 93,
+                formsCount: 7,
+                functions: [
+                    { id: "gen_shop", name: "Generate Shop Drawing", trigger: "Submittal approved", confidence: 92, status: "ready" },
+                    { id: "create_detail", name: "Create Detail Drawing", trigger: "RFI response", confidence: 94, status: "ready" },
+                    { id: "flashing_calcs", name: "Flashing Calculations", trigger: "Shop drawing created", confidence: 96, status: "completed" }
+                ],
+                forms: ["Shop Drawing", "Detail Sheet", "Flashing Layout", "Penetration Plan", "Edge Detail", "Expansion Joint", "Drain Plan"]
+            },
+            {
+                id: "spec_writer",
+                name: "Spec Writer",
+                icon: "📝",
+                color: "#0ea5e9",
+                mode: "full_ai",
+                confidence: 97,
+                formsCount: 6,
+                functions: [
+                    { id: "gen_spec", name: "Generate Product Spec", trigger: "Submittal approved", confidence: 98, status: "ready" },
+                    { id: "create_install", name: "Create Install Guide", trigger: "Spec approved", confidence: 96, status: "ready" },
+                    { id: "warranty_lang", name: "Draft Warranty Language", trigger: "Project closeout", confidence: 94, status: "ready" }
+                ],
+                forms: ["Product Data Sheet", "Installation Guide", "Warranty Doc", "Maintenance Manual", "MSDS Package", "Test Reports"]
+            },
+            {
+                id: "qc_inspector",
+                name: "QC Inspector",
+                icon: "🔍",
+                color: "#f59e0b",
+                mode: "full_ai",
+                confidence: 95,
+                formsCount: 10,
+                functions: [
+                    { id: "gen_checklist", name: "Generate QC Checklist", trigger: "Work phase start", confidence: 97, status: "ready" },
+                    { id: "photo_doc", name: "Photo Documentation", trigger: "Inspection complete", confidence: 99, status: "completed" },
+                    { id: "punch_list", name: "Create Punch List", trigger: "Phase complete", confidence: 94, status: "ready" }
+                ],
+                forms: ["QC Checklist", "Inspection Report", "Photo Log", "Punch List", "Deficiency Report", "Core Sample", "Adhesion Test", "Flood Test", "Warranty Inspection", "Final Walkthrough"]
+            },
+            {
+                id: "safety_officer",
+                name: "Safety Officer",
+                icon: "⛑️",
+                color: "#dc2626",
+                mode: "full_ai",
+                confidence: 98,
+                formsCount: 10,
+                functions: [
+                    { id: "gen_jha", name: "Generate JHA", trigger: "Daily start", confidence: 99, status: "completed" },
+                    { id: "silica_track", name: "Silica Tracking", trigger: "Cutting activity", confidence: 97, status: "ready" },
+                    { id: "incident_report", name: "Incident Report", trigger: "Incident occurred", confidence: 95, status: "ready" }
+                ],
+                forms: ["JHA", "Toolbox Talk", "Incident Report", "Near Miss", "Safety Audit", "Hot Work Permit", "Silica Log", "Fall Protection Plan", "Emergency Plan", "Training Record"]
+            },
+            {
+                id: "superintendent",
+                name: "Superintendent",
+                icon: "👷",
+                color: "#8b5cf6",
+                mode: "assist",
+                confidence: 89,
+                formsCount: 9,
+                functions: [
+                    { id: "daily_log", name: "Daily Log", trigger: "End of day", confidence: 92, status: "pending_review" },
+                    { id: "crew_schedule", name: "Crew Schedule", trigger: "Weekly planning", confidence: 88, status: "pending_review" },
+                    { id: "material_order", name: "Material Order", trigger: "Low inventory", confidence: 94, status: "ready" }
+                ],
+                forms: ["Daily Log", "Crew Schedule", "Material Order", "Delivery Log", "Equipment Log", "Weather Delay", "T&M Ticket", "Extra Work Order", "3-Week Schedule"]
+            },
+            {
+                id: "accounts",
+                name: "Accounts",
+                icon: "💰",
+                color: "#10b981",
+                mode: "full_ai",
+                confidence: 99,
+                formsCount: 11,
+                functions: [
+                    { id: "gen_pay_app", name: "Generate Pay App", trigger: "Monthly billing", confidence: 99, status: "ready" },
+                    { id: "lien_waiver", name: "Lien Waiver", trigger: "Payment received", confidence: 98, status: "ready" },
+                    { id: "invoice", name: "Generate Invoice", trigger: "Work complete", confidence: 97, status: "completed" }
+                ],
+                forms: ["Pay Application (G702)", "Continuation Sheet (G703)", "Invoice", "Lien Waiver", "Payment Receipt", "Retention Release", "Final Billing", "Cost Report", "Budget Variance", "Cash Flow", "Aging Report"]
+            }
+        ];
+
+        const activities = [
+            { icon: "📊", bg: "#2563eb", title: "Estimator generated Bid Proposal", time: "Just now" },
+            { icon: "✅", bg: "#16a34a", title: "JHA signed by Mike Johnson", time: "2 min ago" },
+            { icon: "🌤️", bg: "#0ea5e9", title: "Weather captured: 52°F, Clear", time: "5 min ago" },
+            { icon: "📦", bg: "#7c3aed", title: "Material verified: TPO 60mil", time: "12 min ago" },
+            { icon: "💰", bg: "#10b981", title: "Pay App #4 submitted: $47,500", time: "1 hour ago" },
+            { icon: "📋", bg: "#f59e0b", title: "Punch list created: 8 items", time: "2 hours ago" }
+        ];
+
+        // =============================================================================
+        // RENDER FUNCTIONS
+        // =============================================================================
+
+        function renderPositions() {
+            const grid = document.getElementById('positionsGrid');
+            grid.innerHTML = positions.map(pos => `
+                <div class="position-card" id="card-${pos.id}">
+                    <div class="position-header">
+                        <div class="position-title">
+                            <div class="position-icon" style="background: ${pos.color}">${pos.icon}</div>
+                            <div>
+                                <div class="position-name">${pos.name}</div>
+                                <div class="position-forms-count">${pos.formsCount} forms • ${pos.functions.length} functions</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                            <div class="mode-toggle">
+                                <button class="mode-btn off ${pos.mode === 'off' ? 'active' : ''}" onclick="setMode('${pos.id}', 'off')">OFF</button>
+                                <button class="mode-btn assist ${pos.mode === 'assist' ? 'active' : ''}" onclick="setMode('${pos.id}', 'assist')">ASSIST</button>
+                                <button class="mode-btn full-ai ${pos.mode === 'full_ai' ? 'active' : ''}" onclick="setMode('${pos.id}', 'full_ai')">FULL AI</button>
+                            </div>
+                            <span class="badge ${pos.mode === 'full_ai' ? 'badge-full-ai' : pos.mode === 'assist' ? 'badge-assist' : 'badge-off'}">
+                                ${pos.mode === 'full_ai' ? '🤖 Full AI' : pos.mode === 'assist' ? '🧑‍💼 AI Assist' : '⭕ Off'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 12px; color: #9ca3af;">Confidence Score</span>
+                            <span class="function-confidence" style="color: ${pos.confidence >= 95 ? 'var(--success)' : pos.confidence >= 90 ? 'var(--warning)' : 'var(--danger)'}">${pos.confidence}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill ${pos.confidence >= 95 ? 'high' : pos.confidence >= 90 ? 'medium' : 'low'}" style="width: ${pos.confidence}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="functions-list">
+                        ${pos.functions.map(fn => `
+                            <div class="function-item" onclick="executeFunction('${pos.id}', '${fn.id}')">
+                                <div class="function-info">
+                                    <div class="function-name">${fn.name}</div>
+                                    <div class="function-trigger">Trigger: ${fn.trigger}</div>
+                                </div>
+                                <div class="function-status">
+                                    <span class="function-confidence" style="color: ${fn.confidence >= 95 ? 'var(--success)' : fn.confidence >= 90 ? 'var(--warning)' : 'var(--danger)'}">${fn.confidence}%</span>
+                                    ${fn.status === 'completed' ? '<button class="function-action view">View</button>' :
+                                      fn.status === 'pending_review' ? '<button class="function-action review">Review</button>' :
+                                      '<button class="function-action execute">Run</button>'}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="forms-section">
+                        <div style="font-size: 12px; color: #9ca3af; margin-bottom: 8px;">Quick Forms:</div>
+                        <div class="forms-grid">
+                            ${pos.forms.slice(0, 4).map(form => `
+                                <div class="form-chip" onclick="openForm('${pos.id}', '${form}')">${form}</div>
+                            `).join('')}
+                        </div>
+                        ${pos.forms.length > 4 ? `<div style="text-align: center; margin-top: 8px;"><button class="form-chip" onclick="showAllForms('${pos.id}')">+${pos.forms.length - 4} more</button></div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderActivities() {
+            const list = document.getElementById('activityList');
+            list.innerHTML = activities.map(act => `
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: ${act.bg}">${act.icon}</div>
+                    <div class="activity-content">
+                        <div class="activity-title">${act.title}</div>
+                        <div class="activity-time">${act.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =============================================================================
+        // ACTIONS
+        // =============================================================================
+
+        function setMode(positionId, mode) {
+            const pos = positions.find(p => p.id === positionId);
+            if (pos) {
+                pos.mode = mode;
+                renderPositions();
+                addActivity(`${pos.icon}`, pos.color, `${pos.name} set to ${mode === 'full_ai' ? 'Full AI' : mode === 'assist' ? 'AI Assist' : 'Off'} mode`);
+            }
+        }
+
+        function executeFunction(positionId, functionId) {
+            const pos = positions.find(p => p.id === positionId);
+            const fn = pos?.functions.find(f => f.id === functionId);
+            if (fn) {
+                if (fn.confidence < 90) {
+                    alert(`⚠️ Confidence too low (${fn.confidence}%)\n\nThis action requires human review before proceeding.\n\nThreshold: 90%`);
+                    return;
+                }
+
+                if (fn.status === 'pending_review') {
+                    openReviewModal(pos, fn);
+                } else {
+                    // Simulate execution
+                    fn.status = 'completed';
+                    renderPositions();
+                    addActivity(pos.icon, pos.color, `${fn.name} executed successfully`);
+                }
+            }
+        }
+
+        function openForm(positionId, formName) {
+            const pos = positions.find(p => p.id === positionId);
+            document.getElementById('modalTitle').textContent = formName;
+
+            // Generate form with SSOT pre-filled fields
+            const formHtml = generateFormHtml(formName);
+            document.getElementById('modalBody').innerHTML = formHtml;
+            document.getElementById('formModal').classList.add('visible');
+        }
+
+        function generateFormHtml(formName) {
+            // Sample form with SSOT pre-filled data
+            const sampleData = {
+                company: "Lefebvre Roofing Solutions",
+                project: "JHU Sheridan Libraries",
+                address: "3400 N Charles St, Baltimore, MD 21218",
+                system: "TPO 60mil Mechanically Attached",
+                area: "45,000 SF",
+                amount: "$467,500.00"
+            };
+
+            return `
+                <div class="form-group">
+                    <label>Company Name <span class="ssot-badge">SSOT: companies</span></label>
+                    <input type="text" class="prefilled" value="${sampleData.company}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Project Name <span class="ssot-badge">SSOT: projects</span></label>
+                    <input type="text" class="prefilled" value="${sampleData.project}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Project Address <span class="ssot-badge">SSOT: projects</span></label>
+                    <input type="text" class="prefilled" value="${sampleData.address}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Roofing System <span class="ssot-badge">SSOT: jobs</span></label>
+                    <input type="text" class="prefilled" value="${sampleData.system}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Square Footage <span class="ssot-badge">SSOT: jobs</span></label>
+                    <input type="text" class="prefilled" value="${sampleData.area}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Total Amount <span class="ssot-badge">SSOT: estimates</span></label>
+                    <input type="text" class="prefilled" value="${sampleData.amount}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Notes (editable)</label>
+                    <textarea rows="3" placeholder="Add any additional notes..."></textarea>
+                </div>
+                <div style="background: rgba(37, 99, 235, 0.1); padding: 12px; border-radius: 8px; font-size: 12px;">
+                    <strong>💡 SSOT Active:</strong> Blue fields are auto-filled from the Unified Project Object.
+                    Changes to source data will cascade to all linked forms.
+                </div>
+            `;
+        }
+
+        function openReviewModal(pos, fn) {
+            document.getElementById('modalTitle').textContent = `Review: ${fn.name}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">⚠️ Human Review Required</div>
+                    <div style="font-size: 14px;">Confidence: ${fn.confidence}% (Below 95% threshold)</div>
+                </div>
+                <div class="form-group">
+                    <label>AI Generated Output</label>
+                    <textarea rows="6" class="prefilled">${generateSampleOutput(fn.name)}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Review Notes</label>
+                    <textarea rows="3" placeholder="Add review notes..."></textarea>
+                </div>
+            `;
+            document.getElementById('formModal').classList.add('visible');
+        }
+
+        function generateSampleOutput(fnName) {
+            const outputs = {
+                "Price Labor": "Labor Estimate:\n- Foreman: 240 hrs @ $85/hr = $20,400\n- Journeyman (4): 960 hrs @ $65/hr = $62,400\n- Apprentice (2): 480 hrs @ $45/hr = $21,600\n\nTotal Labor: $104,400",
+                "Draft RFI": "RFI #007\nSubject: Clarification on drain placement at grid B-4\n\nThe drawings show a drain at grid B-4 but the structural drawings indicate a beam at this location. Please clarify the intended drain placement.",
+                "Daily Log": "Date: December 8, 2025\nWeather: 52°F, Clear\nCrew: 6 workers\n\nWork Performed:\n- Installed 2,500 SF TPO membrane (zones 1-3)\n- Completed edge metal at north elevation\n\nDelays: None",
+                "Crew Schedule": "Week of December 9-13:\nMon: 6 crew - TPO install zone 4\nTue: 6 crew - TPO install zone 5\nWed: 4 crew - Flashing details\nThu: 6 crew - Edge metal south\nFri: 4 crew - Punch list items"
+            };
+            return outputs[fnName] || "AI generated content pending review...";
+        }
+
+        function closeModal() {
+            document.getElementById('formModal').classList.remove('visible');
+        }
+
+        function saveForm() {
+            alert('✓ Form saved as draft');
+            closeModal();
+        }
+
+        function submitForm() {
+            addActivity('📄', 'var(--success)', 'Form submitted and PDF generated');
+            alert('✓ Form submitted!\n✓ PDF generated\n✓ SSOT updated');
+            closeModal();
+        }
+
+        function showAllForms(positionId) {
+            const pos = positions.find(p => p.id === positionId);
+            alert(`All ${pos.name} Forms:\n\n${pos.forms.map((f, i) => `${i+1}. ${f}`).join('\n')}`);
+        }
+
+        function addActivity(icon, bg, title) {
+            activities.unshift({ icon, bg, title, time: 'Just now' });
+            if (activities.length > 10) activities.pop();
+            renderActivities();
+        }
+
+        function changeProject() {
+            addActivity('📁', 'var(--primary)', 'Switched to project: ' + document.getElementById('projectSelect').selectedOptions[0].text);
+        }
+
+        // =============================================================================
+        // INIT
+        // =============================================================================
+
+        renderPositions();
+        renderActivities();
+
+        // Simulate live updates
+        setInterval(() => {
+            const randomPos = positions[Math.floor(Math.random() * positions.length)];
+            randomPos.confidence = Math.min(100, Math.max(85, randomPos.confidence + (Math.random() > 0.5 ? 1 : -1)));
+        }, 5000);
+    </script>
+</body>
+</html>

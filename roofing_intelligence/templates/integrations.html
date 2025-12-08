@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOFIO Integrations Hub</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --purple: #7c3aed;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--purple), #6d28d9);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { font-size: 24px; display: flex; align-items: center; gap: 12px; }
+        .header .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .hero h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: #9ca3af;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 16px;
+        }
+
+        .connected-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .category-count {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .integrations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .integration-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .integration-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .integration-card.connected {
+            border-color: var(--success);
+        }
+
+        .integration-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .integration-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .integration-info h3 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .integration-info span {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .integration-status {
+            margin-left: auto;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-connected { background: var(--success); }
+        .status-available { background: rgba(255,255,255,0.1); color: #9ca3af; }
+        .status-coming { background: rgba(124, 58, 237, 0.3); color: #a78bfa; }
+
+        .integration-desc {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .integration-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .feature-tag {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .integration-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn.connect {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn.manage {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .action-btn.disconnect {
+            background: rgba(220, 38, 38, 0.2);
+            color: #f87171;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.visible { display: flex; }
+
+        .modal {
+            background: var(--dark);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-header h2 { font-size: 18px; flex: 1; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body { padding: 20px; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .oauth-btn {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: transparent;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .oauth-btn:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel { background: rgba(255,255,255,0.1); color: white; }
+        .btn-connect { background: var(--success); color: white; }
+
+        /* Sync Status Panel */
+        .sync-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 300px;
+        }
+
+        .sync-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sync-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--success);
+        }
+
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .sync-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sync-item:last-child { border: none; }
+
+        .sync-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .sync-info { flex: 1; }
+        .sync-name { font-size: 13px; }
+        .sync-time { font-size: 11px; color: #9ca3af; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>🔌 Integrations Hub</h1>
+        <button class="back-btn" onclick="location.href='/control-center'">← Back to Control Center</button>
+    </header>
+
+    <!-- Hero -->
+    <div class="hero">
+        <h2>Connect Your Tools</h2>
+        <p>Integrate ROOFIO with the software you already use. Sync data automatically and eliminate double-entry.</p>
+
+        <div class="connected-stats">
+            <div class="stat">
+                <div class="stat-number" id="connectedCount">4</div>
+                <div class="stat-label">CONNECTED</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">28</div>
+                <div class="stat-label">AVAILABLE</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" style="color: var(--primary)">12,847</div>
+                <div class="stat-label">ITEMS SYNCED TODAY</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="integrationsContainer">
+        <!-- Generated by JavaScript -->
+    </div>
+
+    <!-- Connect Modal -->
+    <div class="modal-overlay" id="connectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span id="modalLogo" style="font-size: 24px;"></span>
+                <h2 id="modalTitle">Connect Integration</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Connection form -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Status Panel -->
+    <div class="sync-panel">
+        <div class="sync-header">
+            <span class="sync-title">Live Sync Status</span>
+            <span class="sync-status"><span class="sync-dot"></span> All systems connected</span>
+        </div>
+        <div id="syncItems">
+            <!-- Generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // =============================================================================
+        // INTEGRATIONS DATA
+        // =============================================================================
+
+        const integrations = {
+            "Email & Communication": {
+                icon: "📧",
+                color: "#2563eb",
+                items: [
+                    {
+                        id: "gmail",
+                        name: "Gmail / Google Workspace",
+                        logo: "📧",
+                        logoColor: "#ea4335",
+                        status: "connected",
+                        desc: "Sync emails, calendar, and contacts with ROOFIO.",
+                        features: ["Email sync", "Calendar", "Contacts", "Drive"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "outlook",
+                        name: "Microsoft 365 / Outlook",
+                        logo: "📮",
+                        logoColor: "#0078d4",
+                        status: "available",
+                        desc: "Connect Outlook email, Teams, and SharePoint.",
+                        features: ["Outlook", "Teams", "SharePoint", "OneDrive"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "slack",
+                        name: "Slack",
+                        logo: "💬",
+                        logoColor: "#4a154b",
+                        status: "connected",
+                        desc: "Get ROOFIO notifications and updates in Slack.",
+                        features: ["Notifications", "Commands", "File sharing"],
+                        syncType: "oauth"
+                    }
+                ]
+            },
+            "File Storage": {
+                icon: "📁",
+                color: "#16a34a",
+                items: [
+                    {
+                        id: "dropbox",
+                        name: "Dropbox",
+                        logo: "📦",
+                        logoColor: "#0061ff",
+                        status: "connected",
+                        desc: "Store and sync project files with Dropbox.",
+                        features: ["File sync", "Backup", "Sharing", "Team folders"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "gdrive",
+                        name: "Google Drive",
+                        logo: "🗂️",
+                        logoColor: "#4285f4",
+                        status: "available",
+                        desc: "Access Google Drive files directly in ROOFIO.",
+                        features: ["File sync", "Docs", "Sheets", "Slides"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "box",
+                        name: "Box",
+                        logo: "📋",
+                        logoColor: "#0061d5",
+                        status: "available",
+                        desc: "Enterprise content management with Box.",
+                        features: ["File sync", "Security", "Compliance"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "onedrive",
+                        name: "OneDrive",
+                        logo: "☁️",
+                        logoColor: "#0078d4",
+                        status: "available",
+                        desc: "Microsoft OneDrive file storage integration.",
+                        features: ["File sync", "Office 365", "SharePoint"],
+                        syncType: "oauth"
+                    }
+                ]
+            },
+            "Construction Platforms": {
+                icon: "🏗️",
+                color: "#f59e0b",
+                items: [
+                    {
+                        id: "procore",
+                        name: "Procore",
+                        logo: "🔶",
+                        logoColor: "#f47e20",
+                        status: "connected",
+                        desc: "Sync projects, RFIs, submittals, and daily logs.",
+                        features: ["Projects", "RFIs", "Submittals", "Daily logs", "Photos"],
+                        syncType: "api"
+                    },
+                    {
+                        id: "plangrid",
+                        name: "PlanGrid (Autodesk Build)",
+                        logo: "📐",
+                        logoColor: "#00bcd4",
+                        status: "available",
+                        desc: "Sync drawings, punch lists, and field reports.",
+                        features: ["Drawings", "Punch lists", "Photos", "Reports"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "buildertrend",
+                        name: "Buildertrend",
+                        logo: "🏠",
+                        logoColor: "#ff6b00",
+                        status: "available",
+                        desc: "Residential construction project management sync.",
+                        features: ["Schedules", "Selections", "Financials"],
+                        syncType: "api"
+                    },
+                    {
+                        id: "corecon",
+                        name: "CoreCon",
+                        logo: "⬡",
+                        logoColor: "#2e7d32",
+                        status: "coming",
+                        desc: "Coming soon - Enterprise construction management.",
+                        features: ["Cost control", "Scheduling", "Documents"],
+                        syncType: "api"
+                    }
+                ]
+            },
+            "Accounting & Finance": {
+                icon: "💰",
+                color: "#10b981",
+                items: [
+                    {
+                        id: "quickbooks",
+                        name: "QuickBooks Online",
+                        logo: "💵",
+                        logoColor: "#2ca01c",
+                        status: "available",
+                        desc: "Sync invoices, pay apps, and expenses.",
+                        features: ["Invoices", "Payments", "Expenses", "Reports"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "sage",
+                        name: "Sage 300 CRE",
+                        logo: "📊",
+                        logoColor: "#00d639",
+                        status: "available",
+                        desc: "Construction-specific accounting integration.",
+                        features: ["Job costing", "Payroll", "Equipment", "AP/AR"],
+                        syncType: "api"
+                    },
+                    {
+                        id: "foundation",
+                        name: "Foundation Software",
+                        logo: "🏛️",
+                        logoColor: "#1e3a8a",
+                        status: "coming",
+                        desc: "Coming soon - Construction accounting.",
+                        features: ["Job costing", "Payroll", "Equipment"],
+                        syncType: "api"
+                    },
+                    {
+                        id: "viewpoint",
+                        name: "Viewpoint Vista",
+                        logo: "👁️",
+                        logoColor: "#e91e63",
+                        status: "coming",
+                        desc: "Coming soon - ERP for construction.",
+                        features: ["Financials", "HR", "Project mgmt"],
+                        syncType: "api"
+                    }
+                ]
+            },
+            "CRM & Sales": {
+                icon: "🤝",
+                color: "#7c3aed",
+                items: [
+                    {
+                        id: "salesforce",
+                        name: "Salesforce",
+                        logo: "☁️",
+                        logoColor: "#00a1e0",
+                        status: "available",
+                        desc: "Sync leads, contacts, and opportunities.",
+                        features: ["Leads", "Contacts", "Opportunities", "Reports"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "hubspot",
+                        name: "HubSpot",
+                        logo: "🔶",
+                        logoColor: "#ff7a59",
+                        status: "available",
+                        desc: "Marketing, sales, and service hub integration.",
+                        features: ["CRM", "Marketing", "Sales", "Service"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "jobber",
+                        name: "Jobber",
+                        logo: "📋",
+                        logoColor: "#7ac143",
+                        status: "available",
+                        desc: "Field service management for contractors.",
+                        features: ["Scheduling", "Quotes", "Invoicing"],
+                        syncType: "api"
+                    }
+                ]
+            },
+            "Weather & Mapping": {
+                icon: "🌤️",
+                color: "#0ea5e9",
+                items: [
+                    {
+                        id: "openweather",
+                        name: "OpenWeatherMap",
+                        logo: "⛅",
+                        logoColor: "#eb6e4b",
+                        status: "connected",
+                        desc: "Automatic weather logging for delay documentation.",
+                        features: ["Current weather", "Forecasts", "Alerts", "History"],
+                        syncType: "api"
+                    },
+                    {
+                        id: "googlemaps",
+                        name: "Google Maps",
+                        logo: "🗺️",
+                        logoColor: "#4285f4",
+                        status: "connected",
+                        desc: "GPS verification, routing, and site mapping.",
+                        features: ["GPS", "Routing", "Satellite", "Street view"],
+                        syncType: "api"
+                    },
+                    {
+                        id: "eagleview",
+                        name: "EagleView",
+                        logo: "🦅",
+                        logoColor: "#003366",
+                        status: "available",
+                        desc: "Aerial roof measurements and reports.",
+                        features: ["Roof measurements", "3D models", "Reports"],
+                        syncType: "api"
+                    }
+                ]
+            },
+            "E-Signature & Documents": {
+                icon: "✍️",
+                color: "#dc2626",
+                items: [
+                    {
+                        id: "docusign",
+                        name: "DocuSign",
+                        logo: "✒️",
+                        logoColor: "#ffcc00",
+                        status: "available",
+                        desc: "Electronic signatures for contracts and forms.",
+                        features: ["E-signatures", "Templates", "Workflows"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "pandadoc",
+                        name: "PandaDoc",
+                        logo: "🐼",
+                        logoColor: "#5cb85c",
+                        status: "available",
+                        desc: "Document automation and e-signatures.",
+                        features: ["Proposals", "Contracts", "E-sign", "Payments"],
+                        syncType: "oauth"
+                    },
+                    {
+                        id: "bluebeam",
+                        name: "Bluebeam Revu",
+                        logo: "🔵",
+                        logoColor: "#0072c6",
+                        status: "available",
+                        desc: "PDF markup and collaboration for construction.",
+                        features: ["PDF markup", "Studio", "Takeoff", "Punch"],
+                        syncType: "api"
+                    }
+                ]
+            }
+        };
+
+        const syncHistory = [
+            { logo: "🔶", name: "Procore", action: "Synced 3 submittals", time: "Just now", color: "#f47e20" },
+            { logo: "📧", name: "Gmail", action: "Imported 12 emails", time: "2 min ago", color: "#ea4335" },
+            { logo: "📦", name: "Dropbox", action: "Uploaded 8 photos", time: "5 min ago", color: "#0061ff" },
+            { logo: "⛅", name: "Weather", action: "Captured 52°F Clear", time: "12 min ago", color: "#eb6e4b" }
+        ];
+
+        // =============================================================================
+        // RENDER FUNCTIONS
+        // =============================================================================
+
+        function renderIntegrations() {
+            const container = document.getElementById('integrationsContainer');
+            container.innerHTML = Object.entries(integrations).map(([category, data]) => `
+                <div class="category">
+                    <div class="category-header">
+                        <div class="category-icon" style="background: ${data.color}">${data.icon}</div>
+                        <span class="category-title">${category}</span>
+                        <span class="category-count">${data.items.length} integrations</span>
+                    </div>
+                    <div class="integrations-grid">
+                        ${data.items.map(item => `
+                            <div class="integration-card ${item.status === 'connected' ? 'connected' : ''}" onclick="openIntegration('${item.id}')">
+                                <div class="integration-header">
+                                    <div class="integration-logo" style="background: ${item.logoColor}">${item.logo}</div>
+                                    <div class="integration-info">
+                                        <h3>${item.name}</h3>
+                                        <span>${item.syncType === 'oauth' ? 'OAuth 2.0' : 'API Key'}</span>
+                                    </div>
+                                    <div class="integration-status">
+                                        <span class="status-badge ${item.status === 'connected' ? 'status-connected' : item.status === 'coming' ? 'status-coming' : 'status-available'}">
+                                            ${item.status === 'connected' ? '✓ Connected' : item.status === 'coming' ? 'Coming Soon' : 'Available'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="integration-desc">${item.desc}</div>
+                                <div class="integration-features">
+                                    ${item.features.map(f => `<span class="feature-tag">${f}</span>`).join('')}
+                                </div>
+                                <div class="integration-actions">
+                                    ${item.status === 'connected' ? `
+                                        <button class="action-btn manage">Manage</button>
+                                        <button class="action-btn disconnect" onclick="event.stopPropagation(); disconnect('${item.id}')">Disconnect</button>
+                                    ` : item.status === 'coming' ? `
+                                        <button class="action-btn manage" disabled>Coming Soon</button>
+                                    ` : `
+                                        <button class="action-btn connect" onclick="event.stopPropagation(); connect('${item.id}')">Connect</button>
+                                    `}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSyncPanel() {
+            const container = document.getElementById('syncItems');
+            container.innerHTML = syncHistory.map(item => `
+                <div class="sync-item">
+                    <div class="sync-icon" style="background: ${item.color}">${item.logo}</div>
+                    <div class="sync-info">
+                        <div class="sync-name">${item.action}</div>
+                        <div class="sync-time">${item.name} • ${item.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =============================================================================
+        // ACTIONS
+        // =============================================================================
+
+        function openIntegration(id) {
+            // Find the integration
+            let integration = null;
+            for (const category of Object.values(integrations)) {
+                integration = category.items.find(i => i.id === id);
+                if (integration) break;
+            }
+            if (!integration) return;
+
+            document.getElementById('modalLogo').textContent = integration.logo;
+            document.getElementById('modalTitle').textContent = integration.name;
+
+            const isConnected = integration.status === 'connected';
+
+            document.getElementById('modalBody').innerHTML = isConnected ? `
+                <div style="background: rgba(22, 163, 74, 0.1); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="font-weight: 600; color: var(--success); margin-bottom: 4px;">✓ Connected</div>
+                    <div style="font-size: 13px; color: #9ca3af;">Last synced: 2 minutes ago</div>
+                </div>
+
+                <h4 style="margin-bottom: 12px;">Sync Settings</h4>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" checked> Sync automatically every 15 minutes
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" checked> Push new items to ${integration.name}
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" checked> Pull updates from ${integration.name}
+                    </label>
+                </div>
+
+                <h4 style="margin-bottom: 12px;">Data Mapping</h4>
+                <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; font-size: 13px;">
+                    ${integration.features.map(f => `<div style="padding: 4px 0;">• ${f} ↔ ROOFIO ${f}</div>`).join('')}
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="action-btn manage" onclick="syncNow('${id}')">Sync Now</button>
+                    <button class="action-btn disconnect" onclick="disconnect('${id}')">Disconnect</button>
+                </div>
+            ` : integration.syncType === 'oauth' ? `
+                <p style="color: #9ca3af; margin-bottom: 20px;">${integration.desc}</p>
+
+                <button class="oauth-btn" onclick="oauthConnect('${id}')">
+                    ${integration.logo} Sign in with ${integration.name}
+                </button>
+
+                <div style="text-align: center; color: #6b7280; font-size: 12px;">
+                    You'll be redirected to ${integration.name} to authorize ROOFIO
+                </div>
+            ` : `
+                <p style="color: #9ca3af; margin-bottom: 20px;">${integration.desc}</p>
+
+                <div class="form-group">
+                    <label>API Key</label>
+                    <input type="password" placeholder="Enter your ${integration.name} API key">
+                </div>
+
+                <div class="form-group">
+                    <label>API Secret (if required)</label>
+                    <input type="password" placeholder="Enter API secret">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="action-btn manage" onclick="closeModal()">Cancel</button>
+                    <button class="action-btn connect" onclick="apiConnect('${id}')">Connect</button>
+                </div>
+            `;
+
+            document.getElementById('connectModal').classList.add('visible');
+        }
+
+        function connect(id) {
+            openIntegration(id);
+        }
+
+        function oauthConnect(id) {
+            alert(`Redirecting to OAuth authorization...\n\nIn production, this would open:\n${id}.com/oauth/authorize`);
+            simulateConnect(id);
+        }
+
+        function apiConnect(id) {
+            simulateConnect(id);
+        }
+
+        function simulateConnect(id) {
+            // Find and update the integration
+            for (const category of Object.values(integrations)) {
+                const item = category.items.find(i => i.id === id);
+                if (item) {
+                    item.status = 'connected';
+                    break;
+                }
+            }
+            renderIntegrations();
+            updateConnectedCount();
+            closeModal();
+
+            // Add to sync history
+            syncHistory.unshift({
+                logo: "✓",
+                name: id.charAt(0).toUpperCase() + id.slice(1),
+                action: "Connected successfully",
+                time: "Just now",
+                color: "#16a34a"
+            });
+            renderSyncPanel();
+        }
+
+        function disconnect(id) {
+            if (!confirm('Are you sure you want to disconnect this integration?')) return;
+
+            for (const category of Object.values(integrations)) {
+                const item = category.items.find(i => i.id === id);
+                if (item) {
+                    item.status = 'available';
+                    break;
+                }
+            }
+            renderIntegrations();
+            updateConnectedCount();
+            closeModal();
+        }
+
+        function syncNow(id) {
+            alert(`Syncing ${id}...\n\n✓ 12 items synced successfully`);
+        }
+
+        function closeModal() {
+            document.getElementById('connectModal').classList.remove('visible');
+        }
+
+        function updateConnectedCount() {
+            let count = 0;
+            for (const category of Object.values(integrations)) {
+                count += category.items.filter(i => i.status === 'connected').length;
+            }
+            document.getElementById('connectedCount').textContent = count;
+        }
+
+        // =============================================================================
+        // INIT
+        // =============================================================================
+
+        renderIntegrations();
+        renderSyncPanel();
+
+        // Simulate live sync updates
+        setInterval(() => {
+            const actions = [
+                { logo: "🔶", name: "Procore", action: "Synced 1 daily log", color: "#f47e20" },
+                { logo: "📧", name: "Gmail", action: "Imported 2 emails", color: "#ea4335" },
+                { logo: "📦", name: "Dropbox", action: "Uploaded 3 photos", color: "#0061ff" },
+                { logo: "💬", name: "Slack", action: "Sent notification", color: "#4a154b" }
+            ];
+            const random = actions[Math.floor(Math.random() * actions.length)];
+            syncHistory.unshift({ ...random, time: "Just now" });
+            if (syncHistory.length > 10) syncHistory.pop();
+            renderSyncPanel();
+        }, 30000);
+    </script>
+</body>
+</html>
