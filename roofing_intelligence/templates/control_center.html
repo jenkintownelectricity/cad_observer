@@ -34,6 +34,12 @@
 
         .header h1 { font-size: 24px; }
 
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
         .header .project-select {
             background: rgba(255,255,255,0.2);
             border: none;
@@ -41,6 +47,24 @@
             border-radius: 8px;
             color: white;
             font-size: 14px;
+        }
+
+        .header .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .stats-bar {
@@ -401,11 +425,15 @@
     <!-- Header -->
     <header class="header">
         <h1>🛠️ ROOFIO Control Center</h1>
-        <select class="project-select" id="projectSelect" onchange="changeProject()">
-            <option value="proj1">JHU Sheridan Libraries - Active</option>
-            <option value="proj2">UMass Amherst - Bidding</option>
-            <option value="proj3">Boston Medical - Closeout</option>
-        </select>
+        <div class="header-actions">
+            <a href="/digital-foreman" class="nav-btn">📱 Digital Foreman</a>
+            <a href="/integrations" class="nav-btn">🔌 Integrations</a>
+            <select class="project-select" id="projectSelect" onchange="changeProject()">
+                <option value="proj1">JHU Sheridan Libraries - Active</option>
+                <option value="proj2">UMass Amherst - Bidding</option>
+                <option value="proj3">Boston Medical - Closeout</option>
+            </select>
+        </div>
     </header>
 
     <!-- Stats Bar -->

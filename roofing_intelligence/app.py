@@ -118,6 +118,12 @@ def control_center():
     return render_template('control_center.html')
 
 
+@app.route('/integrations')
+def integrations():
+    """Integrations Hub - Connect email, storage, accounting, and construction platforms."""
+    return render_template('integrations.html')
+
+
 @app.route('/projects')
 def projects():
     """Project management page."""
