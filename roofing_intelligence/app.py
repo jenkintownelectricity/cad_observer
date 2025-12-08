@@ -100,6 +100,18 @@ def roofio():
     return render_template('roofio.html')
 
 
+@app.route('/digital-foreman')
+def digital_foreman():
+    """Digital Foreman - Risk Shield field documentation."""
+    return render_template('digital_foreman.html')
+
+
+@app.route('/inspector/<visit_id>')
+def inspector_access(visit_id):
+    """Guest inspector access for hold point inspections (no account required)."""
+    return render_template('inspector.html')
+
+
 @app.route('/projects')
 def projects():
     """Project management page."""

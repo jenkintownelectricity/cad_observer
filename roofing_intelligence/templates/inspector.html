@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROOFIO - Inspector Access</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-info {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .project-info .icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .project-details h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .project-details p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .inspection-type {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .inspection-type h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .inspection-type p {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .spec-ref {
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: var(--light);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checklist-item:hover {
+            background: #e5e7eb;
+        }
+
+        .checklist-item.checked {
+            background: rgba(22, 163, 74, 0.1);
+            border: 2px solid var(--success);
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+        }
+
+        .checklist-item.checked .checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .checklist-text {
+            flex: 1;
+        }
+
+        .checklist-text strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .checklist-text small {
+            color: #6b7280;
+        }
+
+        .notes-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-btn {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-btn .icon {
+            font-size: 28px;
+        }
+
+        .result-btn.passed:hover,
+        .result-btn.passed.selected {
+            border-color: var(--success);
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+        }
+
+        .result-btn.conditional:hover,
+        .result-btn.conditional.selected {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .result-btn.failed:hover,
+        .result-btn.failed.selected {
+            border-color: var(--danger);
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .signature-area {
+            background: white;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .signature-area.signed {
+            border-style: solid;
+            border-color: var(--success);
+            color: var(--dark);
+            font-style: italic;
+            font-size: 24px;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .photo-slot {
+            aspect-ratio: 1;
+            background: var(--light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #9ca3af;
+            cursor: pointer;
+            border: 2px dashed #d1d5db;
+        }
+
+        .photo-slot.filled {
+            border-style: solid;
+            border-color: var(--success);
+            background: rgba(22, 163, 74, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .gps-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .conditions-list {
+            margin-top: 16px;
+        }
+
+        .condition-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .condition-input input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .condition-input button {
+            width: 40px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .footer-note {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 12px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>ROOFIO Inspector Access</h1>
+        <p>Hold Point Inspection</p>
+    </header>
+
+    <div class="container">
+        <!-- Project Info -->
+        <div class="card">
+            <div class="project-info">
+                <div class="icon">🏗️</div>
+                <div class="project-details">
+                    <h3 id="projectName">JHU Sheridan Libraries</h3>
+                    <p id="projectAddress">3400 N Charles St, Baltimore, MD</p>
+                </div>
+            </div>
+            <div class="inspection-type">
+                <h3>INSPECTION TYPE</h3>
+                <p id="inspectionType">Deck Inspection</p>
+            </div>
+            <p class="spec-ref">Spec Reference: <strong id="specRef">07 22 00</strong></p>
+        </div>
+
+        <!-- Inspector Info -->
+        <div class="card">
+            <h2>Inspector Information</h2>
+            <div class="input-group">
+                <label>Your Name *</label>
+                <input type="text" id="inspectorName" placeholder="Bob Johnson">
+            </div>
+            <div class="input-group">
+                <label>Company</label>
+                <input type="text" id="inspectorCompany" placeholder="FM Global">
+            </div>
+            <div class="input-group">
+                <label>License # (optional)</label>
+                <input type="text" id="inspectorLicense" placeholder="RCI-12345">
+            </div>
+        </div>
+
+        <!-- Inspection Checklist -->
+        <div class="card">
+            <h2>Inspection Checklist</h2>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                <div class="checkbox"></div>
+                <div class="checklist-text">
+                    <strong>Deck surface clean and dry</strong>
+                    <small>No debris, standing water, or contamination</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                <div class="checkbox"></div>
+                <div class="checklist-text">
+                    <strong>No ponding water observed</strong>
+                    <small>Positive drainage verified</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                <div class="checkbox"></div>
+                <div class="checklist-text">
+                    <strong>Deck fasteners properly installed</strong>
+                    <small>Pattern per manufacturer specs</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                <div class="checkbox"></div>
+                <div class="checklist-text">
+                    <strong>Penetrations properly flashed</strong>
+                    <small>Pipe boots, vents, curbs sealed</small>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleItem(this)">
+                <div class="checkbox"></div>
+                <div class="checklist-text">
+                    <strong>Slope verified per drawings</strong>
+                    <small>Minimum 1/4" per foot</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspection Result -->
+        <div class="card">
+            <h2>Inspection Result</h2>
+
+            <div class="result-buttons">
+                <button class="result-btn passed" onclick="selectResult(this, 'passed')">
+                    <span class="icon">✅</span>
+                    <span>PASSED</span>
+                </button>
+                <button class="result-btn conditional" onclick="selectResult(this, 'conditional')">
+                    <span class="icon">⚠️</span>
+                    <span>CONDITIONAL</span>
+                </button>
+                <button class="result-btn failed" onclick="selectResult(this, 'failed')">
+                    <span class="icon">❌</span>
+                    <span>FAILED</span>
+                </button>
+            </div>
+
+            <div class="input-group">
+                <label>Notes / Observations</label>
+                <textarea class="notes-input" rows="3" id="resultNotes" placeholder="Describe any findings or conditions..."></textarea>
+            </div>
+
+            <div class="conditions-list" id="conditionsList" style="display: none;">
+                <label style="font-size: 14px; color: #6b7280; margin-bottom: 8px; display: block;">Conditions for Approval:</label>
+                <div class="condition-input">
+                    <input type="text" placeholder="Enter condition...">
+                    <button onclick="addCondition()">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photos -->
+        <div class="card">
+            <h2>Photo Documentation</h2>
+            <div class="photo-grid">
+                <div class="photo-slot" onclick="capturePhoto(this)">📷</div>
+                <div class="photo-slot" onclick="capturePhoto(this)">📷</div>
+                <div class="photo-slot" onclick="capturePhoto(this)">📷</div>
+                <div class="photo-slot" onclick="capturePhoto(this)">📷</div>
+                <div class="photo-slot" onclick="capturePhoto(this)">📷</div>
+                <div class="photo-slot" onclick="capturePhoto(this)">📷</div>
+            </div>
+        </div>
+
+        <!-- Signature -->
+        <div class="card">
+            <h2>Inspector Signature</h2>
+            <div class="signature-area" id="signatureArea" onclick="captureSignature()">
+                Tap to sign
+            </div>
+
+            <div class="gps-badge">
+                <span>📍</span>
+                <span id="gpsLocation">Acquiring location...</span>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <button class="submit-btn" id="submitBtn" onclick="submitInspection()">
+            <span>✍️</span>
+            <span>Submit Inspection</span>
+        </button>
+
+        <p class="footer-note">
+            This inspection will be linked to the contractor's daily log and available to the Owner/Architect within 24 hours.
+        </p>
+    </div>
+
+    <script>
+        let selectedResult = null;
+        let photoCount = 0;
+        let signed = false;
+
+        // Get GPS on load
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    document.getElementById('gpsLocation').textContent =
+                        `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+                },
+                err => {
+                    document.getElementById('gpsLocation').textContent = 'Location unavailable';
+                }
+            );
+        }
+
+        function toggleItem(item) {
+            item.classList.toggle('checked');
+            if (item.classList.contains('checked')) {
+                item.querySelector('.checkbox').innerHTML = '✓';
+            } else {
+                item.querySelector('.checkbox').innerHTML = '';
+            }
+        }
+
+        function selectResult(btn, result) {
+            document.querySelectorAll('.result-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedResult = result;
+
+            // Show conditions input for conditional
+            document.getElementById('conditionsList').style.display =
+                result === 'conditional' ? 'block' : 'none';
+        }
+
+        function addCondition() {
+            const input = document.querySelector('.condition-input input');
+            if (input.value.trim()) {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #fef3c7; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;';
+                div.innerHTML = `<span>${input.value}</span><button onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer;">×</button>`;
+                document.getElementById('conditionsList').appendChild(div);
+                input.value = '';
+            }
+        }
+
+        function capturePhoto(slot) {
+            if (!slot.classList.contains('filled')) {
+                // Simulate photo capture
+                slot.classList.add('filled');
+                slot.innerHTML = '✓';
+                photoCount++;
+            }
+        }
+
+        function captureSignature() {
+            const name = document.getElementById('inspectorName').value || 'Inspector';
+            document.getElementById('signatureArea').classList.add('signed');
+            document.getElementById('signatureArea').innerHTML = name;
+            signed = true;
+        }
+
+        function submitInspection() {
+            const name = document.getElementById('inspectorName').value;
+
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
+
+            if (!selectedResult) {
+                alert('Please select an inspection result');
+                return;
+            }
+
+            if (!signed) {
+                alert('Please sign the inspection');
+                return;
+            }
+
+            const checkedItems = document.querySelectorAll('.checklist-item.checked').length;
+            const totalItems = document.querySelectorAll('.checklist-item').length;
+
+            const inspection = {
+                inspector_name: name,
+                inspector_company: document.getElementById('inspectorCompany').value,
+                inspector_license: document.getElementById('inspectorLicense').value,
+                result: selectedResult,
+                notes: document.getElementById('resultNotes').value,
+                checklist_completed: `${checkedItems}/${totalItems}`,
+                photos: photoCount,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('Submitting inspection:', inspection);
+
+            alert(`Inspection Submitted!
+
+Result: ${selectedResult.toUpperCase()}
+Checklist: ${checkedItems}/${totalItems} items verified
+Photos: ${photoCount} attached
+
+This inspection is now linked to today's daily log and will be available to the Owner/Architect.
+
+Thank you, ${name}!`);
+        }
+    </script>
+</body>
+</html>
