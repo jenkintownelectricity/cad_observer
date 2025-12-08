@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spec 07 22 00: Roof and Deck Insulation | ROOFIO Division 07 Database</title>
+    <meta name="description" content="Official Division 07 specification for 07 22 00 Roof and Deck Insulation. Technical standards, testing requirements, and installation guidelines from ROOFIO.">
+    
+    <meta property="og:title" content="Spec 07 22 00: Roof and Deck Insulation | ROOFIO">
+    <meta property="og:description" content="Division 07 Technical Standard for Roof and Deck Insulation. NRCA, FM Global, and ASTM compliant.">
+    <meta property="og:type" content="article">
+    
+    <style>
+        :root { 
+            --primary: #0f172a; 
+            --accent: #f97316; 
+            --accent-dark: #ea580c;
+            --bg: #f1f5f9; 
+            --paper: #ffffff; 
+            --border: #e2e8f0;
+            --success: #10b981;
+            --info: #3b82f6;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            color: #333; 
+            margin: 0; 
+            line-height: 1.6; 
+        }
+        
+        .navbar { 
+            background: var(--primary); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .nav-logo { 
+            font-weight: 900; 
+            font-size: 1.4rem; 
+            letter-spacing: -1px; 
+            text-decoration: none; 
+            color: white; 
+        }
+        
+        .nav-logo span { color: var(--accent); }
+        
+        .nav-badge {
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .container { 
+            max-width: 1100px; 
+            margin: 40px auto; 
+            padding: 0 20px; 
+            display: grid; 
+            grid-template-columns: 1fr 320px; 
+            gap: 40px; 
+        }
+        
+        /* THE OFFICIAL DOC LOOK */
+        .doc-viewer { 
+            background: var(--paper); 
+            border: 1px solid #cbd5e0; 
+            padding: 50px; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            position: relative;
+            border-radius: 8px;
+        }
+        
+        .highlight { 
+            background-color: #fff7ed; 
+            border-left: 3px solid var(--accent); 
+            padding-left: 8px; 
+            display: block; 
+            width: 100%; 
+            margin: 2px 0;
+        }
+        
+        .highlight-info {
+            background-color: #eff6ff;
+            border-left: 3px solid var(--info);
+            padding-left: 8px;
+            display: block;
+            width: 100%;
+            margin: 2px 0;
+        }
+        
+        .highlight-success {
+            background-color: #ecfdf5;
+            border-left: 3px solid var(--success);
+            padding-left: 8px;
+            display: block;
+            width: 100%;
+            margin: 2px 0;
+        }
+        
+        .sidebar-box { 
+            background: white; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 25px; 
+            position: sticky; 
+            top: 20px; 
+        }
+        
+        .btn { 
+            display: block; 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary); 
+            color: white; 
+            text-align: center; 
+            text-decoration: none; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            margin-bottom: 10px; 
+            transition: all 0.2s;
+        }
+        
+        .btn:hover { 
+            background: #1e293b; 
+            transform: translateY(-1px);
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background: var(--accent-dark);
+        }
+        
+        .breadcrumb { 
+            color: #64748b; 
+            font-size: 0.9rem; 
+            margin-bottom: 20px; 
+        }
+        
+        .breadcrumb a { 
+            color: var(--accent); 
+            text-decoration: none; 
+        }
+        
+        .breadcrumb a:hover { text-decoration: underline; }
+        
+        h1 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        
+        .spec-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-tag {
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+        
+        .meta-tag.category {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .related-list {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .related-list h4 {
+            margin: 0 0 15px 0;
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .related-link {
+            display: block;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            color: #334155;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .related-link:hover {
+            color: var(--accent);
+        }
+        
+        .related-link:last-child {
+            border-bottom: none;
+        }
+
+        @media(max-width: 900px) { 
+            .container { grid-template-columns: 1fr; } 
+            .sidebar-box { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">ROOF<span>IO</span></a>
+        <span class="nav-badge">Division 07 Database</span>
+    </nav>
+
+    <div class="container">
+        <main>
+            <div class="breadcrumb">
+                <a href="index.html">&larr; Back to Index</a> / Division 07 / 07 22 00
+            </div>
+            
+            <h1>07 22 00 - Roof and Deck Insulation</h1>
+            
+            <div class="spec-meta">
+                <span class="meta-tag category">Insulation</span>
+                <span class="meta-tag">CSI MasterFormat</span>
+                <span class="meta-tag">Updated: December 2025</span>
+            </div>
+            
+            <p style="color: #475569; font-size: 1.05rem; margin-bottom: 30px;">Rigid board insulation for roof assemblies including polyiso EPS XPS and mineral wool.</p>
+
+            <div class="doc-viewer">
+SECTION 07 22 00 - ROOF AND DECK INSULATION
+═══════════════════════════════════════════════════════════════
+ROOFIO DIVISION 07 TECHNICAL STANDARD
+Date: December 2025
+Status: CURRENT
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PART 1 - GENERAL
+
+1.1 SUMMARY
+    A. Section Includes:
+       1. Roof and Deck Insulation.
+       2. Related accessories and components.
+       3. Quality assurance and testing requirements.
+
+1.2 RELATED SECTIONS
+    07 20 00 Thermal Protection
+    07 50 00 Membrane Roofing
+
+1.3 REFERENCES
+<span class="highlight-info">    A. NRCA Roofing Manual - Current Edition</span>
+<span class="highlight-info">    B. FM Global Property Loss Prevention Data Sheets</span>
+    C. ASTM Standards as specified herein.
+    D. Local building codes and amendments (AHJ).
+
+1.4 SUBMITTALS
+    A. Product Data: Manufacturer's technical data sheets.
+    B. Shop Drawings: Layout, details, and flashing conditions.
+    C. Samples: Physical samples upon request.
+    D. Certifications: FM Approval, UL Listing as applicable.
+
+1.5 QUALITY ASSURANCE
+<span class="highlight">    A. Manufacturer Qualifications:</span>
+<span class="highlight">       1. Minimum 5 years experience in roof and deck insulation.</span>
+<span class="highlight">       2. FM Approved or UL Listed products where required.</span>
+    
+    B. Installer Qualifications:
+       1. Manufacturer-certified installer.
+       2. Minimum 3 years documented experience.
+
+1.6 DELIVERY, STORAGE, AND HANDLING
+    A. Deliver materials in original packaging.
+    B. Store in dry location, protected from weather.
+    C. Handle to prevent damage.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PART 2 - PRODUCTS
+
+2.1 MANUFACTURERS
+    A. Acceptable Manufacturers:
+<span class="highlight-success">       1. Johns Manville / Carlisle / GAF</span>
+       2. Or approved equal meeting specifications.
+
+2.2 MATERIALS
+    A. Refer to ROOFIO 07 22 00 Technical Skill for:
+       - Material specifications
+       - ASTM test requirements
+       - Performance criteria
+       - FM/UL ratings
+
+2.3 ACCESSORIES
+    A. Fasteners, adhesives, and accessories as recommended
+       by primary material manufacturer.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PART 3 - EXECUTION
+
+3.1 EXAMINATION
+    A. Verify substrate conditions meet requirements.
+    B. Report unsatisfactory conditions in writing.
+    C. Do not proceed until conditions are corrected.
+
+3.2 PREPARATION
+    A. Clean surfaces of debris, moisture, and contaminants.
+    B. Prime surfaces as required by manufacturer.
+
+3.3 INSTALLATION
+    A. Install in accordance with:
+       1. Manufacturer's written instructions.
+       2. NRCA Roofing Manual guidelines.
+       3. FM Global requirements where applicable.
+    
+    B. Coordinate with adjacent work.
+
+3.4 PROTECTION
+    A. Protect installed work from damage.
+    B. Repair or replace damaged materials.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+END OF SECTION 07 22 00
+
+ROOFIO - The Division 07 Digital Journeyman
+            </div>
+        </main>
+
+        <aside>
+            <div class="sidebar-box">
+                <h3 style="margin-top:0; color: var(--primary);">Download Spec</h3>
+                <p style="font-size:0.9rem; color:#64748b">Get the editable Word and PDF versions of this specification.</p>
+                <a href="#" class="btn btn-accent">Download Package</a>
+                <div style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-top: 10px;">
+                    Format: .DOCX / .PDF<br>
+                    CSI 3-Part Format
+                </div>
+                
+                <div class="related-list">
+                    <h4>Related Standards</h4>
+                    <a href="#" class="related-link">NRCA Manual Reference</a>
+                    <a href="#" class="related-link">FM Data Sheets</a>
+                    <a href="#" class="related-link">ASTM Standards</a>
+                    <a href="#" class="related-link">Installation Details</a>
+                </div>
+            </div>
+            
+            <div class="sidebar-box" style="margin-top: 20px; border-color: #fed7aa; background: #fff7ed;">
+                <h4 style="margin-top:0; color: #9a3412;">🔧 Ask Roofio</h4>
+                <p style="font-size:0.85rem; color:#78350f">Get instant answers about Roof and Deck Insulation specifications, installation, and compliance.</p>
+                <a href="#" class="btn" style="background: var(--accent);">Open Roofio Chat &rarr;</a>
+            </div>
+        </aside>
+    </div>
+
+</body>
+</html>
