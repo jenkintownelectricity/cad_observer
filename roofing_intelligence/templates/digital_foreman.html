@@ -56,6 +56,34 @@
             gap: 6px;
         }
 
+        /* Main Navigation */
+        .main-nav {
+            background: rgba(0,0,0,0.4);
+            padding: 12px 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .main-nav a {
+            color: #9ca3af;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .main-nav a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .main-nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+
         /* Gatekeeper Lock Screen */
         .gatekeeper-screen {
             display: flex;
@@ -615,6 +643,17 @@
             <span id="projectName">JHU Library - Roof A</span>
         </div>
     </header>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/analysis">Analysis</a>
+        <a href="/roofio">Roofio</a>
+        <a href="/control-center">Control</a>
+        <a href="/digital-foreman" class="active">Foreman</a>
+        <a href="/integrations">Integrations</a>
+        <a href="/projects">Projects</a>
+    </nav>
 
     <!-- Gatekeeper Lock Screen -->
     <div class="gatekeeper-screen" id="gatekeeperScreen">
