@@ -1,77 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROOFIO Integrations Hub</title>
+    <title>Integrations | APPIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <style>
+        /* Integrations Specific Styles */
         :root {
             --primary: #2563eb;
             --success: #16a34a;
             --warning: #f59e0b;
             --danger: #dc2626;
             --purple: #7c3aed;
-            --dark: #1f2937;
-            --light: #f3f4f6;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--dark);
-            color: white;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--purple), #6d28d9);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 { font-size: 24px; display: flex; align-items: center; gap: 12px; }
-        .header .back-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* Main Navigation */
-        .main-nav {
-            background: rgba(0,0,0,0.4);
-            padding: 12px 20px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .main-nav a {
-            color: #9ca3af;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .main-nav a:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .main-nav a.active {
-            background: var(--purple);
-            color: white;
-        }
-
-        .hero {
+        .integrations-hero {
             text-align: center;
             padding: 40px 20px;
             background: rgba(0,0,0,0.3);
@@ -443,25 +391,65 @@
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
     <!-- Header -->
-    <header class="header">
-        <h1>🔌 Integrations Hub</h1>
-        <button class="back-btn" onclick="location.href='/control-center'">← Back to Control Center</button>
+    <header class="header glass">
+        <div class="header-content">
+            <div class="logo">
+                <a href="/dashboard" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="APPIO" class="logo-img">
+                </a>
+            </div>
+
+            <nav class="nav">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/analysis" class="nav-link">Analysis</a>
+                <a href="/roofio" class="nav-link">Roofio</a>
+                <a href="/control-center" class="nav-link">Control</a>
+                <a href="/digital-foreman" class="nav-link">Foreman</a>
+                <a href="/integrations" class="nav-link active">Integrations</a>
+                <a href="/projects" class="nav-link">Projects</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="company-status">
+                    <span class="status-indicator online"></span>
+                    <span>4 Connected</span>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </header>
 
-    <!-- Main Navigation -->
-    <nav class="main-nav">
-        <a href="/dashboard">Dashboard</a>
-        <a href="/analysis">Analysis</a>
-        <a href="/roofio">Roofio</a>
-        <a href="/control-center">Control</a>
-        <a href="/digital-foreman">Foreman</a>
-        <a href="/integrations" class="active">Integrations</a>
-        <a href="/projects">Projects</a>
-    </nav>
+    <main class="main">
+        <!-- Page Title -->
+        <div style="margin-bottom: 2rem;">
+            <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Integrations Hub</h1>
+            <p style="color: var(--text-secondary);">Connect your tools and eliminate double-entry</p>
+        </div>
 
-    <!-- Hero -->
-    <div class="hero">
+        <!-- Hero -->
+        <div class="integrations-hero" style="background: var(--glass-bg); border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 2rem; text-align: center;">
         <h2>Connect Your Tools</h2>
         <p>Integrate ROOFIO with the software you already use. Sync data automatically and eliminate double-entry.</p>
 
@@ -1035,6 +1023,19 @@
             if (syncHistory.length > 10) syncHistory.pop();
             renderSyncPanel();
         }, 30000);
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
 </body>
 </html>
