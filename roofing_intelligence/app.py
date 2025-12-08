@@ -112,6 +112,12 @@ def inspector_access(visit_id):
     return render_template('inspector.html')
 
 
+@app.route('/control-center')
+def control_center():
+    """ROOFIO Control Center - All 8 positions with Full AI/Assist/Off toggles."""
+    return render_template('control_center.html')
+
+
 @app.route('/projects')
 def projects():
     """Project management page."""
