@@ -1169,6 +1169,32 @@
     color: white;
 }
 
+/* New AI Seat Avatars (13-Seat System) */
+.seat-avatar.sales {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.seat-avatar.hr {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+}
+
+.seat-avatar.marketing {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    color: white;
+}
+
+.seat-avatar.warranty {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.seat-avatar.owner {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+}
+
 /* Red metric icon for safety */
 .metric-icon.red {
     background: rgba(239, 68, 68, 0.15);
