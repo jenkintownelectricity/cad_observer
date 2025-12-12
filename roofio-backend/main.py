@@ -8,6 +8,10 @@ Run with:
     uvicorn main:app --reload --port 8000
 """
 
+# Load .env file FIRST before any other imports
+from dotenv import load_dotenv
+load_dotenv()
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
