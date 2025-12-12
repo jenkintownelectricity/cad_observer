@@ -1,6 +1,6 @@
 # CAD Observer Repository
 
-> **3 Applications in 1 Repo** | Last Updated: December 12, 2024
+> **3 Applications in 1 Repo** | Last Updated: December 12, 2025
 
 This repository contains three distinct applications for Armand Lefebvre (20+ year journeyman roofer/waterproofer, Local 30):
 
@@ -408,7 +408,7 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 
 # Changelog
 
-### December 12, 2024 - Custom Form System & REST API
+### December 12, 2025 - Custom Form System & REST API
 - **Custom Form Templates**: Use your forms or ROOFIO format with toggle
 - **Document Scanner**: Snap photo of existing forms to digitize them
 - **Mobile Upload**: iPhone camera/photos, Android gallery, web drag-drop
@@ -416,17 +416,17 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 - **Database Models**: FormTemplate, FormSubmission tables added
 - **Flask-FastAPI Bridge**: Frontend now connected to backend API
 
-### December 12, 2024 - Repository Restructure
+### December 12, 2025 - Repository Restructure
 - Documented 3 distinct applications in README
 - Added status matrix and completion tracking
 - Clarified boundaries between CAD Observer, APPIO, and Backend
 
-### December 8, 2024 - Backend Phase 1 Complete
+### December 8, 2025 - Backend Phase 1 Complete
 - Security foundation (JWT, RBAC, OAuth, encryption)
 - Upstash Redis and Vector integration
 - Groq API tested and working
 
-### December 2024 - APPIO UI Complete
+### December 2025 - APPIO UI Complete
 - All 9 pages functional
 - 8-position Control Center
 - Digital Foreman Risk Shield

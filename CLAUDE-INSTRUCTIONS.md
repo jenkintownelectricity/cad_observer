@@ -13,29 +13,16 @@
 | **Upstash Redis** | ✅ Connected & tested |
 | **Upstash Vector** | ✅ Hybrid index ready |
 | **Groq API** | ✅ Llama 3.3 70B (~395ms) |
-| **Supabase PostgreSQL** | ⏳ DNS issue - needs troubleshooting |
+| **Supabase PostgreSQL** | ✅ Connected via pooler |
 | **Deployment** | Local Flask only |
 
 ---
 
 ## Priority Queue
 
-### 🔴 IMMEDIATE: Finish Supabase PostgreSQL Setup
+### ✅ COMPLETED: Supabase PostgreSQL Setup
 
-**Problem:** DNS resolution failing for `db.kuzcgmolzqvulwypvoun.supabase.co`
-
-**Troubleshooting Steps:**
-1. Check Supabase dashboard - is project status "Active"?
-2. Try the **Pooler connection** (port 6543) instead of direct (port 5432)
-3. In Supabase: Settings → Database → Connection Pooling → Copy "Transaction" mode URI
-4. Check if on VPN/corporate network blocking port 5432
-5. Try `ping db.kuzcgmolzqvulwypvoun.supabase.co` to test DNS
-
-**Test command:**
-```powershell
-$env:DATABASE_URL='postgresql://postgres:PASSWORD@db.xxx.supabase.co:5432/postgres'
-python test_postgres.py
-```
+**Status:** Connected via IPv4-compatible pooler connection (port 6543).
 
 ### ✅ COMPLETED: Phase 1 - Security Foundation
 
@@ -45,22 +32,31 @@ Files created in `roofio-backend/common/`:
 - `security.py` - RBAC (5 roles), OAuth (4 providers), circuit breakers, LLM fallback
 - `database.py` - PostgreSQL async with multi-tenant scoping
 
-### 🔜 AFTER DATABASE: Phase 2 - Tier 1 Python Layer
-1. Create database tables using SQLAlchemy models
-2. Implement user/agency CRUD in `tier1/`
-3. Implement project CRUD
-4. Wire up authentication to Flask frontend
+### ✅ COMPLETED: Phase 2 - Database Tables
+- SQLAlchemy models for all entities (Agency, User, Project, Form)
+- Migration scripts for table creation
+- CRUD operations in API routes
+
+### ✅ COMPLETED: Phase 3 - REST API + Forms
+- FastAPI application with all routes
+- Custom Form Templates system
+- Document Scanner endpoints
+- Flask-FastAPI bridge (api_client.py)
+
+### 🔜 NEXT: Phase 4 - Tier 2 Groq + RAG
+1. Integrate Groq AI into /ai/query endpoint
+2. Connect RAG knowledge base (brain/knowledge.py)
+3. Implement smart routing between tiers
 
 ### Future Phases
-- Phase 3: Tier 2 Groq + RAG integration (brain/knowledge.py)
-- Phase 4: Tier 3 Advanced LLM with failover
-- Phase 5: Master Architect self-healing
+- Phase 5: Tier 3 Claude/GPT with failover
+- Phase 6: Master Architect self-healing
 
 ---
 
 ## What's Done (Don't Redo)
 
-### Backend Infrastructure (NEW - Dec 8, 2024)
+### Backend Infrastructure (NEW - Dec 8, 2025)
 - `roofio-backend/common/` - Complete security foundation
 - Upstash Redis account - Sessions, rate limiting, audit
 - Upstash Vector index - Hybrid (dense+sparse) for RAG
@@ -152,8 +148,8 @@ $env:UPSTASH_VECTOR_REST_TOKEN='your-token'
 # Groq API (✅ CONFIGURED)
 $env:GROQ_API_KEY='gsk_...'
 
-# Supabase PostgreSQL (⏳ DNS ISSUE)
-$env:DATABASE_URL='postgresql://postgres:PASSWORD@db.kuzcgmolzqvulwypvoun.supabase.co:5432/postgres'
+# Supabase PostgreSQL (✅ CONNECTED)
+$env:DATABASE_URL='postgresql://postgres:PASSWORD@aws-0-us-east-1.pooler.supabase.com:6543/postgres'
 
 # Security (generate these for production)
 $env:JWT_SECRET='your-32-byte-secret'
@@ -209,25 +205,26 @@ $env:OPENAI_API_KEY='sk-...'
 When ending a session, update this section:
 
 ### Last Session Summary
-**Date:** December 8, 2024
+**Date:** December 12, 2025
 **Completed:**
 - ✅ Backend Phase 1 - Security Foundation (all 4 files)
 - ✅ Upstash Redis - Account created, tested, working
 - ✅ Upstash Vector - Hybrid index (384 dim), tested, working
 - ✅ Groq API - Key obtained, tested (~395ms response)
-- ⏳ Supabase PostgreSQL - Account created, DNS resolution failing
+- ✅ Supabase PostgreSQL - Connected via pooler (port 6543)
+- ✅ Backend Phase 2 - Database tables (users, agencies, projects, forms)
+- ✅ Backend Phase 3 - REST API + Custom Form System
+- ✅ Custom Form Templates - Format toggle, scanner, mobile upload
+- ✅ Flask-FastAPI Bridge - Frontend connected to backend API
 - ✅ Test scripts for all services
 - ✅ .env.example template
-- ✅ Updated README and this file
+- ✅ Updated README with full documentation
 
 **Next Session Should:**
-1. **FIRST:** Troubleshoot Supabase DNS issue:
-   - Check if project is fully provisioned (Active status)
-   - Try Pooler connection (port 6543) instead of direct
-   - Test: `ping db.kuzcgmolzqvulwypvoun.supabase.co`
-   - Check VPN/firewall issues
-2. Once DB works, run `python test_postgres.py`
-3. Start Phase 2: Create SQLAlchemy models and user CRUD
+1. Phase 4: Tier 2 Groq + RAG integration
+2. Connect Digital Foreman to form submission API
+3. Connect Inspector page to form submission API
+4. Add file upload handling for scan endpoint
 
 ---
 
