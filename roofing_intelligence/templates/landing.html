@@ -15,9 +15,32 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
 </head>
 <body>
-    <!-- Animated Background -->
+    <!-- Immersive Preloader - Roof Building Sequence -->
+    <div class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">
+                <span class="preloader-letter">R</span>
+                <span class="preloader-letter">O</span>
+                <span class="preloader-letter">O</span>
+                <span class="preloader-letter">F</span>
+                <span class="preloader-letter">I</span>
+                <span class="preloader-letter">O</span>
+            </div>
+            <div class="preloader-layers">
+                <div class="preloader-layer" data-label="Substrate"></div>
+                <div class="preloader-layer" data-label="Insulation"></div>
+                <div class="preloader-layer" data-label="Membrane"></div>
+                <div class="preloader-layer" data-label="Cap Sheet"></div>
+            </div>
+            <div class="preloader-text">Loading your AI crew...</div>
+        </div>
+    </div>
+
+    <!-- Animated Mesh Gradient Background (Stripe-style) -->
+    <div class="mesh-gradient"></div>
+
+    <!-- Animated Background Grid -->
     <div class="bg-animation">
-        <div class="bg-gradient"></div>
         <div class="bg-grid"></div>
     </div>
 
@@ -897,5 +920,6 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/interactions.js') }}"></script>
 </body>
 </html>

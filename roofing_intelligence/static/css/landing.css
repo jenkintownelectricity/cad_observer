@@ -3,6 +3,124 @@
    APPIO - AI-Powered Roofing Operating System
    ============================================================================ */
 
+/* ============================================================================
+   IMMERSIVE PRELOADER
+   ============================================================================ */
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.preloader.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preloader-content {
+    text-align: center;
+}
+
+.preloader-logo {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+}
+
+.preloader-letter {
+    font-size: var(--text-6xl);
+    font-weight: var(--font-black);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: letterReveal 0.5s ease forwards;
+}
+
+.preloader-letter:nth-child(1) { animation-delay: 0.1s; }
+.preloader-letter:nth-child(2) { animation-delay: 0.15s; }
+.preloader-letter:nth-child(3) { animation-delay: 0.2s; }
+.preloader-letter:nth-child(4) { animation-delay: 0.25s; }
+.preloader-letter:nth-child(5) { animation-delay: 0.3s; }
+.preloader-letter:nth-child(6) { animation-delay: 0.35s; }
+
+@keyframes letterReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.preloader-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 200px;
+    margin: 0 auto 1.5rem;
+}
+
+.preloader-layer {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.preloader-layer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: layerFill 0.5s ease forwards;
+}
+
+.preloader-layer:nth-child(1)::after { animation-delay: 0.5s; }
+.preloader-layer:nth-child(2)::after { animation-delay: 0.7s; background: var(--gradient-accent); }
+.preloader-layer:nth-child(3)::after { animation-delay: 0.9s; }
+.preloader-layer:nth-child(4)::after { animation-delay: 1.1s; background: var(--gradient-accent); }
+
+@keyframes layerFill {
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.preloader-text {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================================================
+   MESH GRADIENT BACKGROUND (Stripe-style)
+   ============================================================================ */
+.mesh-gradient {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+/* ============================================================================
+   BODY STATES
+   ============================================================================ */
+body:not(.loaded) {
+    overflow: hidden;
+}
+
 /* Landing Header */
 .landing-header {
     position: fixed;
