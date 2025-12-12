@@ -227,8 +227,8 @@
         .form-chip:hover { background: rgba(255,255,255,0.15); }
         .form-chip.active { background: var(--primary); }
 
-        /* Modal */
-        .modal-overlay {
+        /* Modal - Use unique class names to avoid conflicts */
+        .cc-modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -238,19 +238,20 @@
             justify-content: center;
         }
 
-        .modal-overlay.visible { display: flex; }
+        .cc-modal-overlay.visible { display: flex; }
 
-        .modal {
-            background: var(--dark);
+        .cc-modal {
+            background: #1e293b;
             border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
+            width: 90vw;
+            max-width: 700px;
+            min-width: 350px;
             max-height: 90vh;
             overflow-y: auto;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .modal-header {
+        .cc-modal-header {
             padding: 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             display: flex;
@@ -258,7 +259,7 @@
             align-items: center;
         }
 
-        .modal-close {
+        .cc-modal-close {
             background: none;
             border: none;
             color: white;
@@ -266,49 +267,17 @@
             cursor: pointer;
         }
 
-        .modal-body { padding: 20px; }
+        .cc-modal-body { padding: 20px; }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
+        /* Form styles now use global .form-group from styles.css */
 
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: #9ca3af;
-            margin-bottom: 6px;
-        }
-
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .form-group .prefilled {
-            background: rgba(37, 99, 235, 0.2);
-            border-color: var(--primary);
-        }
-
-        .ssot-badge {
-            display: inline-block;
-            font-size: 10px;
-            background: var(--primary);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
-        }
-
-        .modal-footer {
+        .cc-modal-footer {
             padding: 20px;
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex;
             gap: 12px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -458,16 +427,16 @@
     </div>
 
     <!-- Form Modal -->
-    <div class="modal-overlay" id="formModal">
-        <div class="modal">
-            <div class="modal-header">
+    <div class="cc-modal-overlay" id="formModal">
+        <div class="cc-modal">
+            <div class="cc-modal-header">
                 <h2 id="modalTitle">Bid Proposal</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <button class="cc-modal-close" onclick="closeModal()">&times;</button>
             </div>
-            <div class="modal-body" id="modalBody">
+            <div class="cc-modal-body" id="modalBody">
                 <!-- Form content -->
             </div>
-            <div class="modal-footer">
+            <div class="cc-modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveForm()">Save Draft</button>
                 <button class="btn btn-success" onclick="submitForm()">Submit & Generate</button>

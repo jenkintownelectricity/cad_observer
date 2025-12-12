@@ -293,24 +293,24 @@
             box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4);
         }
 
-        /* JHA Form Modal */
-        .modal {
+        /* JHA Form Modal - uses df- prefix to avoid conflicts with global styles */
+        .df-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--dark);
+            background: var(--bg-secondary);
             z-index: 200;
             overflow-y: auto;
         }
 
-        .modal.visible {
+        .df-modal.visible {
             display: block;
         }
 
-        .modal-header {
+        .df-modal-header {
             background: linear-gradient(135deg, var(--warning), #d97706);
             padding: 20px;
             position: sticky;
@@ -318,17 +318,17 @@
             z-index: 10;
         }
 
-        .modal-header h2 {
+        .df-modal-header h2 {
             font-size: 20px;
             margin-bottom: 4px;
         }
 
-        .modal-header p {
+        .df-modal-header p {
             opacity: 0.8;
             font-size: 14px;
         }
 
-        .modal-content {
+        .df-modal-content {
             padding: 20px;
         }
 
@@ -755,12 +755,12 @@
     </div>
 
     <!-- JHA Form Modal -->
-    <div class="modal" id="jhaModal">
-        <div class="modal-header">
+    <div class="df-modal" id="jhaModal">
+        <div class="df-modal-header">
             <h2>⚠️ Job Hazard Analysis</h2>
             <p>TPO Membrane Installation - 07 54 00</p>
         </div>
-        <div class="modal-content">
+        <div class="df-modal-content">
             <!-- Hazards -->
             <h3 style="margin-bottom: 16px;">Hazards Identified</h3>
             <div class="hazard-list">
@@ -834,12 +834,12 @@
     </div>
 
     <!-- Material Scan Modal -->
-    <div class="modal" id="materialModal">
-        <div class="modal-header" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
+    <div class="df-modal" id="materialModal">
+        <div class="df-modal-header" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
             <h2>📦 Material Verification</h2>
             <p>Scan barcode to verify against submittal</p>
         </div>
-        <div class="modal-content">
+        <div class="df-modal-content">
             <div class="scan-area">
                 <div class="scan-frame"></div>
             </div>
