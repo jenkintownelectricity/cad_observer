@@ -2,6 +2,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Init Database",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/roofio-backend/init_db.py",
+      "cwd": "${workspaceFolder}/roofio-backend",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/roofio-backend/.env"
+    },
+    {
       "name": "Click Capture",
       "type": "debugpy",
       "request": "launch",
