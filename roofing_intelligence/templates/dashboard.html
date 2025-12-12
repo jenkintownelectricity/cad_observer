@@ -503,38 +503,57 @@
     <!-- New Project Modal -->
     <div class="modal hidden" id="new-project-modal">
         <div class="modal-backdrop" onclick="closeNewProjectModal()"></div>
-        <div class="modal-content glass">
+        <div class="modal-content glass wide">
             <div class="modal-header">
                 <h3>New Project</h3>
                 <button class="modal-close" onclick="closeNewProjectModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="new-project-form" onsubmit="createProject(event)">
+                <form id="new-project-form" onsubmit="createProject(event)" autocomplete="off">
                     <div class="form-group">
-                        <label for="project-name">Project Name</label>
-                        <input type="text" id="project-name" required placeholder="e.g., JHU Library Roofing">
+                        <label for="project-name">Project Name *</label>
+                        <input type="text" id="project-name" name="project-name" required
+                               placeholder="e.g., JHU Library Roofing"
+                               autocomplete="off" inputmode="text">
                     </div>
                     <div class="form-group">
-                        <label for="project-client">Client</label>
-                        <input type="text" id="project-client" placeholder="e.g., Turner Construction">
+                        <label for="project-client">Client / GC</label>
+                        <input type="text" id="project-client" name="project-client"
+                               placeholder="e.g., Turner Construction"
+                               autocomplete="organization" inputmode="text">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="project-value">Contract Value</label>
-                            <input type="text" id="project-value" placeholder="e.g., $250,000">
+                            <input type="text" id="project-value" name="project-value"
+                                   placeholder="$250,000"
+                                   inputmode="decimal" pattern="[\$,\d\.]*">
                         </div>
                         <div class="form-group">
                             <label for="project-start">Start Date</label>
-                            <input type="date" id="project-start">
+                            <input type="date" id="project-start" name="project-start">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="project-pm">Assigned PM</label>
-                        <select id="project-pm">
-                            <option value="">Select PM...</option>
-                            <option value="pm1">Project Manager 1</option>
-                            <option value="pm2">Project Manager 2</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="project-pm">Assigned PM</label>
+                            <select id="project-pm" name="project-pm">
+                                <option value="">Select PM...</option>
+                                <option value="pm1">Project Manager 1</option>
+                                <option value="pm2">Project Manager 2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-phase">Phase</label>
+                            <select id="project-phase" name="project-phase">
+                                <option value="bidding">Bidding</option>
+                                <option value="awarded">Awarded</option>
+                                <option value="mobilization">Mobilization</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="punch_list">Punch List</option>
+                                <option value="complete">Complete</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-secondary" onclick="closeNewProjectModal()">Cancel</button>
