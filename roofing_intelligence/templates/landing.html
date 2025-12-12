@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APPIO | AI-Powered Roofing Company Operating System</title>
+    <meta name="description" content="Replace 8 office positions with AI. Save $500K+/year. Never miss a deadline. APPIO is the first AI operating system built specifically for roofing contractors.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <!-- Navigation -->
+    <header class="landing-header">
+        <div class="landing-nav">
+            <div class="logo">
+                <a href="/" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="APPIO" class="logo-img">
+                </a>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#savings">Savings</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#faq">FAQ</a>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="/login" class="btn-ghost">Log In</a>
+                <a href="#pricing" class="btn-primary">Start Free Trial</a>
+            </div>
+
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>Built by roofers, for roofers</span>
+            </div>
+
+            <h1 class="hero-title">
+                <span class="gradient-text">Your Team,</span>
+                <br>Supercharged by AI
+            </h1>
+
+            <p class="hero-subtitle">
+                8 AI assistants working alongside your crew — 24/7.
+                Estimating, PM, Field Ops, QC, Safety, Accounting,
+                Operations, and Shop Drawings. All in one platform.
+            </p>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">10x</span>
+                    <span class="stat-label">More efficient operations</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-value">0</span>
+                    <span class="stat-label">Missed deadlines</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-value">24/7</span>
+                    <span class="stat-label">AI support available</span>
+                </div>
+            </div>
+
+            <div class="hero-cta">
+                <a href="#pricing" class="btn-primary btn-large">
+                    Start 14-Day Free Trial
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="#demo" class="btn-secondary btn-large">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                    </svg>
+                    Watch Demo
+                </a>
+            </div>
+
+            <p class="hero-note">No credit card required. Cancel anytime.</p>
+        </div>
+
+        <div class="hero-visual">
+            <div class="dashboard-preview glass">
+                <div class="preview-header">
+                    <div class="preview-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <span class="preview-title">APPIO Dashboard</span>
+                </div>
+                <div class="preview-content">
+                    <div class="ai-positions-grid">
+                        <div class="ai-position active">
+                            <div class="position-icon green">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 20v-6M6 20V10M18 20V4"/>
+                                </svg>
+                            </div>
+                            <span>AI Estimator</span>
+                            <span class="status-dot green"></span>
+                        </div>
+                        <div class="ai-position active">
+                            <div class="position-icon blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </div>
+                            <span>AI PM</span>
+                            <span class="status-dot green"></span>
+                        </div>
+                        <div class="ai-position active">
+                            <div class="position-icon orange">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <span>AI Safety</span>
+                            <span class="status-dot green"></span>
+                        </div>
+                        <div class="ai-position active">
+                            <div class="position-icon purple">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                </svg>
+                            </div>
+                            <span>AI Accounting</span>
+                            <span class="status-dot green"></span>
+                        </div>
+                    </div>
+                    <div class="preview-activity">
+                        <div class="activity-item">
+                            <span class="activity-time">Just now</span>
+                            <span class="activity-text">AI Estimator completed takeoff for JHU Library</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-time">2 min ago</span>
+                            <span class="activity-text">AI PM updated schedule for UMass project</span>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-time">5 min ago</span>
+                            <span class="activity-text">AI Safety flagged weather alert for tomorrow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="container">
+            <div class="problem-header">
+                <h2>Running a Roofing Company is Hard Enough</h2>
+                <p>Without these daily challenges slowing you down</p>
+            </div>
+
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <h3>Too Much Admin Work</h3>
+                    <p>Your team spends hours on paperwork that could be automated.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <h3>After-Hours Requests</h3>
+                    <p>GCs send RFIs at 9pm. Without AI backup, they wait until morning.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <h3>Things Fall Through Cracks</h3>
+                    <p>Follow-ups, deadlines, compliance items — there's always something missed.</p>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3>Team is Stretched Thin</h3>
+                    <p>Everyone's wearing multiple hats. More projects mean more stress.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">The Solution</span>
+                <h2>8 AI Assistants <span class="gradient-text">Always Ready</span></h2>
+                <p>Each AI is trained specifically for roofing. Division 07 expertise built-in.</p>
+            </div>
+
+            <div class="positions-grid">
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large green">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20v-6M6 20V10M18 20V4"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Estimator</h3>
+                    <p>Auto-takeoffs from plans, instant pricing, accurate bids in minutes not days.</p>
+                    <ul class="position-features">
+                        <li>PDF takeoff extraction</li>
+                        <li>Material calculations</li>
+                        <li>Proposal generation</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">20+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large blue">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Project Manager</h3>
+                    <p>Scheduling, coordination, and communication that never drops the ball.</p>
+                    <ul class="position-features">
+                        <li>Auto-scheduling</li>
+                        <li>Deadline tracking</li>
+                        <li>Stakeholder updates</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">15+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large yellow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Superintendent</h3>
+                    <p>Field intelligence, crew coordination, weather monitoring, progress tracking.</p>
+                    <ul class="position-features">
+                        <li>Daily reports</li>
+                        <li>Weather alerts</li>
+                        <li>Crew scheduling</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">10+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large teal">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI QC Manager</h3>
+                    <p>Quality control inspections, punch lists, warranty compliance tracking.</p>
+                    <ul class="position-features">
+                        <li>Inspection checklists</li>
+                        <li>Photo documentation</li>
+                        <li>Warranty tracking</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">8+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large orange">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Safety Director</h3>
+                    <p>JHA forms, OSHA compliance, toolbox talks, incident tracking.</p>
+                    <ul class="position-features">
+                        <li>Auto JHA generation</li>
+                        <li>Compliance alerts</li>
+                        <li>Training tracking</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">10+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Accounting</h3>
+                    <p>Invoicing, progress billing, payroll prep, QuickBooks sync.</p>
+                    <ul class="position-features">
+                        <li>Auto-invoicing</li>
+                        <li>Payment tracking</li>
+                        <li>Financial reports</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">12+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large pink">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="3" width="15" height="13"/>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                                <circle cx="5.5" cy="18.5" r="2.5"/>
+                                <circle cx="18.5" cy="18.5" r="2.5"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Operations</h3>
+                    <p>Logistics, material ordering, resource allocation, vendor management.</p>
+                    <ul class="position-features">
+                        <li>Material tracking</li>
+                        <li>Vendor coordination</li>
+                        <li>Equipment scheduling</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">8+ hrs/week</span>
+                    </div>
+                </div>
+
+                <div class="position-card">
+                    <div class="position-header">
+                        <div class="position-icon-large cyan">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                <line x1="12" y1="22.08" x2="12" y2="12"/>
+                            </svg>
+                        </div>
+                        <div class="position-modes">
+                            <span class="mode active">Full AI</span>
+                            <span class="mode">Assist</span>
+                            <span class="mode">Off</span>
+                        </div>
+                    </div>
+                    <h3>AI Shop Drawings</h3>
+                    <p>CAD details, flashing layouts, submittal packages, spec interpretation.</p>
+                    <ul class="position-features">
+                        <li>Detail generation</li>
+                        <li>Spec compliance</li>
+                        <li>DXF export</li>
+                    </ul>
+                    <div class="position-value">
+                        <span class="value-label">Time saved:</span>
+                        <span class="value-amount">15+ hrs/week</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-savings-banner glass">
+                <div class="savings-content">
+                    <span class="savings-title">Total Efficiency Gain:</span>
+                    <span class="savings-amount">100+ hours/week</span>
+                </div>
+                <div class="savings-vs">
+                    <span>With APPIO Professional:</span>
+                    <span class="appio-price">$499/month</span>
+                </div>
+                <div class="savings-result">
+                    <span>Value per hour:</span>
+                    <span class="savings-final gradient-text">Under $1.25</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value Calculator Section -->
+    <section class="calculator-section" id="savings">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Value Calculator</span>
+                <h2>See Your <span class="gradient-text">Efficiency Gains</span></h2>
+                <p>Calculate the time and value APPIO brings to your operation</p>
+            </div>
+
+            <div class="calculator-card glass">
+                <div class="calculator-inputs">
+                    <div class="calc-group">
+                        <label>Active Projects</label>
+                        <div class="calc-input-row">
+                            <button onclick="adjustProjects(-1)" class="calc-btn">-</button>
+                            <input type="number" id="project-count" value="5" min="1" max="50">
+                            <button onclick="adjustProjects(1)" class="calc-btn">+</button>
+                        </div>
+                        <span class="calc-hint">Jobs you're currently managing</span>
+                    </div>
+
+                    <div class="calc-group">
+                        <label>Hours Spent on Admin/Week</label>
+                        <div class="calc-input-row">
+                            <input type="number" id="admin-hours" value="40" step="5">
+                            <span class="calc-suffix">hrs</span>
+                        </div>
+                        <span class="calc-hint">Estimates, reports, scheduling, etc.</span>
+                    </div>
+
+                    <div class="calc-group">
+                        <label>Your Hourly Rate Value</label>
+                        <div class="calc-input-row">
+                            <span class="calc-prefix">$</span>
+                            <input type="number" id="hourly-value" value="75" step="5">
+                            <span class="calc-suffix">/hr</span>
+                        </div>
+                        <span class="calc-hint">What your time is worth</span>
+                    </div>
+                </div>
+
+                <div class="calculator-results">
+                    <div class="result-card">
+                        <span class="result-label">Hours Saved Weekly</span>
+                        <span class="result-value green" id="hours-saved">30</span>
+                        <span class="result-detail">with AI assistance</span>
+                    </div>
+
+                    <div class="result-card">
+                        <span class="result-label">Value of Time Saved</span>
+                        <span class="result-value green" id="time-value">$2,250</span>
+                        <span class="result-detail">per week</span>
+                    </div>
+
+                    <div class="result-card highlight">
+                        <span class="result-label">Monthly Efficiency Value</span>
+                        <span class="result-value gradient-text" id="monthly-value">$9,000</span>
+                        <span class="result-detail" id="efficiency-gain">Focus on what matters most</span>
+                    </div>
+
+                    <div class="result-extras">
+                        <div class="extra-stat">
+                            <span class="extra-value" id="projects-capacity">+40%</span>
+                            <span class="extra-label">More project capacity</span>
+                        </div>
+                        <div class="extra-stat">
+                            <span class="extra-value" id="response-time">5x</span>
+                            <span class="extra-label">Faster response time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calculator-cta">
+                <a href="#pricing" class="btn-primary btn-large">Start Being More Efficient</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Advantages Section -->
+    <section class="advantages-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Why APPIO</span>
+                <h2>Work Smarter, <span class="gradient-text">Not Harder</span></h2>
+                <p>AI that complements your team's expertise</p>
+            </div>
+
+            <div class="advantages-grid">
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <h3>24/7/365 Operations</h3>
+                    <p>AI works nights, weekends, holidays. Process RFIs at 2am. Never takes vacation.</p>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <h3>Zero Mistakes</h3>
+                    <p>No calculation errors, no forgotten follow-ups, no missed deadlines. Ever.</p>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Instant Response</h3>
+                    <p>Estimates in minutes, not days. Respond to GCs before competitors even wake up.</p>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                    </div>
+                    <h3>Infinite Scale</h3>
+                    <p>Handle 5 projects or 500. Same quality, same speed. No hiring headaches.</p>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                    </div>
+                    <h3>Division 07 Expert</h3>
+                    <p>Trained on roofing specs, NRCA standards, FM Global, manufacturer details.</p>
+                </div>
+
+                <div class="advantage-card">
+                    <div class="advantage-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </div>
+                    <h3>Your Way or Full AI</h3>
+                    <p>Set each position to Full AI, Assist mode, or Off. You're always in control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Simple Pricing</span>
+                <h2>Start Free. <span class="gradient-text">Scale As You Grow.</span></h2>
+                <p>No credit card required. Cancel anytime.</p>
+            </div>
+
+            <div class="pricing-toggle">
+                <span class="toggle-label" data-period="monthly">Monthly</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="pricing-toggle" onchange="togglePricing()">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label" data-period="annual">Annual <span class="save-badge">Save 17%</span></span>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Starter Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Starter</h3>
+                        <p>For small crews getting started</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" data-monthly="199" data-annual="166">199</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <div class="pricing-annual-note">
+                        <span class="monthly-note">Billed monthly</span>
+                        <span class="annual-note hidden">$1,990/year (save $398)</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 3 Users</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 Active Projects</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 2 AI Positions</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 100 AI Queries/month</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Basic Reports</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Email Support</li>
+                        <li class="disabled"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Integrations</li>
+                        <li class="disabled"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> API Access</li>
+                    </ul>
+                    <a href="/signup?plan=starter" class="btn-secondary btn-full">Start Free Trial</a>
+                </div>
+
+                <!-- Professional Plan -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Professional</h3>
+                        <p>For growing roofing companies</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount" data-monthly="499" data-annual="416">499</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <div class="pricing-annual-note">
+                        <span class="monthly-note">Billed monthly</span>
+                        <span class="annual-note hidden">$4,990/year (save $998)</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 10 Users</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited Projects</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 5 AI Positions</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 500 AI Queries/month</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Advanced Reports</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Priority Support</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> All Integrations</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> API Access</li>
+                    </ul>
+                    <a href="/signup?plan=professional" class="btn-primary btn-full">Start Free Trial</a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <p>For large operations & multi-branch</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="price-amount custom">Custom</span>
+                    </div>
+                    <div class="pricing-annual-note">
+                        <span>Tailored to your needs</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited Users</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited Projects</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> All 8 AI Positions</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI Queries</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Custom Reports</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Dedicated Support</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Custom Integrations</li>
+                        <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> White-Label Option</li>
+                    </ul>
+                    <a href="/contact?plan=enterprise" class="btn-secondary btn-full">Contact Sales</a>
+                </div>
+            </div>
+
+            <div class="pricing-guarantee glass">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <div>
+                    <strong>30-Day Money Back Guarantee</strong>
+                    <p>Not satisfied? Get a full refund within 30 days. No questions asked.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">FAQ</span>
+                <h2>Common Questions</h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Will this replace my entire office staff?</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>It depends on your preference. Each AI position has three modes: <strong>Full AI</strong> (handles everything autonomously), <strong>Assist</strong> (helps your staff work faster), or <strong>Off</strong>. Most customers use Full AI for routine tasks and Assist mode for complex decisions. You stay in control.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is this actually built for roofing, or is it generic?</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>100% built for roofing and waterproofing. Our AI is trained on Division 07 specifications, NRCA standards, FM Global requirements, SPRI guidelines, and major manufacturer specs (Carlisle, Firestone, GAF, etc.). We understand TPO, EPDM, modified bitumen, metal panels, and everything in between.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>How accurate are the AI estimates?</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Our AI extracts quantities from plans with 95%+ accuracy. For pricing, you input your own material costs and labor rates, so estimates reflect YOUR actual numbers. The AI never guesses — it uses the data you provide combined with takeoff measurements.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>What if I need help getting started?</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Every new account gets a free onboarding call. We'll help you configure your AI positions, import your pricing data, and connect your existing tools (QuickBooks, Procore, etc.). Most customers are fully operational within 48 hours.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Can I cancel anytime?</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. No contracts, no cancellation fees. Cancel anytime from your account settings. We also offer a 30-day money-back guarantee — if you're not satisfied within your first month, we'll refund you completely.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>Is my data secure?</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Enterprise-grade security. All data is encrypted at rest and in transit. We use Supabase PostgreSQL with row-level security, JWT authentication, and optional OAuth (Google, Microsoft). Your project data is never shared or used to train AI models for other companies.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Work Smarter?</h2>
+                <p>Join roofing contractors using AI to run more efficient operations</p>
+                <div class="cta-buttons">
+                    <a href="/signup" class="btn-primary btn-large">
+                        Start Your 14-Day Free Trial
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="/contact" class="btn-ghost btn-large">Talk to Sales</a>
+                </div>
+                <p class="cta-note">No credit card required. Setup in under 5 minutes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="APPIO" class="footer-logo">
+                    <p>AI-powered operating system for roofing contractors. Built by roofers, for roofers.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="/integrations">Integrations</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="/about">About</a>
+                    <a href="/contact">Contact</a>
+                    <a href="/careers">Careers</a>
+                    <a href="/blog">Blog</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="/privacy">Privacy Policy</a>
+                    <a href="/terms">Terms of Service</a>
+                    <a href="/security">Security</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 APPIO by Lefebvre Design Solutions. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+</body>
+</html>
