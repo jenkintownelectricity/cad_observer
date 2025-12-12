@@ -98,8 +98,14 @@ def send_progress(session_id, step, progress, message, data=None):
 
 @app.route('/')
 def home():
-    """Redirect to dashboard as the main page."""
-    return redirect('/dashboard')
+    """Landing page - marketing/pricing page."""
+    return render_template('landing.html')
+
+
+@app.route('/landing')
+def landing():
+    """Alias for landing page."""
+    return render_template('landing.html')
 
 
 @app.route('/dashboard')

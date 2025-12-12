@@ -4,32 +4,46 @@
    ============================================================================ */
 
 :root {
-    /* Dark Theme (Default) */
-    --bg-primary: #0a0a0f;
-    --bg-secondary: #12121a;
-    --bg-tertiary: #1a1a24;
+    /* Dark Theme (Default) - Construction Industry Colors */
+    /* Research: Blue = trust/security, Orange = construction/optimism */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
     --glass-bg: rgba(255, 255, 255, 0.03);
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0b0;
-    --text-muted: #6b6b7b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
 
-    --accent: #00d4ff;
-    --accent-glow: rgba(0, 212, 255, 0.3);
-    --accent-secondary: #ff6b47;
+    /* Primary: Blue (trust, professionalism) */
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-glow: rgba(37, 99, 235, 0.3);
+
+    /* Accent: Orange (construction, energy, OSHA-familiar) */
+    --accent: #f97316;
+    --accent-dark: #ea580c;
+    --accent-glow: rgba(249, 115, 22, 0.3);
+
+    /* Secondary accents */
     --accent-purple: #a855f7;
     --accent-green: #22c55e;
-    --accent-orange: #f97316;
+    --accent-teal: #14b8a6;
+    --accent-cyan: #06b6d4;
 
+    /* Status Colors (OSHA-aligned) */
     --success: #22c55e;
     --warning: #eab308;
     --error: #ef4444;
+    --info: #3b82f6;
 
-    --gradient-1: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
-    --gradient-2: linear-gradient(135deg, #ff6b47 0%, #f97316 100%);
+    /* Gradients - Blue to Orange (trust to action) */
+    --gradient-1: linear-gradient(135deg, #2563eb 0%, #f97316 100%);
+    --gradient-2: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     --gradient-3: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+    --gradient-blue: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -55,8 +69,11 @@
     --text-secondary: #475569;
     --text-muted: #94a3b8;
 
-    --accent: #0ea5e9;
-    --accent-glow: rgba(14, 165, 233, 0.2);
+    /* Light mode keeps same blue/orange but adjusted for contrast */
+    --primary: #2563eb;
+    --primary-glow: rgba(37, 99, 235, 0.15);
+    --accent: #ea580c;
+    --accent-glow: rgba(234, 88, 12, 0.15);
 }
 
 /* ============================================================================
@@ -103,9 +120,9 @@ body {
     width: 200%;
     height: 200%;
     background:
-        radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(255, 107, 71, 0.05) 0%, transparent 50%);
+        radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
     animation: bgFloat 20s ease-in-out infinite;
 }
 
@@ -235,7 +252,7 @@ a.logo-text {
 
 .nav-link.active {
     color: var(--accent);
-    background: rgba(0, 212, 255, 0.1);
+    background: var(--accent-glow);
 }
 
 .header-actions {
@@ -385,14 +402,14 @@ a.logo-text {
 .upload-card.has-files {
     border-style: solid;
     border-color: var(--accent);
-    background: rgba(0, 212, 255, 0.05);
+    background: var(--accent-glow);
 }
 
 .upload-card-icon {
     width: 60px;
     height: 60px;
     margin: 0 auto 1.25rem;
-    background: rgba(0, 212, 255, 0.1);
+    background: var(--accent-glow);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -893,7 +910,7 @@ a.logo-text {
 }
 
 .stat-card.accent {
-    background: linear-gradient(135deg, var(--accent) 0%, rgba(0, 212, 255, 0.7) 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
     border: none;
     color: white;
 }
@@ -981,7 +998,7 @@ a.logo-text {
 }
 
 .badge-detected { background: rgba(234, 179, 8, 0.15); color: var(--warning); }
-.badge-reviewing { background: rgba(0, 212, 255, 0.15); color: var(--accent); }
+.badge-reviewing { background: var(--accent-glow); color: var(--accent); }
 .badge-verified { background: rgba(34, 197, 94, 0.15); color: var(--success); }
 .badge-approved { background: var(--success); color: white; }
 
@@ -1035,7 +1052,7 @@ a.logo-text {
 }
 
 .action-verify {
-    background: rgba(0, 212, 255, 0.15);
+    background: var(--accent-glow);
     color: var(--accent);
 }
 

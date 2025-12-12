@@ -297,7 +297,7 @@
 
 /* Role-specific colors */
 .seat-avatar.pm {
-    background: linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
     color: white;
 }
 

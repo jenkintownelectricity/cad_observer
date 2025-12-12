@@ -77,10 +77,64 @@
     .nav-links,
     .nav-actions {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-secondary);
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .nav-links.mobile-open,
+    .nav-actions.mobile-open {
+        display: flex;
     }
 
     .mobile-menu-btn {
         display: block;
+    }
+}
+
+/* Animation classes */
+.position-card,
+.advantage-card,
+.pricing-card,
+.problem-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.position-card.animate-in,
+.advantage-card.animate-in,
+.pricing-card.animate-in,
+.problem-card.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger animation delays */
+.positions-grid .position-card:nth-child(1) { transition-delay: 0.1s; }
+.positions-grid .position-card:nth-child(2) { transition-delay: 0.15s; }
+.positions-grid .position-card:nth-child(3) { transition-delay: 0.2s; }
+.positions-grid .position-card:nth-child(4) { transition-delay: 0.25s; }
+.positions-grid .position-card:nth-child(5) { transition-delay: 0.3s; }
+.positions-grid .position-card:nth-child(6) { transition-delay: 0.35s; }
+.positions-grid .position-card:nth-child(7) { transition-delay: 0.4s; }
+.positions-grid .position-card:nth-child(8) { transition-delay: 0.45s; }
+
+/* Reduce animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .position-card,
+    .advantage-card,
+    .pricing-card,
+    .problem-card {
+        opacity: 1;
+        transform: none;
+        transition: none;
     }
 }
 
