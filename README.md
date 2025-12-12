@@ -1,24 +1,93 @@
-# APPIO - Roofing Company Operating System
+# CAD Observer Repository
 
-> **Backend Phase 1 COMPLETE** | December 8, 2024
+> **3 Applications in 1 Repo** | Last Updated: December 12, 2024
 
-AI-powered construction platform for Division 07 professionals. Role-based dashboards, document analysis, tiered AI processing, and 28+ integrations.
-
----
-
-## Infrastructure Status
-
-| Service | Status | Details |
-|---------|--------|---------|
-| Upstash Redis | ✅ Ready | Sessions, rate limiting, audit logging |
-| Upstash Vector | ✅ Ready | Hybrid index (384 dim), RAG knowledge base |
-| Groq API | ✅ Ready | Llama 3.3 70B, ~395ms response time |
-| Supabase PostgreSQL | ⏳ Setup | DNS resolution - needs troubleshooting |
-| Backend Code | ✅ Phase 1 | Security foundation complete |
+This repository contains three distinct applications for Armand Lefebvre (20+ year journeyman roofer/waterproofer, Local 30):
 
 ---
 
-## Quick Start
+## Applications Overview
+
+| Application | Purpose | Status |
+|-------------|---------|--------|
+| **CAD Observer** | Watches AutoCAD workflow to learn patterns | ✅ Production Ready |
+| **APPIO** | Roofing company operating system (9 pages) | ✅ UI Complete |
+| **ROOFIO Backend** | Unified data infrastructure & tiered AI | ⏳ Phase 1 Done |
+
+---
+
+## Status Matrix
+
+```
+CAD Observer        [████████████████████] 100% - Ready to use
+APPIO UI            [████████████████████] 100% - All 9 pages working
+Document Processing [████████████████████] 100% - PDFs, DXF export
+Roofio AI Skills    [████████████████████] 100% - 14 domains
+Backend Security    [████████████████████] 100% - Phase 1 done
+Backend Database    [████████░░░░░░░░░░░░]  40% - Supabase DNS issue
+Backend API Layer   [░░░░░░░░░░░░░░░░░░░░]   0% - Waiting on DB
+```
+
+---
+
+# Application 1: CAD Observer
+
+**Purpose:** AI-powered observation of AutoCAD shop drawing workflows
+**Location:** `scripts/` + `CLAUDE.md`
+**Storage:** `~/.cad-observer/observations.jsonl`
+
+### Components
+
+| Script | Description |
+|--------|-------------|
+| `click_capture.py` | Screenshot capture on mouse clicks with XY coordinates |
+| `research_capture.py` | Capture mode for spec sheets/literature |
+| `floating_toolbar.py` | UI control panel for all modes |
+| `cad-observer.lsp` | AutoCAD LISP plugin for bidirectional tasks |
+| `cad_task.py` | Python bridge to send commands to AutoCAD |
+
+### Quick Start
+
+```bash
+# Click capture mode (CAD work)
+python scripts/click_capture.py --project "Project Name"
+
+# Research capture mode (specs/literature)
+python scripts/research_capture.py --project "Project Name"
+
+# All-in-one toolbar
+python scripts/floating_toolbar.py --project "Project Name"
+```
+
+### AutoCAD LISP Commands
+
+Load `scripts/cad-observer.lsp` in AutoCAD:
+
+| Command | Action |
+|---------|--------|
+| `CAD-OBSERVER-START` | Start logging session |
+| `CAD-OBSERVER-STOP` | Stop logging session |
+| `CAD-OBSERVER-STATUS` | Show current status |
+| `CAD-OBSERVER-TASK` | Check for Claude tasks |
+| `CAD-OBSERVER-AUTO` | Toggle auto-task execution |
+
+### Key Protocol
+
+**Question-First:** When observing CAD work, Claude MUST:
+1. Describe what it sees factually
+2. Ask 2-3 questions before logging
+3. Wait for user response
+4. Log with confirmed intent
+
+---
+
+# Application 2: APPIO - Roofing Intelligence Platform
+
+**Purpose:** Complete roofing company operating system with AI
+**Location:** `roofing_intelligence/`
+**Run:** `python roofing_intelligence/app.py` → http://127.0.0.1:5000
+
+### Quick Start
 
 ```bash
 cd roofing_intelligence
@@ -26,16 +95,6 @@ pip install flask PyPDF2 ezdxf groq
 python app.py
 # Open http://127.0.0.1:5000
 ```
-
----
-
-## Claude Code Users
-
-**IMPORTANT:** Before starting any work, read `CLAUDE-INSTRUCTIONS.md` for current priorities and context.
-
----
-
-## Features Overview
 
 ### 9 Application Pages
 
@@ -46,10 +105,30 @@ python app.py
 | `/roofio` | Roofio AI | Division 07 expert chat with 14 skill domains |
 | `/control-center` | Control Center | 8 positions with Full AI/Assist/Off toggles |
 | `/digital-foreman` | Digital Foreman | Risk Shield field documentation system |
-| `/integrations` | Integrations Hub | 28+ connectors (email, storage, accounting, etc.) |
+| `/integrations` | Integrations Hub | 28+ connectors (QuickBooks, Procore, etc.) |
 | `/projects` | Projects | Saved project management |
 | `/inspector/<id>` | Guest Inspector | No-account access for hold point inspections |
 | `/phone` | Phone | Hive 215 integration (planned) |
+
+### Document Processing Pipeline
+
+| Parser | Lines | Purpose |
+|--------|-------|---------|
+| `roof_page_filter.py` | 485 | Smart AI filtering (60-80% cost savings) |
+| `arch_drawing_parser.py` | 546 | Extract drawing references |
+| `assembly_parser.py` | 406 | Parse assembly letters |
+| `spec_parser.py` | 50 | Specification extraction |
+| `scope_parser.py` | 66 | Work scope analysis |
+| `dxf_generator.py` | 403 | AutoCAD-ready DXF export |
+
+### Roofio AI Skills (14 Domains)
+
+- **Standards**: FM Global, NRCA, SPRI, IIBEC, ASCE 7
+- **Technical**: Roofing Systems, Wind Uplift, Leak Detection
+- **Code**: IRC/ICC Codes, Standards Hierarchy
+- **Testing**: Division 07 Testing, Inspections
+- **Tools**: Web Scraper, ASCE 7 Hazard Tool, Drafting Innovations
+- **Manufacturers**: Carlisle, Firestone, GAF product specs
 
 ### Tiered AI Architecture
 
@@ -65,22 +144,18 @@ python app.py
             ╱────────────────╲
 ```
 
-### Roofio Skills (14 Domains)
+### 8-Position System
 
-- **Standards**: FM Global, NRCA, SPRI, IIBEC, ASCE 7
-- **Technical**: Roofing Systems, Wind Uplift, Leak Detection
-- **Code**: IRC/ICC Codes, Standards Hierarchy
-- **Testing**: Division 07 Testing, Inspections
-- **Tools**: Web Scraper, ASCE 7 Hazard Tool, Drafting Innovations
-- **Manufacturers**: Product specifications and warranty details
-
-### Document Processing
-
-- **Smart Roof Filter**: AI identifies roofing-relevant pages (60-80% cost savings)
-- **Multi-File Upload**: Drawings, assemblies, specs, scopes
-- **Real-Time Progress**: Server-Sent Events (SSE) streaming
-- **DXF Generation**: AutoCAD-ready detail drawings
-- **PDF Parsing**: Construction document extraction
+| Position | AI Modes | Description |
+|----------|----------|-------------|
+| Estimator | Full/Assist/Off | Takeoffs, pricing, proposals |
+| Project Manager | Full/Assist/Off | Scheduling, coordination |
+| QC Manager | Full/Assist/Off | Quality control, inspections |
+| Safety Director | Full/Assist/Off | JHA, compliance, training |
+| Superintendent | Full/Assist/Off | Field operations |
+| Shop Drawings | Full/Assist/Off | CAD details, submittals |
+| Accounting | Full/Assist/Off | Invoicing, payroll |
+| Operations | Full/Assist/Off | Logistics, resources |
 
 ### Integrations Hub (28+ Connectors)
 
@@ -93,123 +168,8 @@ python app.py
 | Phone | Hive 215, RingCentral, Dialpad |
 | CRM | Salesforce, HubSpot, Zoho |
 
----
+### API Endpoints
 
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Backend | Flask (Python 3.9+) |
-| Frontend | Vanilla JS, CSS3 |
-| UI Design | Glass morphism, dark/light themes |
-| Real-time | Server-Sent Events (SSE) |
-| PDF | PyPDF2 |
-| CAD | ezdxf |
-| AI | Groq (Llama 3), Anthropic Claude |
-
----
-
-## Dependencies
-
-```bash
-# Core Frontend
-flask>=2.0
-PyPDF2>=3.0
-ezdxf>=1.0
-
-# AI
-groq>=0.4                    # Tier 2 - Fast AI (✅ tested)
-
-# Backend Infrastructure (✅ installed and tested)
-upstash-redis               # Sessions, rate limiting
-upstash-vector              # RAG knowledge base
-asyncpg                     # PostgreSQL async driver
-sqlalchemy[asyncio]         # ORM with async support
-python-jose                 # JWT tokens
-cryptography                # Fernet encryption
-httpx                       # Async HTTP client
-
-# Install all backend deps:
-pip install upstash-redis upstash-vector asyncpg sqlalchemy groq python-jose cryptography httpx
-```
-
----
-
-## Project Structure
-
-```
-cad_observer/
-├── roofio-backend/                 # Backend infrastructure (NEW)
-│   ├── common/
-│   │   ├── __init__.py             # Module exports
-│   │   ├── config.py               # Environment configuration
-│   │   ├── session.py              # Redis-backed sessions
-│   │   ├── security.py             # RBAC, OAuth, encryption, circuit breakers
-│   │   └── database.py             # PostgreSQL async connection
-│   ├── brain/                      # Tier 2 RAG (placeholder)
-│   ├── architect/                  # Master Architect (placeholder)
-│   ├── tier1/                      # Python CRUD (placeholder)
-│   ├── tier2/                      # Groq AI (placeholder)
-│   ├── tier3/                      # Claude/GPT (placeholder)
-│   ├── .env.example                # Environment template
-│   ├── test_redis.py               # Redis connection test
-│   ├── test_vector.py              # Vector DB test
-│   ├── test_groq.py                # Groq API test
-│   └── test_postgres.py            # PostgreSQL test
-├── roofing_intelligence/           # Main application
-│   ├── app.py                      # Flask routes & API
-│   ├── templates/                  # 9 HTML pages
-│   │   ├── dashboard.html          # Company dashboard
-│   │   ├── index.html              # Document analysis
-│   │   ├── roofio.html             # AI chat interface
-│   │   ├── control_center.html     # 8 position control
-│   │   ├── digital_foreman.html    # Field documentation
-│   │   ├── integrations.html       # 28+ connectors
-│   │   ├── projects.html           # Project management
-│   │   ├── inspector.html          # Guest inspector
-│   │   └── phone.html              # Phone integration
-│   ├── static/
-│   │   ├── css/styles.css          # Main styles
-│   │   ├── css/dashboard.css       # Dashboard styles
-│   │   ├── js/app.js               # Analysis logic
-│   │   ├── js/dashboard.js         # Dashboard logic
-│   │   └── images/logo.png         # APPIO logo
-│   ├── parsers/                    # Document parsers
-│   │   ├── roof_page_filter.py     # Smart page filtering
-│   │   ├── arch_drawing_parser.py  # Drawing analysis
-│   │   ├── assembly_parser.py      # Assembly letters
-│   │   ├── spec_parser.py          # Specifications
-│   │   ├── scope_parser.py         # Scope of work
-│   │   ├── pdf_extractor.py        # PDF extraction
-│   │   └── text_cleaner.py         # Text utilities
-│   ├── generators/
-│   │   └── dxf_generator.py        # AutoCAD DXF output
-│   ├── architect_ai/               # Tiered AI routing
-│   │   └── rules_engine.py         # Query routing logic
-│   └── roofio/                     # Roofio platform
-│       ├── groq_client.py          # Groq AI integration
-│       ├── skills/                 # 14 skill SKILL.md files
-│       └── platform/               # Backend architecture
-│           ├── schema.sql          # Database schema
-│           ├── digital_foreman/    # Risk Shield system
-│           ├── positions/          # 8 position system
-│           ├── badges/             # Badge system
-│           ├── confidence/         # Confidence scoring
-│           └── forms/              # Form system
-├── scripts/                        # CAD Observer tools
-│   ├── click_capture.py            # Screenshot capture
-│   ├── floating_toolbar.py         # Control toolbar
-│   └── cad_task.py                 # AutoCAD task bridge
-├── CLAUDE.md                       # Claude Code context
-├── CLAUDE-INSTRUCTIONS.md          # Session instructions
-└── NEXT-SESSION-BACKEND-MASTERPLAN.md  # Backend roadmap
-```
-
----
-
-## API Endpoints
-
-### Document Analysis
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/analyze` | Start document analysis |
@@ -217,10 +177,6 @@ cad_observer/
 | POST | `/api/project/save` | Save analysis results |
 | GET | `/api/project/load/<file>` | Load saved project |
 | DELETE | `/api/project/delete/<file>` | Delete project |
-
-### Company Dashboard
-| Method | Endpoint | Description |
-|--------|----------|-------------|
 | GET/POST | `/api/company/projects` | CRUD projects |
 | GET/POST | `/api/company/activity` | Activity feed |
 | GET | `/api/company/seats` | Role statuses |
@@ -228,84 +184,202 @@ cad_observer/
 
 ---
 
-## Changelog
+# Application 3: ROOFIO Backend
 
-### v3.0 - UI Complete (December 2024)
-- Added Control Center with 8 positions and AI mode toggles
-- Added Digital Foreman with Risk Shield architecture
-- Added Integrations Hub with 28+ service connectors
-- Added Roofio AI chat with 14 skill domains
-- Added Guest Inspector mode for hold point access
-- Updated navigation across all pages
-- Cleaned up 52 auto-generated HTML files
-- Platform architecture specifications complete
+**Purpose:** Unified data infrastructure with tiered AI architecture
+**Location:** `roofio-backend/`
+**Status:** Phase 1 Complete (Security Foundation)
 
-### v2.0 - Company Dashboard
-- APPIO branding with new logo
-- 6 role-based seats (PM, Estimator, Operations, Accounting, Superintendent, Shop Drawings)
-- Traffic light status indicators
-- Task queues and project cards
-- Activity feed with real-time updates
-- Architect AI rules engine foundation
+### Infrastructure Status
 
-### v1.0 - Document Analysis
-- Smart PDF roof page filtering
-- Multi-layered element detection
-- Assembly letter parsing
-- DXF generation
-- Real-time SSE progress
+| Service | Status | Details |
+|---------|--------|---------|
+| Upstash Redis | ✅ Ready | Sessions, rate limiting, audit logging |
+| Upstash Vector | ✅ Ready | Hybrid index (384 dim), RAG knowledge base |
+| Groq API | ✅ Ready | Llama 3.3 70B, ~395ms response time |
+| Supabase PostgreSQL | ⏳ Setup | DNS resolution - needs troubleshooting |
 
----
+### Phase 1 Complete - Security Foundation
 
-## Next Steps (Backend)
+| File | Lines | Purpose |
+|------|-------|---------|
+| `common/config.py` | 272 | Environment + Upstash credentials |
+| `common/security.py` | 911 | JWT, OAuth (4 providers), RBAC (5 roles), encryption |
+| `common/session.py` | 314 | Redis-backed session management |
+| `common/database.py` | 323 | SQLAlchemy async + PostgreSQL multi-tenant |
 
-### ✅ COMPLETED - Phase 1: Security Foundation
-- `roofio-backend/common/config.py` - Environment configuration
-- `roofio-backend/common/session.py` - Redis-backed sessions (JWT, sliding expiration)
-- `roofio-backend/common/security.py` - RBAC (5 roles), OAuth (4 providers), encryption, circuit breakers, LLM fallback
-- `roofio-backend/common/database.py` - PostgreSQL async with multi-tenant scoping
-
-### ⏳ IN PROGRESS - Infrastructure Setup
-- [x] Upstash Redis - Connected and tested
-- [x] Upstash Vector - Hybrid index for RAG
-- [x] Groq API - Llama 3.3 70B working
-- [ ] **Supabase PostgreSQL** - DNS resolution issue, needs troubleshooting
-
-### 🔜 NEXT - Phase 2: Tier 1 Python Layer
-1. Finish Supabase connection troubleshooting
-2. Create database tables (users, agencies, projects)
-3. Implement CRUD operations in `tier1/`
-4. Wire up to Flask frontend
-
-### Future Phases
-- Phase 3: Tier 2 Groq + RAG integration
-- Phase 4: Tier 3 Advanced LLM with failover
-- Phase 5: Master Architect self-healing
-
----
-
-## CAD Observer (Original Feature)
-
-AI-powered CAD workflow observation for AutoCAD:
+### Test Scripts
 
 ```bash
-python scripts/click_capture.py -p "Project Name"
+cd roofio-backend
+python test_redis.py      # Upstash Redis connectivity
+python test_vector.py     # Vector DB search
+python test_groq.py       # Groq API integration
+python test_postgres.py   # Supabase PostgreSQL
 ```
 
-AutoCAD LISP commands:
-- `CAD-OBSERVER-START` - Start logging
-- `CAD-OBSERVER-STOP` - Stop logging
-- `CAD-OBSERVER-TASK` - Check for Claude tasks
+### Environment Setup
+
+Copy `.env.example` to `.env` and configure:
+
+```
+ROOFIO_ENV=development
+
+# Upstash
+UPSTASH_REDIS_REST_URL=...
+UPSTASH_REDIS_REST_TOKEN=...
+UPSTASH_VECTOR_REST_URL=...
+UPSTASH_VECTOR_REST_TOKEN=...
+
+# Database
+DATABASE_URL=postgresql://...
+
+# Security
+JWT_SECRET=...
+ENCRYPTION_KEY=...
+
+# AI Providers
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+GROQ_API_KEY=gsk_...
+```
+
+### Backend Roadmap
+
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 1 | ✅ Done | Security foundation (JWT, RBAC, OAuth, encryption) |
+| Phase 2 | 🔜 Next | Tier 1 Python CRUD (users, agencies, projects) |
+| Phase 3 | 🔜 | Tier 2 Groq + RAG integration |
+| Phase 4 | 🔜 | Tier 3 Claude/GPT with failover |
+| Phase 5 | 🔜 | Master Architect self-healing |
 
 ---
 
-## License
+# Project Structure
+
+```
+cad_observer/
+├── scripts/                           # CAD OBSERVER
+│   ├── click_capture.py               # Screenshot on click
+│   ├── research_capture.py            # Spec capture mode
+│   ├── floating_toolbar.py            # UI toolbar
+│   ├── cad-observer.lsp               # AutoCAD plugin
+│   └── cad_task.py                    # Python ↔ AutoCAD bridge
+│
+├── roofing_intelligence/              # APPIO
+│   ├── app.py                         # Flask routes (1,003 lines)
+│   ├── templates/                     # 9 HTML pages
+│   ├── static/                        # CSS + JS
+│   ├── parsers/                       # Document processing (2,100 lines)
+│   ├── generators/                    # DXF output
+│   ├── architect_ai/                  # Tiered AI routing
+│   └── roofio/                        # Platform core
+│       ├── groq_client.py             # Groq integration
+│       ├── skills/                    # 14 skill domains (7,296 lines)
+│       └── platform/                  # Backend specs
+│           ├── forms/                 # 74 forms
+│           ├── positions/             # 8 positions
+│           ├── confidence/            # AI scoring
+│           ├── badges/                # Badge system
+│           └── digital_foreman/       # Risk Shield
+│
+├── roofio-backend/                    # ROOFIO BACKEND
+│   ├── common/                        # Phase 1 complete
+│   │   ├── config.py                  # Environment config
+│   │   ├── security.py                # JWT, OAuth, RBAC
+│   │   ├── session.py                 # Redis sessions
+│   │   └── database.py                # PostgreSQL async
+│   ├── tier1/                         # Placeholder
+│   ├── tier2/                         # Placeholder
+│   ├── tier3/                         # Placeholder
+│   ├── brain/                         # RAG placeholder
+│   ├── architect/                     # Meta-AI placeholder
+│   └── test_*.py                      # Integration tests
+│
+├── drop/                              # Archive/experimental
+│   ├── architect-ai-skill/            # Meta-intelligence docs
+│   ├── roofio-complete-skills/        # Skill reference (14 domains)
+│   ├── security_backend/              # Phase 1 source
+│   └── training-data-collection-skill/
+│
+├── README.md                          # This file
+├── CLAUDE.md                          # CAD Observer context
+├── CLAUDE-INSTRUCTIONS.md             # Current session priorities
+└── NEXT-SESSION-BACKEND-MASTERPLAN.md # Backend roadmap
+```
+
+---
+
+# Dependencies
+
+```bash
+# CAD Observer
+pip install pynput pillow
+
+# APPIO
+pip install flask PyPDF2 ezdxf groq
+
+# ROOFIO Backend
+pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptography httpx
+```
+
+---
+
+# Tech Stack Summary
+
+| Layer | Technology | Used By |
+|-------|------------|---------|
+| CAD Integration | AutoCAD LISP + Python | CAD Observer |
+| Screenshots | pynput + Pillow | CAD Observer |
+| Web Framework | Flask | APPIO |
+| PDF Processing | PyPDF2 | APPIO |
+| CAD Export | ezdxf | APPIO |
+| Frontend | Vanilla JS + CSS3 | APPIO |
+| Real-time | Server-Sent Events (SSE) | APPIO |
+| Sessions | Upstash Redis | Backend |
+| Vector DB | Upstash Vector (384 dim) | Backend |
+| Database | Supabase PostgreSQL | Backend |
+| Tier 2 AI | Groq Llama 3.3 70B | Backend |
+| Tier 3 AI | Anthropic Claude / OpenAI | Backend |
+| Auth | JWT + OAuth + Fernet | Backend |
+
+---
+
+# Changelog
+
+### December 12, 2024 - Repository Restructure
+- Documented 3 distinct applications in README
+- Added status matrix and completion tracking
+- Clarified boundaries between CAD Observer, APPIO, and Backend
+
+### December 8, 2024 - Backend Phase 1 Complete
+- Security foundation (JWT, RBAC, OAuth, encryption)
+- Upstash Redis and Vector integration
+- Groq API tested and working
+
+### December 2024 - APPIO UI Complete
+- All 9 pages functional
+- 8-position Control Center
+- Digital Foreman Risk Shield
+- 28+ integration connectors
+- 14 Roofio AI skill domains
+
+### Earlier - CAD Observer & Document Analysis
+- Click capture with coordinates
+- AutoCAD LISP bidirectional tasks
+- Smart PDF roof page filtering
+- DXF generation
+
+---
+
+# License
 
 Proprietary - Lefebvre Design Solutions
 
 ---
 
-## Support
+# Support
 
 - **Owner**: Armand (20+ year journeyman roofer/waterproofer, Local 30)
 - **Spec Sections**: 07 62 00, 07 50 00, 07 27 00, 07 92 00
