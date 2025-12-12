@@ -269,41 +269,7 @@
 
         .cc-modal-body { padding: 20px; }
 
-        .cc-form-group {
-            margin-bottom: 16px;
-        }
-
-        .cc-form-group label {
-            display: block;
-            font-size: 12px;
-            color: #9ca3af;
-            margin-bottom: 6px;
-        }
-
-        .cc-form-group input, .cc-form-group textarea, .cc-form-group select {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .cc-form-group .prefilled {
-            background: rgba(37, 99, 235, 0.2);
-            border-color: var(--primary);
-        }
-
-        .ssot-badge {
-            display: inline-block;
-            font-size: 10px;
-            background: var(--primary);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
-        }
+        /* Form styles now use global .form-group from styles.css */
 
         .cc-modal-footer {
             padding: 20px;
@@ -761,31 +727,31 @@
             };
 
             return `
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Company Name <span class="ssot-badge">SSOT: companies</span></label>
                     <input type="text" class="prefilled" value="${sampleData.company}" readonly>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Project Name <span class="ssot-badge">SSOT: projects</span></label>
                     <input type="text" class="prefilled" value="${sampleData.project}" readonly>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Project Address <span class="ssot-badge">SSOT: projects</span></label>
                     <input type="text" class="prefilled" value="${sampleData.address}" readonly>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Roofing System <span class="ssot-badge">SSOT: jobs</span></label>
                     <input type="text" class="prefilled" value="${sampleData.system}" readonly>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Square Footage <span class="ssot-badge">SSOT: jobs</span></label>
                     <input type="text" class="prefilled" value="${sampleData.area}" readonly>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Total Amount <span class="ssot-badge">SSOT: estimates</span></label>
                     <input type="text" class="prefilled" value="${sampleData.amount}" readonly>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Notes (editable)</label>
                     <textarea rows="3" placeholder="Add any additional notes..."></textarea>
                 </div>
@@ -803,11 +769,11 @@
                     <div style="font-weight: 600; margin-bottom: 8px;">⚠️ Human Review Required</div>
                     <div style="font-size: 14px;">Confidence: ${fn.confidence}% (Below 95% threshold)</div>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>AI Generated Output</label>
                     <textarea rows="6" class="prefilled">${generateSampleOutput(fn.name)}</textarea>
                 </div>
-                <div class="cc-form-group">
+                <div class="form-group">
                     <label>Review Notes</label>
                     <textarea rows="3" placeholder="Add review notes..."></textarea>
                 </div>
