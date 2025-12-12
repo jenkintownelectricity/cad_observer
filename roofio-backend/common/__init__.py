@@ -75,6 +75,15 @@ from .database import (
     close_database,
 )
 
+from .models import (
+    Agency,
+    User,
+    Project,
+    AuditLog,
+    AIActionLog,
+    PositionConfig,
+)
+
 __all__ = [
     # Config
     "ENV",
@@ -136,4 +145,12 @@ __all__ = [
     "check_database_health",
     "init_database",
     "close_database",
+
+    # Models
+    "Agency",
+    "User",
+    "Project",
+    "AuditLog",
+    "AIActionLog",
+    "PositionConfig",
 ]
