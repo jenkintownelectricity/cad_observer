@@ -226,20 +226,77 @@ async function selectRoofioFormat(formType) {
 function showScanSetup(formType) {
     FormsState.currentFormType = formType;
 
+    // Detect if mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     const scanDialog = document.createElement('div');
     scanDialog.className = 'scan-dialog';
     scanDialog.innerHTML = `
         <div class="scan-content">
             <div class="scan-header">
-                <h2>Scan Your Form</h2>
+                <h2>Upload Your Form Template</h2>
                 <button class="close-btn" onclick="closeScanDialog()">×</button>
             </div>
 
             <div class="scan-instructions">
-                <p>Take a photo of your existing form (filled out or blank). We'll create a digital version that looks just like it.</p>
+                <p>Upload an example of your form (filled out or blank). We'll create a digital version that looks just like it.</p>
             </div>
 
-            <div class="scan-area" id="scanArea">
+            <!-- Upload Options - Mobile Friendly -->
+            <div class="upload-options" id="uploadOptions">
+                <div class="upload-option" onclick="triggerCameraCapture()">
+                    <div class="upload-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                    </div>
+                    <span>Take Photo</span>
+                    <small>Use camera</small>
+                </div>
+
+                <div class="upload-option" onclick="triggerPhotoLibrary()">
+                    <div class="upload-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <span>Photo Library</span>
+                    <small>${isMobile ? 'Camera Roll' : 'Browse images'}</small>
+                </div>
+
+                <div class="upload-option" onclick="triggerFileUpload()">
+                    <div class="upload-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <span>Files</span>
+                    <small>${isMobile ? 'iCloud, Drive, Files' : 'PDF, Word, Image'}</small>
+                </div>
+            </div>
+
+            <!-- Drag & Drop Zone (Desktop) -->
+            <div class="drop-zone" id="dropZone" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p>Drag & drop your form here</p>
+                <small>PDF, JPG, PNG, HEIC, Word</small>
+            </div>
+
+            <!-- Hidden file inputs for different sources -->
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none" onchange="handleFileSelect(event)">
+            <input type="file" id="photoInput" accept="image/*" style="display: none" onchange="handleFileSelect(event)">
+            <input type="file" id="fileInput" accept="image/*,application/pdf,.doc,.docx,.heic,.heif" style="display: none" onchange="handleFileSelect(event)">
+
+            <!-- Camera Preview Area (hidden until camera active) -->
+            <div class="scan-area" id="scanArea" style="display: none;">
                 <video id="cameraPreview" autoplay playsinline></video>
                 <canvas id="scanCanvas" style="display: none;"></canvas>
                 <img id="previewImage" style="display: none;">
@@ -248,60 +305,42 @@ function showScanSetup(formType) {
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <rect x="2" y="2" width="20" height="20" rx="2"/>
                         <circle cx="12" cy="12" r="4"/>
-                        <path d="M2 12h2M20 12h2M12 2v2M12 20v2"/>
                     </svg>
                     <p>Position your form within the frame</p>
                 </div>
             </div>
 
-            <div class="scan-controls">
-                <button class="btn-secondary" id="uploadBtn" onclick="triggerFileUpload()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                    Upload Photo
+            <!-- Camera Controls (hidden until camera active) -->
+            <div class="scan-controls" id="cameraControls" style="display: none;">
+                <button class="btn-secondary" onclick="cancelCamera()">Cancel</button>
+                <button class="btn-primary btn-capture" onclick="capturePhoto()">
+                    <div class="capture-circle"></div>
                 </button>
-                <button class="btn-primary" id="captureBtn" onclick="capturePhoto()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <circle cx="12" cy="12" r="6" fill="currentColor"/>
-                    </svg>
-                    Capture
-                </button>
-                <input type="file" id="fileInput" accept="image/*,application/pdf" style="display: none" onchange="handleFileSelect(event)">
             </div>
 
-            <div class="output-format-section">
-                <label>Output Format:</label>
-                <div class="format-buttons">
-                    <button class="format-btn active" data-format="pdf">PDF</button>
-                    <button class="format-btn" data-format="png">Image</button>
-                    <button class="format-btn" data-format="docx">Word</button>
-                    <button class="format-btn" data-format="xlsx">Excel</button>
+            <!-- Preview & Process Actions (hidden until file selected) -->
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <div class="preview-container">
+                    <img id="previewImg" src="" alt="Preview">
+                    <div class="preview-info" id="previewInfo"></div>
                 </div>
-            </div>
-
-            <div class="scan-actions" id="scanActions" style="display: none;">
-                <button class="btn-secondary" onclick="retakePhoto()">Retake</button>
-                <button class="btn-primary" onclick="processAndCreateTemplate()">Create Form Template</button>
+                <div class="preview-actions">
+                    <button class="btn-secondary" onclick="clearPreview()">Choose Different</button>
+                    <button class="btn-primary" onclick="processAndCreateTemplate()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Use This Form
+                    </button>
+                </div>
             </div>
         </div>
     `;
 
     document.body.appendChild(scanDialog);
 
-    // Initialize camera
-    initCamera();
-
-    // Format button handlers
-    scanDialog.querySelectorAll('.format-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            scanDialog.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-        });
-    });
+    // Setup drag & drop for desktop
+    setupDragDrop();
 }
 
 function closeScanDialog() {
@@ -309,6 +348,124 @@ function closeScanDialog() {
     const dialog = document.querySelector('.scan-dialog');
     if (dialog) {
         dialog.remove();
+    }
+}
+
+// =============================================================================
+// UPLOAD SOURCE HANDLERS
+// =============================================================================
+
+/**
+ * Trigger camera capture (opens native camera on mobile)
+ */
+function triggerCameraCapture() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // On mobile, use the file input with capture attribute
+        document.getElementById('cameraInput').click();
+    } else {
+        // On desktop, show the camera preview
+        const uploadOptions = document.getElementById('uploadOptions');
+        const dropZone = document.getElementById('dropZone');
+        const scanArea = document.getElementById('scanArea');
+        const cameraControls = document.getElementById('cameraControls');
+
+        uploadOptions.style.display = 'none';
+        dropZone.style.display = 'none';
+        scanArea.style.display = 'block';
+        cameraControls.style.display = 'flex';
+
+        initCamera();
+    }
+}
+
+/**
+ * Trigger photo library picker
+ */
+function triggerPhotoLibrary() {
+    document.getElementById('photoInput').click();
+}
+
+/**
+ * Trigger file picker (all file types)
+ */
+function triggerFileUpload() {
+    document.getElementById('fileInput').click();
+}
+
+/**
+ * Cancel camera and go back to options
+ */
+function cancelCamera() {
+    stopCamera();
+
+    const uploadOptions = document.getElementById('uploadOptions');
+    const dropZone = document.getElementById('dropZone');
+    const scanArea = document.getElementById('scanArea');
+    const cameraControls = document.getElementById('cameraControls');
+
+    uploadOptions.style.display = 'grid';
+    dropZone.style.display = 'flex';
+    scanArea.style.display = 'none';
+    cameraControls.style.display = 'none';
+}
+
+/**
+ * Clear preview and go back to options
+ */
+function clearPreview() {
+    const uploadOptions = document.getElementById('uploadOptions');
+    const dropZone = document.getElementById('dropZone');
+    const previewSection = document.getElementById('previewSection');
+
+    uploadOptions.style.display = 'grid';
+    dropZone.style.display = 'flex';
+    previewSection.style.display = 'none';
+
+    FormsState.scanResult = null;
+    FormsState.uploadedFile = null;
+}
+
+// =============================================================================
+// DRAG & DROP HANDLERS
+// =============================================================================
+
+function setupDragDrop() {
+    const dropZone = document.getElementById('dropZone');
+    if (!dropZone) return;
+
+    // Hide drop zone on mobile (not useful)
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+        dropZone.style.display = 'none';
+    }
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const dropZone = document.getElementById('dropZone');
+    dropZone.classList.add('drag-over');
+}
+
+function handleDragLeave(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const dropZone = document.getElementById('dropZone');
+    dropZone.classList.remove('drag-over');
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const dropZone = document.getElementById('dropZone');
+    dropZone.classList.remove('drag-over');
+
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        processUploadedFile(files[0]);
     }
 }
 
@@ -392,33 +549,95 @@ function triggerFileUpload() {
 }
 
 /**
- * Handle file selection for upload.
+ * Handle file selection from any input
  */
 function handleFileSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
+    processUploadedFile(file);
+}
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById('previewImage');
-        const video = document.getElementById('cameraPreview');
-        const placeholder = document.getElementById('scanPlaceholder');
-        const actionsDiv = document.getElementById('scanActions');
-        const controlsDiv = document.querySelector('.scan-controls');
+/**
+ * Process an uploaded file (from any source)
+ */
+function processUploadedFile(file) {
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/heic', 'image/heif', 'image/webp', 'application/pdf',
+                        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.heic', '.heif', '.webp', '.pdf', '.doc', '.docx'];
 
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        video.style.display = 'none';
-        placeholder.style.display = 'none';
+    const isValidType = validTypes.includes(file.type) ||
+                       validExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
 
-        actionsDiv.style.display = 'flex';
-        controlsDiv.style.display = 'none';
+    if (!isValidType) {
+        showNotification('Please upload an image, PDF, or Word document', 'error');
+        return;
+    }
 
-        FormsState.scanResult = e.target.result;
-        stopCamera();
-    };
+    // Store the file
+    FormsState.uploadedFile = file;
 
-    reader.readAsDataURL(file);
+    // Show preview section
+    const uploadOptions = document.getElementById('uploadOptions');
+    const dropZone = document.getElementById('dropZone');
+    const scanArea = document.getElementById('scanArea');
+    const cameraControls = document.getElementById('cameraControls');
+    const previewSection = document.getElementById('previewSection');
+
+    uploadOptions.style.display = 'none';
+    dropZone.style.display = 'none';
+    scanArea.style.display = 'none';
+    cameraControls.style.display = 'none';
+    previewSection.style.display = 'block';
+
+    // Stop camera if running
+    stopCamera();
+
+    // Show preview
+    const previewImg = document.getElementById('previewImg');
+    const previewInfo = document.getElementById('previewInfo');
+
+    // File info
+    const fileSize = (file.size / 1024).toFixed(1);
+    const sizeUnit = fileSize > 1024 ? `${(fileSize / 1024).toFixed(1)} MB` : `${fileSize} KB`;
+    previewInfo.innerHTML = `
+        <strong>${file.name}</strong>
+        <span>${sizeUnit}</span>
+    `;
+
+    // Generate preview based on file type
+    if (file.type.startsWith('image/') || file.name.toLowerCase().match(/\.(heic|heif)$/)) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+            FormsState.scanResult = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else if (file.type === 'application/pdf') {
+        // Show PDF icon for PDF files
+        previewImg.src = 'data:image/svg+xml,' + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <text x="7" y="17" font-size="6" fill="#F97316" stroke="none">PDF</text>
+            </svg>
+        `);
+        previewImg.style.display = 'block';
+        FormsState.scanResult = 'pdf-upload';
+    } else {
+        // Show doc icon for Word files
+        previewImg.src = 'data:image/svg+xml,' + encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+        `);
+        previewImg.style.display = 'block';
+        FormsState.scanResult = 'doc-upload';
+    }
 }
 
 function retakePhoto() {
@@ -1007,6 +1226,123 @@ function addFormStyles() {
             color: #888;
         }
 
+        /* Upload Options */
+        .upload-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .upload-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 16px;
+            background: #252542;
+            border: 2px solid #333;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .upload-option:hover {
+            border-color: #F97316;
+            transform: translateY(-2px);
+        }
+
+        .upload-option:active {
+            transform: translateY(0);
+        }
+
+        .upload-icon {
+            color: #F97316;
+            margin-bottom: 12px;
+        }
+
+        .upload-option span {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .upload-option small {
+            color: #888;
+            font-size: 11px;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            border: 2px dashed #333;
+            border-radius: 12px;
+            background: #1a1a2e;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: #F97316;
+            background: rgba(249, 115, 22, 0.05);
+            color: #F97316;
+        }
+
+        .drop-zone p {
+            margin: 12px 0 4px;
+            font-weight: 500;
+        }
+
+        .drop-zone small {
+            font-size: 12px;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            text-align: center;
+        }
+
+        .preview-container {
+            background: #252542;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .preview-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .preview-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preview-info strong {
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .preview-info span {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .preview-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
         /* Format Options */
         .format-options {
             display: grid;
@@ -1419,12 +1755,52 @@ function addFormStyles() {
                 grid-template-columns: 1fr;
             }
 
+            .upload-options {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .upload-option {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 16px;
+                padding: 16px 20px;
+            }
+
+            .upload-icon {
+                margin-bottom: 0;
+            }
+
+            .upload-option span, .upload-option small {
+                text-align: left;
+            }
+
+            .drop-zone {
+                display: none;
+            }
+
             .field-item {
                 flex-wrap: wrap;
             }
 
             .field-item .field-label {
                 width: 100%;
+            }
+
+            .preview-container img {
+                max-height: 200px;
+            }
+
+            .form-setup-content, .scan-content, .review-content {
+                padding: 20px;
+                border-radius: 12px;
+            }
+        }
+
+        /* iOS Safe Areas */
+        @supports (padding: max(0px)) {
+            .form-setup-dialog, .scan-dialog, .field-review-dialog {
+                padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
             }
         }
     `;
