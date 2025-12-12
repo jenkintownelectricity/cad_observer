@@ -1950,8 +1950,8 @@ a.logo-text {
 
 .modal-content {
     position: relative;
-    max-width: 90vw;
-    width: 100%;
+    width: 95vw;
+    max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
     border-radius: var(--radius-xl);
@@ -1962,20 +1962,30 @@ a.logo-text {
 
 /* Wide modal for forms */
 .modal-content.wide {
-    max-width: 800px;
+    max-width: 90vw;
+    width: 800px;
 }
 
-/* Full-width modal on mobile */
+/* Tablet and up */
 @media (min-width: 768px) {
     .modal {
         padding: 2rem;
     }
     .modal-content {
-        max-width: 600px;
+        width: 600px;
+        max-width: 95vw;
         padding: 2rem;
     }
     .modal-content.wide {
-        max-width: 800px;
+        width: 850px;
+        max-width: 95vw;
+    }
+}
+
+/* Large screens */
+@media (min-width: 1024px) {
+    .modal-content.wide {
+        width: 900px;
     }
 }
 

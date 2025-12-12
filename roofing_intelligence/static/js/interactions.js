@@ -728,86 +728,15 @@ function initSVGLineDrawing() {
 }
 
 /* ============================================================================
-   SMOOTH SCROLL (Lenis-style) - Buttery smooth scrolling with momentum
+   SMOOTH SCROLL - DISABLED for performance
+   The custom Lenis-style scroll was causing sluggish behavior.
+   Using native CSS smooth-scroll instead (set in CSS: scroll-behavior: smooth)
    ============================================================================ */
 function initSmoothScroll() {
-    // Skip on touch devices for native momentum
-    if ('ontouchstart' in window) return;
-
-    // Check for reduced motion preference
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    document.documentElement.classList.add('lenis');
-
-    let currentScroll = window.scrollY;
-    let targetScroll = window.scrollY;
-    let ease = 0.1;
-    let rafId = null;
-
-    // Capture scroll intent
-    window.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        targetScroll += e.deltaY;
-        targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight - window.innerHeight));
-
-        if (!rafId) {
-            rafId = requestAnimationFrame(smoothScroll);
-        }
-    }, { passive: false });
-
-    function smoothScroll() {
-        currentScroll += (targetScroll - currentScroll) * ease;
-
-        // Stop when close enough
-        if (Math.abs(targetScroll - currentScroll) < 0.5) {
-            currentScroll = targetScroll;
-            window.scrollTo(0, currentScroll);
-            rafId = null;
-            return;
-        }
-
-        window.scrollTo(0, currentScroll);
-        rafId = requestAnimationFrame(smoothScroll);
-    }
-
-    // Handle keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-            targetScroll += e.key === 'PageDown' ? window.innerHeight : 100;
-        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-            targetScroll -= e.key === 'PageUp' ? window.innerHeight : 100;
-        } else if (e.key === 'Home') {
-            targetScroll = 0;
-        } else if (e.key === 'End') {
-            targetScroll = document.body.scrollHeight - window.innerHeight;
-        } else {
-            return;
-        }
-
-        targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight - window.innerHeight));
-
-        if (!rafId) {
-            rafId = requestAnimationFrame(smoothScroll);
-        }
-    });
-
-    // Smooth scroll to anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', (e) => {
-            const targetId = anchor.getAttribute('href');
-            if (targetId === '#') return;
-
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                e.preventDefault();
-                targetScroll = targetElement.offsetTop;
-
-                if (!rafId) {
-                    rafId = requestAnimationFrame(smoothScroll);
-                }
-            }
-        });
-    });
+    // DISABLED - Custom smooth scroll causes performance issues
+    // Native browser scrolling is much smoother
+    // Just add CSS scroll-behavior: smooth for anchor links
+    return;
 }
 
 /* ============================================================================
