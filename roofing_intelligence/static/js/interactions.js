@@ -5,12 +5,18 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initPreloader();
+    initNoiseOverlay();
     initMeshGradient();
+    initBlobBackground();
     initMagneticCursor();
+    initSpotlightEffect();
     initKineticTypography();
+    initTextScramble();
     initScrollReveal();
     initParallax();
     initCounterAnimations();
+    initSVGLineDrawing();
+    initSmoothScroll();
     initSoundFeedback();
 });
 
@@ -555,3 +561,399 @@ function triggerEasterEgg() {
 
     setTimeout(() => message.remove(), 3000);
 }
+
+/* ============================================================================
+   NOISE/GRAIN TEXTURE OVERLAY - Adds analog warmth to digital flatness
+   ============================================================================ */
+function initNoiseOverlay() {
+    // Check if noise overlay already exists
+    if (document.querySelector('.noise-overlay')) return;
+
+    const noise = document.createElement('div');
+    noise.className = 'noise-overlay';
+    document.body.appendChild(noise);
+}
+
+/* ============================================================================
+   BLOB/GOOEY BACKGROUND - Organic shapes that morph and blend
+   ============================================================================ */
+function initBlobBackground() {
+    // Only add to landing page
+    if (!document.querySelector('.landing-page, [data-blob-bg]')) return;
+
+    // Create SVG filter for gooey effect
+    const svgFilter = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgFilter.style.cssText = 'position: absolute; width: 0; height: 0;';
+    svgFilter.innerHTML = `
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+            </filter>
+        </defs>
+    `;
+    document.body.appendChild(svgFilter);
+
+    // Create blob container
+    const container = document.createElement('div');
+    container.className = 'blob-container';
+    container.innerHTML = `
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    `;
+    document.body.insertBefore(container, document.body.firstChild);
+}
+
+/* ============================================================================
+   SPOTLIGHT/FLASHLIGHT CURSOR EFFECT
+   ============================================================================ */
+function initSpotlightEffect() {
+    const spotlightContainers = document.querySelectorAll('.spotlight-container, [data-spotlight]');
+
+    spotlightContainers.forEach(container => {
+        // Create overlay if not exists
+        let overlay = container.querySelector('.spotlight-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'spotlight-overlay';
+            container.appendChild(overlay);
+        }
+
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+            container.style.setProperty('--mouse-x', `${x}%`);
+            container.style.setProperty('--mouse-y', `${y}%`);
+        });
+    });
+}
+
+/* ============================================================================
+   TEXT SCRAMBLE/DECRYPT EFFECT - Headlines that decode from random characters
+   ============================================================================ */
+function initTextScramble() {
+    const scrambleElements = document.querySelectorAll('.text-scramble, [data-scramble]');
+    const chars = '!<>-_\\/[]{}—=+*^?#________';
+
+    scrambleElements.forEach(el => {
+        const originalText = el.textContent;
+        el.dataset.original = originalText;
+
+        // Scramble on scroll into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    scrambleText(el, originalText);
+                    observer.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(el);
+    });
+
+    function scrambleText(element, finalText) {
+        let iteration = 0;
+        const maxIterations = finalText.length * 3;
+
+        const interval = setInterval(() => {
+            element.textContent = finalText
+                .split('')
+                .map((char, index) => {
+                    if (index < iteration / 3) {
+                        return finalText[index];
+                    }
+                    if (char === ' ') return ' ';
+                    return chars[Math.floor(Math.random() * chars.length)];
+                })
+                .join('');
+
+            iteration++;
+
+            if (iteration >= maxIterations) {
+                element.textContent = finalText;
+                clearInterval(interval);
+            }
+        }, 30);
+    }
+}
+
+/* ============================================================================
+   SVG LINE DRAWING ANIMATION - Technical drawings that draw themselves
+   ============================================================================ */
+function initSVGLineDrawing() {
+    const svgElements = document.querySelectorAll('.draw-svg, [data-draw-svg]');
+
+    const drawObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const paths = entry.target.querySelectorAll('path, line, polyline, polygon, rect, circle');
+
+                paths.forEach((path, index) => {
+                    // Calculate path length
+                    const length = path.getTotalLength ? path.getTotalLength() : 1000;
+                    path.style.strokeDasharray = length;
+                    path.style.strokeDashoffset = length;
+                    path.classList.add('draw-line');
+
+                    // Stagger animation
+                    setTimeout(() => {
+                        path.classList.add('animate');
+                    }, index * 200);
+                });
+
+                drawObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    svgElements.forEach(svg => drawObserver.observe(svg));
+
+    // Also handle individual draw-line elements
+    const drawLines = document.querySelectorAll('.draw-line:not(.animate)');
+    const lineObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate');
+                lineObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    drawLines.forEach(line => lineObserver.observe(line));
+}
+
+/* ============================================================================
+   SMOOTH SCROLL (Lenis-style) - Buttery smooth scrolling with momentum
+   ============================================================================ */
+function initSmoothScroll() {
+    // Skip on touch devices for native momentum
+    if ('ontouchstart' in window) return;
+
+    // Check for reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.documentElement.classList.add('lenis');
+
+    let currentScroll = window.scrollY;
+    let targetScroll = window.scrollY;
+    let ease = 0.1;
+    let rafId = null;
+
+    // Capture scroll intent
+    window.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        targetScroll += e.deltaY;
+        targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight - window.innerHeight));
+
+        if (!rafId) {
+            rafId = requestAnimationFrame(smoothScroll);
+        }
+    }, { passive: false });
+
+    function smoothScroll() {
+        currentScroll += (targetScroll - currentScroll) * ease;
+
+        // Stop when close enough
+        if (Math.abs(targetScroll - currentScroll) < 0.5) {
+            currentScroll = targetScroll;
+            window.scrollTo(0, currentScroll);
+            rafId = null;
+            return;
+        }
+
+        window.scrollTo(0, currentScroll);
+        rafId = requestAnimationFrame(smoothScroll);
+    }
+
+    // Handle keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+            targetScroll += e.key === 'PageDown' ? window.innerHeight : 100;
+        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+            targetScroll -= e.key === 'PageUp' ? window.innerHeight : 100;
+        } else if (e.key === 'Home') {
+            targetScroll = 0;
+        } else if (e.key === 'End') {
+            targetScroll = document.body.scrollHeight - window.innerHeight;
+        } else {
+            return;
+        }
+
+        targetScroll = Math.max(0, Math.min(targetScroll, document.body.scrollHeight - window.innerHeight));
+
+        if (!rafId) {
+            rafId = requestAnimationFrame(smoothScroll);
+        }
+    });
+
+    // Smooth scroll to anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+            const targetId = anchor.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                e.preventDefault();
+                targetScroll = targetElement.offsetTop;
+
+                if (!rafId) {
+                    rafId = requestAnimationFrame(smoothScroll);
+                }
+            }
+        });
+    });
+}
+
+/* ============================================================================
+   DIRECTION-AWARE HOVER - Cards that know which direction you entered from
+   ============================================================================ */
+function initDirectionAwareHover() {
+    const directionElements = document.querySelectorAll('.direction-aware');
+
+    directionElements.forEach(el => {
+        el.addEventListener('mouseenter', (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Determine entry direction
+            const directions = {
+                top: y,
+                bottom: rect.height - y,
+                left: x,
+                right: rect.width - x
+            };
+
+            const direction = Object.keys(directions).reduce((a, b) =>
+                directions[a] < directions[b] ? a : b
+            );
+
+            el.dataset.direction = direction;
+
+            // Set CSS custom property for animation direction
+            const fill = el.querySelector('.hover-fill');
+            if (fill) {
+                switch (direction) {
+                    case 'top':
+                        fill.style.transform = 'translateY(-101%)';
+                        break;
+                    case 'bottom':
+                        fill.style.transform = 'translateY(101%)';
+                        break;
+                    case 'left':
+                        fill.style.transform = 'translateX(-101%)';
+                        break;
+                    case 'right':
+                        fill.style.transform = 'translateX(101%)';
+                        break;
+                }
+                requestAnimationFrame(() => {
+                    fill.style.transform = 'translate(0, 0)';
+                });
+            }
+        });
+
+        el.addEventListener('mouseleave', (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const directions = {
+                top: y,
+                bottom: rect.height - y,
+                left: x,
+                right: rect.width - x
+            };
+
+            const direction = Object.keys(directions).reduce((a, b) =>
+                directions[a] < directions[b] ? a : b
+            );
+
+            const fill = el.querySelector('.hover-fill');
+            if (fill) {
+                switch (direction) {
+                    case 'top':
+                        fill.style.transform = 'translateY(-101%)';
+                        break;
+                    case 'bottom':
+                        fill.style.transform = 'translateY(101%)';
+                        break;
+                    case 'left':
+                        fill.style.transform = 'translateX(-101%)';
+                        break;
+                    case 'right':
+                        fill.style.transform = 'translateX(101%)';
+                        break;
+                }
+            }
+        });
+    });
+}
+
+// Initialize direction-aware hover
+document.addEventListener('DOMContentLoaded', initDirectionAwareHover);
+
+/* ============================================================================
+   SCROLL VELOCITY EFFECTS - Elements respond to scroll speed
+   ============================================================================ */
+function initScrollVelocity() {
+    let lastScroll = 0;
+    let lastTime = performance.now();
+    let velocity = 0;
+
+    const velocityElements = document.querySelectorAll('[data-velocity]');
+    if (velocityElements.length === 0) return;
+
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.scrollY;
+        const currentTime = performance.now();
+        const timeDelta = currentTime - lastTime;
+
+        if (timeDelta > 0) {
+            velocity = Math.abs(currentScroll - lastScroll) / timeDelta;
+
+            // Clamp velocity
+            velocity = Math.min(velocity, 2);
+
+            velocityElements.forEach(el => {
+                const effect = el.dataset.velocity || 'blur';
+
+                switch (effect) {
+                    case 'blur':
+                        el.style.filter = `blur(${velocity * 2}px)`;
+                        break;
+                    case 'stretch':
+                        el.style.transform = `scaleY(${1 + velocity * 0.1})`;
+                        break;
+                    case 'fade':
+                        el.style.opacity = Math.max(0.5, 1 - velocity);
+                        break;
+                }
+            });
+        }
+
+        lastScroll = currentScroll;
+        lastTime = currentTime;
+    });
+
+    // Reset effects when scroll stops
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            velocityElements.forEach(el => {
+                el.style.filter = '';
+                el.style.transform = '';
+                el.style.opacity = '';
+            });
+        }, 150);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initScrollVelocity);

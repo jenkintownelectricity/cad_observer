@@ -2020,6 +2020,346 @@ a.logo-text {
 }
 
 /* ============================================================================
+   NOISE/GRAIN TEXTURE OVERLAY - Adds analog warmth
+   ============================================================================ */
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.03;
+    mix-blend-mode: overlay;
+}
+
+.noise-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+}
+
+/* ============================================================================
+   ANIMATED GLOW BORDERS - Scanning/charging effect
+   ============================================================================ */
+.glow-border {
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.glow-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: conic-gradient(
+        from var(--glow-angle, 0deg),
+        var(--primary) 0deg,
+        var(--accent) 90deg,
+        var(--primary) 180deg,
+        var(--accent) 270deg,
+        var(--primary) 360deg
+    );
+    border-radius: inherit;
+    z-index: -1;
+    animation: glowRotate 4s linear infinite;
+}
+
+.glow-border::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--bg-secondary);
+    border-radius: calc(var(--radius-xl) - 2px);
+    z-index: -1;
+}
+
+@property --glow-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes glowRotate {
+    to { --glow-angle: 360deg; }
+}
+
+/* Glow border on focus for inputs */
+.input-glow:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--primary), 0 0 20px var(--primary-glow);
+    animation: inputGlow 2s ease-in-out infinite;
+}
+
+@keyframes inputGlow {
+    0%, 100% { box-shadow: 0 0 0 2px var(--primary), 0 0 20px var(--primary-glow); }
+    50% { box-shadow: 0 0 0 2px var(--accent), 0 0 30px var(--accent-glow); }
+}
+
+/* ============================================================================
+   SPOTLIGHT/FLASHLIGHT CURSOR EFFECT
+   ============================================================================ */
+.spotlight-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.spotlight-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle 150px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        transparent 0%,
+        rgba(15, 23, 42, 0.95) 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+}
+
+.spotlight-container:hover .spotlight-overlay {
+    opacity: 1;
+}
+
+/* ============================================================================
+   SVG LINE DRAWING ANIMATION
+   ============================================================================ */
+.draw-line {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 2s ease forwards;
+    animation-play-state: paused;
+}
+
+.draw-line.animate {
+    animation-play-state: running;
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Staggered line drawing */
+.draw-line:nth-child(1) { animation-delay: 0s; }
+.draw-line:nth-child(2) { animation-delay: 0.3s; }
+.draw-line:nth-child(3) { animation-delay: 0.6s; }
+.draw-line:nth-child(4) { animation-delay: 0.9s; }
+.draw-line:nth-child(5) { animation-delay: 1.2s; }
+
+/* ============================================================================
+   BLOB/GOOEY BACKGROUND
+   ============================================================================ */
+.blob-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -2;
+    overflow: hidden;
+    filter: url('#goo');
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.6;
+    animation: blobFloat 20s ease-in-out infinite;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--primary);
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 350px;
+    height: 350px;
+    background: var(--accent);
+    top: 50%;
+    right: 10%;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: var(--purple);
+    bottom: 20%;
+    left: 40%;
+    animation-delay: -10s;
+}
+
+@keyframes blobFloat {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+    25% {
+        transform: translate(50px, -30px) scale(1.1);
+        border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    }
+    50% {
+        transform: translate(-20px, 20px) scale(0.9);
+        border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+    }
+    75% {
+        transform: translate(30px, 40px) scale(1.05);
+        border-radius: 60% 40% 30% 70% / 30% 60% 40% 70%;
+    }
+}
+
+/* ============================================================================
+   SMOOTH SCROLL (Lenis-style) CSS Enhancements
+   ============================================================================ */
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+/* ============================================================================
+   TEXT SCRAMBLE/DECRYPT EFFECT
+   ============================================================================ */
+.text-scramble {
+    font-family: monospace;
+}
+
+.text-scramble .char {
+    display: inline-block;
+    animation: scrambleChar 0.1s ease;
+}
+
+/* ============================================================================
+   DIRECTION-AWARE HOVER
+   ============================================================================ */
+.direction-aware {
+    position: relative;
+    overflow: hidden;
+}
+
+.direction-aware .hover-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent-glow);
+    transform: translateX(-101%);
+    transition: transform 0.4s var(--ease-out);
+    pointer-events: none;
+}
+
+.direction-aware:hover .hover-fill {
+    transform: translateX(0);
+}
+
+.direction-aware[data-direction="right"]:hover .hover-fill {
+    transform: translateX(0);
+}
+
+.direction-aware[data-direction="left"]:hover .hover-fill {
+    transform: translateX(0);
+}
+
+/* ============================================================================
+   VARIABLE FONT WEIGHT ANIMATION
+   ============================================================================ */
+@supports (font-variation-settings: 'wght' 400) {
+    .weight-animate {
+        font-variation-settings: 'wght' 400;
+        transition: font-variation-settings 0.3s ease;
+    }
+
+    .weight-animate:hover {
+        font-variation-settings: 'wght' 700;
+    }
+
+    .weight-breathe {
+        animation: weightBreathe 3s ease-in-out infinite;
+    }
+
+    @keyframes weightBreathe {
+        0%, 100% { font-variation-settings: 'wght' 400; }
+        50% { font-variation-settings: 'wght' 600; }
+    }
+}
+
+/* ============================================================================
+   CLIP-PATH REVEALS
+   ============================================================================ */
+.clip-reveal {
+    clip-path: circle(0% at 50% 50%);
+    transition: clip-path 0.8s var(--ease-out);
+}
+
+.clip-reveal.revealed {
+    clip-path: circle(150% at 50% 50%);
+}
+
+.clip-reveal-left {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.6s var(--ease-out);
+}
+
+.clip-reveal-left.revealed {
+    clip-path: inset(0 0 0 0);
+}
+
+/* ============================================================================
+   STACKED CARDS
+   ============================================================================ */
+.stacked-cards {
+    position: relative;
+    perspective: 1000px;
+}
+
+.stacked-card {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.5s var(--ease-out);
+}
+
+.stacked-card:nth-child(1) { transform: translateY(0) scale(1); z-index: 3; }
+.stacked-card:nth-child(2) { transform: translateY(10px) scale(0.95); z-index: 2; }
+.stacked-card:nth-child(3) { transform: translateY(20px) scale(0.9); z-index: 1; }
+
+.stacked-cards:hover .stacked-card:nth-child(1) { transform: translateY(-20px) scale(1) rotateX(-5deg); }
+.stacked-cards:hover .stacked-card:nth-child(2) { transform: translateY(0) scale(0.97); }
+.stacked-cards:hover .stacked-card:nth-child(3) { transform: translateY(20px) scale(0.94); }
+
+/* ============================================================================
    RESPONSIVE
    ============================================================================ */
 
