@@ -433,6 +433,21 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 
 # Changelog
 
+### December 12, 2025 - Centralized CSS Form System & UI Fixes
+- **Unified Form System**: All forms now controlled from `styles.css` (lines 2046-2238)
+  - `.form-group`, `.form-row` for consistent layouts
+  - `.btn`, `.btn-primary`, `.btn-success`, `.btn-secondary`, `.btn-danger`
+  - `.prefilled`, `.ssot-badge` for SSOT auto-filled fields
+  - Form validation states (`.error`, `.success`)
+  - `.form-check` for checkboxes/radios
+- **Fixed Slow Scrolling**: Disabled custom Lenis-style smooth scroll in `interactions.js`
+- **Fixed Narrow Modals**: Updated modal widths (600px standard, 900px wide)
+- **Template Class Prefixes**: Avoids CSS conflicts between pages
+  - Control Center: `cc-modal-*`
+  - Integrations: `int-modal-*`
+  - Digital Foreman: `df-modal-*`
+- **Global CSS Variables**: All templates now use `var(--bg-secondary)` instead of hardcoded colors
+
 ### December 12, 2025 - UX Overhaul (2025 Best Practices)
 - **Loading States**: Skeleton screens, button spinners for instant feedback
 - **Auto-Formatting**: Currency ($250,000), phone ((123) 456-7890) auto-format
