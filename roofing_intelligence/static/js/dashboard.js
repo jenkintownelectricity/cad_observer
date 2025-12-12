@@ -526,8 +526,8 @@ function openProject(projectId) {
         return;
     }
 
-    showToast(`Opening ${project.name}...`, 'info');
-    // TODO: Navigate to project detail page or open modal
+    // Navigate to projects page with project ID as parameter
+    window.location.href = `/projects?id=${projectId}`;
 }
 
 // ============================================================================

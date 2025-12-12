@@ -116,48 +116,50 @@
             <!-- Projects Grid -->
             <div class="projects-grid" id="projectsGrid">
                 {% for project in projects %}
-                <div class="project-card status-green" data-project="{{ project.filename }}">
+                <div class="project-card status-{% if project.status == 'complete' or project.status == 'awarded' %}green{% elif project.status == 'bidding' %}yellow{% else %}green{% endif %}" data-project="{{ project.filename }}" data-source="{{ project.source|default('local') }}">
                     <div class="project-header">
                         <div>
                             <div class="project-name">{{ project.name }}</div>
-                            <div class="project-client">{{ project.created[:10] if project.created else 'Unknown date' }}</div>
+                            <div class="project-client">{% if project.client %}{{ project.client }}{% elif project.created %}{{ project.created[:10] }}{% else %}Unknown{% endif %}</div>
                         </div>
                         <div class="project-status">
-                            <span class="traffic-light green"></span>
+                            <span class="traffic-light {% if project.status == 'complete' or project.status == 'awarded' %}green{% elif project.status == 'bidding' %}yellow{% else %}green{% endif %}"></span>
                         </div>
                     </div>
                     <div class="project-stats">
+                        {% if project.value %}
+                        <div class="project-stat">
+                            <span class="project-stat-value">{{ project.value }}</span>
+                            <span class="project-stat-label">Contract</span>
+                        </div>
+                        {% endif %}
                         <div class="project-stat">
                             <span class="project-stat-value">{{ project.documents }}</span>
                             <span class="project-stat-label">Documents</span>
                         </div>
                         <div class="project-stat">
-                            <span class="project-stat-value">-</span>
-                            <span class="project-stat-label">Sheets</span>
-                        </div>
-                        <div class="project-stat">
-                            <span class="project-stat-value">-</span>
-                            <span class="project-stat-label">Elements</span>
+                            <span class="project-stat-value">{{ project.status|default('active')|title }}</span>
+                            <span class="project-stat-label">Status</span>
                         </div>
                     </div>
                     <div class="project-progress">
                         <div class="progress-header">
-                            <span class="progress-label">Analysis Complete</span>
-                            <span class="progress-value">100%</span>
+                            <span class="progress-label">{% if project.source == 'api' %}Project{% else %}Analysis{% endif %}</span>
+                            <span class="progress-value">{% if project.status == 'complete' %}100%{% elif project.status == 'in_progress' %}50%{% else %}0%{% endif %}</span>
                         </div>
                         <div class="progress-bar-bg">
-                            <div class="progress-bar-fill green" style="width: 100%"></div>
+                            <div class="progress-bar-fill {% if project.status == 'complete' %}green{% elif project.status == 'in_progress' %}blue{% else %}yellow{% endif %}" style="width: {% if project.status == 'complete' %}100%{% elif project.status == 'in_progress' %}50%{% else %}10%{% endif %}"></div>
                         </div>
                     </div>
                     <div class="project-actions-row">
-                        <button class="action-btn-sm primary" onclick="viewProject('{{ project.filename }}')">
+                        <button class="action-btn-sm primary" onclick="viewProject('{{ project.filename }}', '{{ project.source|default('local') }}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
                             View
                         </button>
-                        <button class="action-btn-sm" onclick="deleteProject('{{ project.filename }}')">
+                        <button class="action-btn-sm" onclick="deleteProject('{{ project.filename }}', '{{ project.source|default('local') }}')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="3 6 5 6 21 6"></polyline>
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -340,105 +342,181 @@
         }
 
         // View project details
-        function viewProject(filename) {
-            fetch(`/api/project/load/${filename}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        showToast(data.error, 'error');
-                        return;
-                    }
+        function viewProject(filename, source = 'local') {
+            if (source === 'api') {
+                // Fetch API project details
+                fetch(`/api/company/projects`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const project = data.projects.find(p => p.id === filename);
+                        if (!project) {
+                            showToast('Project not found', 'error');
+                            return;
+                        }
+                        showProjectModal(project, 'api');
+                    })
+                    .catch(error => {
+                        showToast('Failed to load project', 'error');
+                        console.error(error);
+                    });
+            } else {
+                // Fetch local project
+                fetch(`/api/project/load/${filename}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            showToast(data.error, 'error');
+                            return;
+                        }
+                        showProjectModal(data, 'local');
+                    })
+                    .catch(error => {
+                        showToast('Failed to load project', 'error');
+                        console.error(error);
+                    });
+            }
+        }
 
-                    const modal = document.getElementById('project-modal');
-                    const title = document.getElementById('project-modal-title');
-                    const body = document.getElementById('project-modal-body');
+        function showProjectModal(data, source) {
+            const modal = document.getElementById('project-modal');
+            const title = document.getElementById('project-modal-title');
+            const body = document.getElementById('project-modal-body');
 
-                    title.textContent = data.name || 'Project Details';
+            title.textContent = data.name || 'Project Details';
 
-                    body.innerHTML = `
-                        <div class="project-detail-grid">
-                            <div class="detail-section">
-                                <h4>Project Information</h4>
-                                <div class="detail-item">
-                                    <span class="detail-label">Name</span>
-                                    <span class="detail-value">${data.name || 'Untitled'}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Created</span>
-                                    <span class="detail-value">${data.created ? new Date(data.created).toLocaleDateString() : 'Unknown'}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Documents</span>
-                                    <span class="detail-value">${data.documents ? data.documents.length : 0}</span>
-                                </div>
+            if (source === 'api') {
+                // API project display
+                body.innerHTML = `
+                    <div class="project-detail-grid">
+                        <div class="detail-section">
+                            <h4>Project Information</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Name</span>
+                                <span class="detail-value">${data.name || 'Untitled'}</span>
                             </div>
-
-                            ${data.results ? `
-                            <div class="detail-section">
-                                <h4>Analysis Results</h4>
-                                <div class="detail-item">
-                                    <span class="detail-label">Drawings Analyzed</span>
-                                    <span class="detail-value">${data.results.drawings ? data.results.drawings.length : 0}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Assemblies Found</span>
-                                    <span class="detail-value">${data.results.assemblies ? data.results.assemblies.length : 0}</span>
-                                </div>
-                                ${data.results.filter_stats ? `
-                                <div class="detail-item">
-                                    <span class="detail-label">Pages Scanned</span>
-                                    <span class="detail-value">${data.results.filter_stats.total_pages_scanned || 0}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Cost Savings</span>
-                                    <span class="detail-value" style="color: var(--success);">${data.results.filter_stats.savings_percent || 0}%</span>
-                                </div>
-                                ` : ''}
+                            <div class="detail-item">
+                                <span class="detail-label">Client</span>
+                                <span class="detail-value">${data.client || '-'}</span>
                             </div>
-                            ` : ''}
+                            <div class="detail-item">
+                                <span class="detail-label">Contract Value</span>
+                                <span class="detail-value">${data.value || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Status</span>
+                                <span class="detail-value">${data.phase || data.status || 'Bidding'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Created</span>
+                                <span class="detail-value">${data.created ? new Date(data.created).toLocaleDateString() : 'Unknown'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 1.5rem;">
+                        <button class="btn-secondary" onclick="closeProjectModal()">Close</button>
+                        <a href="/dashboard" class="btn-primary">Open Dashboard</a>
+                    </div>
+                `;
+            } else {
+                // Local analysis project display
+                body.innerHTML = `
+                    <div class="project-detail-grid">
+                        <div class="detail-section">
+                            <h4>Project Information</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Name</span>
+                                <span class="detail-value">${data.name || 'Untitled'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Created</span>
+                                <span class="detail-value">${data.created ? new Date(data.created).toLocaleDateString() : 'Unknown'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Documents</span>
+                                <span class="detail-value">${data.documents ? data.documents.length : 0}</span>
+                            </div>
+                        </div>
 
-                            ${data.notes ? `
-                            <div class="detail-section">
-                                <h4>Notes</h4>
-                                <p style="color: var(--text-secondary);">${data.notes}</p>
+                        ${data.results ? `
+                        <div class="detail-section">
+                            <h4>Analysis Results</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Drawings Analyzed</span>
+                                <span class="detail-value">${data.results.drawings ? data.results.drawings.length : 0}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Assemblies Found</span>
+                                <span class="detail-value">${data.results.assemblies ? data.results.assemblies.length : 0}</span>
+                            </div>
+                            ${data.results.filter_stats ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Pages Scanned</span>
+                                <span class="detail-value">${data.results.filter_stats.total_pages_scanned || 0}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Cost Savings</span>
+                                <span class="detail-value" style="color: var(--success);">${data.results.filter_stats.savings_percent || 0}%</span>
                             </div>
                             ` : ''}
                         </div>
+                        ` : ''}
 
-                        <div class="form-actions" style="margin-top: 1.5rem;">
-                            <button class="btn-secondary" onclick="closeProjectModal()">Close</button>
-                            <a href="/analysis" class="btn-primary">Open in Analysis</a>
+                        ${data.notes ? `
+                        <div class="detail-section">
+                            <h4>Notes</h4>
+                            <p style="color: var(--text-secondary);">${data.notes}</p>
                         </div>
-                    `;
+                        ` : ''}
+                    </div>
 
-                    modal.classList.remove('hidden');
-                })
-                .catch(error => {
-                    showToast('Failed to load project', 'error');
-                    console.error(error);
-                });
+                    <div class="form-actions" style="margin-top: 1.5rem;">
+                        <button class="btn-secondary" onclick="closeProjectModal()">Close</button>
+                        <a href="/analysis" class="btn-primary">Open in Analysis</a>
+                    </div>
+                `;
+            }
+
+            modal.classList.remove('hidden');
         }
 
         function closeProjectModal() {
             document.getElementById('project-modal').classList.add('hidden');
         }
 
-        function deleteProject(filename) {
+        function deleteProject(filename, source = 'local') {
             if (!confirm('Delete this project? This cannot be undone.')) return;
 
-            fetch(`/api/project/delete/${filename}`, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showToast('Project deleted', 'success');
-                        setTimeout(() => location.reload(), 500);
-                    } else {
-                        showToast(data.error || 'Delete failed', 'error');
-                    }
-                })
-                .catch(() => {
-                    showToast('Delete failed', 'error');
-                });
+            if (source === 'api') {
+                // Delete API project
+                fetch(`/api/company/projects/${filename}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Project deleted', 'success');
+                            setTimeout(() => location.reload(), 500);
+                        } else {
+                            showToast(data.error || 'Delete failed', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        showToast('Delete failed', 'error');
+                    });
+            } else {
+                // Delete local project
+                fetch(`/api/project/delete/${filename}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('Project deleted', 'success');
+                            setTimeout(() => location.reload(), 500);
+                        } else {
+                            showToast(data.error || 'Delete failed', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        showToast('Delete failed', 'error');
+                    });
+            }
         }
 
         function filterProjects(status) {

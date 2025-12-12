@@ -153,19 +153,46 @@ def integrations():
 @app.route('/projects')
 def projects():
     """Project management page."""
-    project_files = []
+    all_projects = []
+
+    # 1. Try to fetch from API (Supabase-backed projects)
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.list_projects()
+            for p in result.get('projects', []):
+                all_projects.append({
+                    'id': p['project_id'],
+                    'filename': p['project_id'],  # Use ID as filename for compatibility
+                    'name': p['name'],
+                    'client': p.get('gc_contact', {}).get('name', '') if p.get('gc_contact') else '',
+                    'value': f"${p.get('contract_amount', 0):,.0f}" if p.get('contract_amount') else '',
+                    'status': p.get('status', 'bidding'),
+                    'created': p.get('created_at', ''),
+                    'documents': 0,
+                    'source': 'api'
+                })
+        except Exception as e:
+            print(f"Error fetching API projects: {e}")
+
+    # 2. Also load local JSON files (analysis projects)
     for f in os.listdir(app.config['PROJECTS_FOLDER']):
         if f.endswith('.json'):
             filepath = os.path.join(app.config['PROJECTS_FOLDER'], f)
-            with open(filepath, 'r') as pf:
-                project_data = json.load(pf)
-                project_files.append({
-                    'filename': f,
-                    'name': project_data.get('name', f.replace('.json', '')),
-                    'created': project_data.get('created', 'Unknown'),
-                    'documents': len(project_data.get('documents', []))
-                })
-    return render_template('projects.html', projects=project_files)
+            try:
+                with open(filepath, 'r') as pf:
+                    project_data = json.load(pf)
+                    all_projects.append({
+                        'id': f,
+                        'filename': f,
+                        'name': project_data.get('name', f.replace('.json', '')),
+                        'created': project_data.get('created', 'Unknown'),
+                        'documents': len(project_data.get('documents', [])),
+                        'source': 'local'
+                    })
+            except Exception as e:
+                print(f"Error loading project {f}: {e}")
+
+    return render_template('projects.html', projects=all_projects)
 
 
 # =============================================================================
@@ -533,6 +560,27 @@ def update_company_project(project_id):
         if str(project['id']) == str(project_id):
             project.update(data)
             return jsonify({'success': True, 'project': project})
+    return jsonify({'error': 'Project not found'}), 404
+
+
+@app.route('/api/company/projects/<project_id>', methods=['DELETE'])
+def delete_company_project(project_id):
+    """Delete a company project."""
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.delete_project(str(project_id))
+            if result:
+                return jsonify({'success': True})
+            else:
+                return jsonify({'error': 'Failed to delete project'}), 500
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
+
+    # Fallback to local
+    for i, project in enumerate(COMPANY_DATA['projects']):
+        if str(project['id']) == str(project_id):
+            COMPANY_DATA['projects'].pop(i)
+            return jsonify({'success': True})
     return jsonify({'error': 'Project not found'}), 404
 
 
