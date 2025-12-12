@@ -21,19 +21,30 @@ from datetime import datetime
 import PyPDF2
 
 # Import API client for backend connection
-try:
-    import api_client
-    API_AVAILABLE = api_client.is_api_available()
-    if API_AVAILABLE:
-        print("✓ Connected to ROOFIO Backend API")
-        # Set agency ID (use env var or default)
-        agency_id = os.getenv('ROOFIO_AGENCY_ID', '3cfd5441-d5fc-4857-8fb9-3dc7be7a37d5')
-        api_client.set_agency_id(agency_id)
-        print(f"  Agency ID: {agency_id}")
-except ImportError:
-    API_AVAILABLE = False
-    api_client = None
-    print("⚠ API client not available, using local storage")
+api_client = None
+API_AVAILABLE = False
+
+def check_api_connection():
+    """Check API connection and set agency ID"""
+    global API_AVAILABLE, api_client
+    try:
+        import api_client as ac
+        api_client = ac
+        API_AVAILABLE = api_client.is_api_available()
+        if API_AVAILABLE:
+            # Set agency ID (use env var or default)
+            agency_id = os.getenv('ROOFIO_AGENCY_ID', '3cfd5441-d5fc-4857-8fb9-3dc7be7a37d5')
+            api_client.set_agency_id(agency_id)
+            print(f"✓ Connected to ROOFIO Backend API (Agency: {agency_id})")
+        else:
+            print("⚠ Backend API not available, using local storage")
+    except ImportError as e:
+        print(f"⚠ API client import error: {e}")
+    except Exception as e:
+        print(f"⚠ API connection error: {e}")
+
+# Try to connect on startup (will retry on each request if needed)
+check_api_connection()
 
 # Import parsers
 from parsers.roof_page_filter import filter_roof_pages, get_roof_page_numbers
@@ -494,12 +505,32 @@ def create_company_project():
     return jsonify({'success': True, 'project': project})
 
 
-@app.route('/api/company/projects/<int:project_id>', methods=['PUT'])
+@app.route('/api/company/projects/<project_id>', methods=['PUT'])
 def update_company_project(project_id):
     """Update a company project."""
     data = request.json
+
+    if API_AVAILABLE and api_client:
+        try:
+            # Map frontend fields to API fields
+            update_data = {}
+            if 'name' in data:
+                update_data['name'] = data['name']
+            if 'status' in data:
+                # Map traffic light status to project status
+                status_map = {'green': 'complete', 'yellow': 'in_progress', 'red': 'bidding'}
+                update_data['status'] = status_map.get(data['status'], data['status'])
+            if 'phase' in data:
+                update_data['status'] = data['phase'].lower().replace(' ', '_')
+
+            result = api_client.update_project(str(project_id), **update_data)
+            return jsonify({'success': True, 'project': result})
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
+
+    # Fallback to local
     for project in COMPANY_DATA['projects']:
-        if project['id'] == project_id:
+        if str(project['id']) == str(project_id):
             project.update(data)
             return jsonify({'success': True, 'project': project})
     return jsonify({'error': 'Project not found'}), 404
@@ -509,6 +540,7 @@ def update_company_project(project_id):
 def get_company_activity():
     """Get company activity feed."""
     limit = request.args.get('limit', 20, type=int)
+    # Activities stay local for now (audit log integration later)
     return jsonify({'activities': COMPANY_DATA['activities'][:limit]})
 
 
@@ -533,6 +565,34 @@ def log_company_activity():
 @app.route('/api/company/seats', methods=['GET'])
 def get_company_seats():
     """Get all seat statuses."""
+    if API_AVAILABLE and api_client:
+        try:
+            configs = api_client.list_position_configs()
+            # Transform position configs to seats format
+            seats = {}
+            position_map = {
+                'project_manager': 'pm',
+                'estimator': 'estimator',
+                'operations': 'operations',
+                'accounting': 'accounting',
+                'superintendent': 'field',
+                'shop_drawings': 'shop-drawings'
+            }
+            for config in configs:
+                pos = config.get('position', '')
+                seat_key = position_map.get(pos, pos)
+                seats[seat_key] = {
+                    'user': 'Active' if config.get('mode') != 'off' else 'Offline',
+                    'status': 'online' if config.get('mode') != 'off' else 'offline',
+                    'mode': config.get('mode', 'assist')
+                }
+            # Fill in defaults for any missing seats
+            for key in ['pm', 'estimator', 'operations', 'accounting', 'field', 'shop-drawings']:
+                if key not in seats:
+                    seats[key] = COMPANY_DATA['seats'].get(key, {'user': 'Active', 'status': 'online'})
+            return jsonify({'seats': seats})
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
     return jsonify({'seats': COMPANY_DATA['seats']})
 
 
@@ -540,6 +600,27 @@ def get_company_seats():
 def update_seat_status(role):
     """Update a seat's status."""
     data = request.json
+
+    if API_AVAILABLE and api_client:
+        try:
+            # Map seat role to position name
+            role_map = {
+                'pm': 'project_manager',
+                'estimator': 'estimator',
+                'operations': 'operations',
+                'accounting': 'accounting',
+                'field': 'superintendent',
+                'shop-drawings': 'shop_drawings'
+            }
+            position = role_map.get(role, role)
+
+            if 'mode' in data:
+                result = api_client.update_position_mode(position, data['mode'])
+                return jsonify({'success': True, 'seat': result})
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
+
+    # Fallback to local
     if role in COMPANY_DATA['seats']:
         COMPANY_DATA['seats'][role].update(data)
         return jsonify({'success': True, 'seat': COMPANY_DATA['seats'][role]})
@@ -549,6 +630,30 @@ def update_seat_status(role):
 @app.route('/api/company/metrics', methods=['GET'])
 def get_company_metrics():
     """Get company dashboard metrics."""
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.list_projects()
+            projects = result.get('projects', [])
+
+            active_projects = len([p for p in projects if p.get('status') not in ['complete', 'cancelled']])
+            pending_bids = len([p for p in projects if p.get('status') in ['bidding']])
+            roadblocks = len([p for p in projects if p.get('status') in ['cancelled']])
+
+            # Calculate revenue from contract amounts
+            total_value = sum(float(p.get('contract_amount') or 0) for p in projects if p.get('status') == 'in_progress')
+            revenue_str = f"${total_value/1000:.0f}K" if total_value >= 1000 else f"${total_value:.0f}"
+
+            return jsonify({
+                'active_projects': active_projects,
+                'pending_bids': pending_bids,
+                'roadblocks': roadblocks,
+                'revenue_mtd': revenue_str,
+                'total_projects': result.get('total', len(projects))
+            })
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
+
+    # Fallback to local
     active_projects = len([p for p in COMPANY_DATA['projects'] if p.get('status') != 'completed'])
     pending_bids = len([p for p in COMPANY_DATA['projects'] if p.get('phase') in ['Bidding', 'Estimating']])
     roadblocks = len([p for p in COMPANY_DATA['projects'] if p.get('status') == 'red'])
@@ -557,7 +662,7 @@ def get_company_metrics():
         'active_projects': active_projects,
         'pending_bids': pending_bids,
         'roadblocks': roadblocks,
-        'revenue_mtd': '$847K'  # Would calculate from actual data
+        'revenue_mtd': '$847K'
     })
 
 
