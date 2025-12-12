@@ -304,6 +304,118 @@ class PositionConfig(Base):
 
 
 # =============================================================================
+# CUSTOM FORM TEMPLATES
+# =============================================================================
+
+class FormTemplate(Base):
+    """
+    Custom form templates - allows users to use their own form formats.
+    Can be created by:
+    1. Scanning/photographing an existing paper form
+    2. Uploading a PDF/image of their template
+    3. AI extraction of fields from scanned document
+    """
+    __tablename__ = "form_templates"
+
+    template_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    agency_id = Column(UUID(as_uuid=True), ForeignKey("agencies.agency_id"), nullable=False)
+
+    # Template info
+    name = Column(String(255), nullable=False)
+    form_type = Column(String(100), nullable=False)  # daily_report, inspection, jha, etc.
+    description = Column(Text)
+
+    # Format preference
+    is_custom = Column(Boolean, default=True)  # True = user's format, False = ROOFIO format
+    is_default = Column(Boolean, default=False)  # Default template for this form_type
+
+    # Source document (scanned/uploaded)
+    source_file_url = Column(String(500))  # URL to original uploaded file
+    source_file_type = Column(String(50))  # pdf, jpg, png, heic
+
+    # Extracted/defined fields
+    fields = Column(JSON, default=list)  # [{name, type, position, required, default_value}]
+
+    # Layout info (for rendering)
+    layout = Column(JSON)  # {columns, rows, field_positions, styles}
+
+    # Our flavor additions (always present even on custom forms)
+    roofio_additions = Column(JSON, default=dict)  # {logo: true, timestamp: true, gps: true}
+
+    # Preview image
+    preview_url = Column(String(500))
+
+    # Usage stats
+    times_used = Column(Integer, default=0)
+
+    # Status
+    status = Column(String(50), default="active")  # active, archived, draft
+
+    # Created by
+    created_by = Column(UUID(as_uuid=True), ForeignKey("users.user_id"))
+
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Indexes
+    __table_args__ = (
+        Index("idx_form_template_agency", "agency_id"),
+        Index("idx_form_template_type", "form_type"),
+        Index("idx_form_template_default", "agency_id", "form_type", "is_default"),
+    )
+
+
+class FormSubmission(Base):
+    """
+    Submitted form instances - actual filled-out forms.
+    Links to either custom or ROOFIO template.
+    """
+    __tablename__ = "form_submissions"
+
+    submission_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    agency_id = Column(UUID(as_uuid=True), ForeignKey("agencies.agency_id"), nullable=False)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.project_id"))
+    template_id = Column(UUID(as_uuid=True), ForeignKey("form_templates.template_id"))
+
+    # Form type (in case template is deleted)
+    form_type = Column(String(100), nullable=False)
+
+    # Filled data
+    data = Column(JSON, nullable=False)  # {field_name: value, ...}
+
+    # Attachments (photos, signatures)
+    attachments = Column(JSON, default=list)  # [{name, url, type}]
+
+    # Signature
+    signature_url = Column(String(500))
+    signed_by = Column(String(255))
+    signed_at = Column(DateTime)
+
+    # GPS & metadata
+    gps_latitude = Column(Numeric(10, 8))
+    gps_longitude = Column(Numeric(11, 8))
+    device_info = Column(JSON)
+
+    # Status
+    status = Column(String(50), default="draft")  # draft, submitted, approved, rejected
+
+    # Submitted by
+    submitted_by = Column(UUID(as_uuid=True), ForeignKey("users.user_id"))
+
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    submitted_at = Column(DateTime)
+
+    # Indexes
+    __table_args__ = (
+        Index("idx_form_sub_agency", "agency_id"),
+        Index("idx_form_sub_project", "project_id"),
+        Index("idx_form_sub_type", "form_type"),
+    )
+
+
+# =============================================================================
 # EXPORTS
 # =============================================================================
 
@@ -314,4 +426,6 @@ __all__ = [
     "AuditLog",
     "AIActionLog",
     "PositionConfig",
+    "FormTemplate",
+    "FormSubmission",
 ]

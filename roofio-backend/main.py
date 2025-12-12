@@ -21,6 +21,8 @@ from api.routes import (
     project_router,
     position_router,
     ai_router,
+    form_router,
+    scan_router,
 )
 
 
@@ -84,6 +86,8 @@ app.include_router(user_router)
 app.include_router(project_router)
 app.include_router(position_router)
 app.include_router(ai_router)
+app.include_router(form_router)
+app.include_router(scan_router)
 
 
 # Root endpoint

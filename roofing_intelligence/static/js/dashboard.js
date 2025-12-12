@@ -1,6 +1,7 @@
 /**
  * Company Dashboard - Roofing OS
  * Role-based seats, project management, activity tracking
+ * Connected to ROOFIO Backend API
  */
 
 // ============================================================================
@@ -9,8 +10,9 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    loadProjects();
+    loadProjectsFromAPI();
     loadActivityFeed();
+    loadMetricsFromAPI();
     initFilterButtons();
     startAutoRefresh();
 });
@@ -33,8 +35,10 @@ function toggleTheme() {
 }
 
 // ============================================================================
-// SAMPLE DATA
+// SAMPLE DATA (Fallback when API unavailable)
 // ============================================================================
+
+let projectsData = [];
 
 const sampleProjects = [
     {
@@ -48,66 +52,6 @@ const sampleProjects = [
         initials: 'MS',
         dueDate: '2025-01-15',
         phase: 'Installation'
-    },
-    {
-        id: 2,
-        name: 'UMass Waterproofing',
-        client: 'Gilbane Building',
-        status: 'yellow',
-        value: '$280,000',
-        progress: 45,
-        assignee: 'John D.',
-        initials: 'JD',
-        dueDate: '2025-02-01',
-        phase: 'Submittals'
-    },
-    {
-        id: 3,
-        name: 'Boston Medical Center',
-        client: 'Suffolk Construction',
-        status: 'red',
-        value: '$620,000',
-        progress: 15,
-        assignee: 'Sarah K.',
-        initials: 'SK',
-        dueDate: '2024-12-20',
-        phase: 'Shop Drawings'
-    },
-    {
-        id: 4,
-        name: 'Hartford Plaza',
-        client: 'Shawmut Design',
-        status: 'green',
-        value: '$185,000',
-        progress: 90,
-        assignee: 'Mike S.',
-        initials: 'MS',
-        dueDate: '2024-12-15',
-        phase: 'Closeout'
-    },
-    {
-        id: 5,
-        name: 'MIT Dormitory',
-        client: 'Consigli Construction',
-        status: 'yellow',
-        value: '$340,000',
-        progress: 30,
-        assignee: 'John D.',
-        initials: 'JD',
-        dueDate: '2025-03-01',
-        phase: 'Estimating'
-    },
-    {
-        id: 6,
-        name: 'Providence Hospital',
-        client: 'Dimeo Construction',
-        status: 'green',
-        value: '$520,000',
-        progress: 55,
-        assignee: 'Sarah K.',
-        initials: 'SK',
-        dueDate: '2025-02-15',
-        phase: 'Procurement'
     }
 ];
 
@@ -115,44 +59,9 @@ const sampleActivities = [
     {
         type: 'success',
         icon: 'check-circle',
-        text: '<strong>Mike S.</strong> completed daily report for JHU Library',
-        time: '5 min ago',
-        project: 'JHU Library'
-    },
-    {
-        type: 'warning',
-        icon: 'alert-triangle',
-        text: '<strong>RFI #12</strong> requires response by end of day',
-        time: '15 min ago',
-        project: 'UMass'
-    },
-    {
-        type: 'info',
-        icon: 'file-text',
-        text: '<strong>John D.</strong> submitted bid for MIT Dormitory',
-        time: '1 hour ago',
-        project: 'MIT Dormitory'
-    },
-    {
-        type: 'error',
-        icon: 'x-circle',
-        text: 'Shop drawing revision requested for <strong>Boston Medical</strong>',
-        time: '2 hours ago',
-        project: 'Boston Medical'
-    },
-    {
-        type: 'success',
-        icon: 'dollar-sign',
-        text: 'Payment received: <strong>$45,000</strong> from Hartford Plaza',
-        time: '3 hours ago',
-        project: 'Hartford Plaza'
-    },
-    {
-        type: 'info',
-        icon: 'truck',
-        text: 'Material delivery scheduled for JHU Library - Tomorrow 7AM',
-        time: '4 hours ago',
-        project: 'JHU Library'
+        text: '<strong>System</strong> Dashboard connected to API',
+        time: 'Just now',
+        project: 'System'
     }
 ];
 
@@ -175,8 +84,7 @@ const roleSkills = {
         ],
         tasks: [
             { name: 'Respond to RFI #12', project: 'UMass', priority: 'high', due: 'Today 5PM' },
-            { name: 'Review submittal package', project: 'JHU Library', priority: 'medium', due: 'Tomorrow' },
-            { name: 'Schedule kickoff meeting', project: 'MIT Dorm', priority: 'low', due: 'This Week' }
+            { name: 'Review submittal package', project: 'JHU Library', priority: 'medium', due: 'Tomorrow' }
         ]
     },
     estimator: {
@@ -190,9 +98,7 @@ const roleSkills = {
             { name: 'Value Engineering', status: 'learning' }
         ],
         tasks: [
-            { name: 'Complete bid for Boston Medical', project: 'Boston Medical', priority: 'high', due: 'Today 5PM' },
-            { name: 'Update pricing sheet', project: 'MIT Dorm', priority: 'medium', due: 'Tomorrow' },
-            { name: 'Review subcontractor bids', project: 'Providence', priority: 'low', due: 'This Week' }
+            { name: 'Complete bid for Boston Medical', project: 'Boston Medical', priority: 'high', due: 'Today 5PM' }
         ]
     },
     operations: {
@@ -206,8 +112,7 @@ const roleSkills = {
             { name: 'Resource Planning', status: 'learning' }
         ],
         tasks: [
-            { name: 'Reschedule Crew 3 for weather', project: 'UMass', priority: 'medium', due: 'Today' },
-            { name: 'Confirm material delivery', project: 'JHU Library', priority: 'low', due: 'Tomorrow' }
+            { name: 'Reschedule Crew 3 for weather', project: 'UMass', priority: 'medium', due: 'Today' }
         ]
     },
     accounting: {
@@ -221,9 +126,7 @@ const roleSkills = {
             { name: 'Financial Reporting', status: 'learning' }
         ],
         tasks: [
-            { name: 'Follow up on Hartford payment', project: 'Hartford Plaza', priority: 'high', due: 'Today' },
-            { name: 'Process payroll', project: 'Company', priority: 'high', due: 'Friday' },
-            { name: 'Submit invoice', project: 'JHU Library', priority: 'medium', due: 'This Week' }
+            { name: 'Follow up on Hartford payment', project: 'Hartford Plaza', priority: 'high', due: 'Today' }
         ]
     },
     field: {
@@ -237,9 +140,7 @@ const roleSkills = {
             { name: 'Problem Solving', status: 'active' }
         ],
         tasks: [
-            { name: 'Complete daily report', project: 'JHU Library', priority: 'medium', due: 'End of Day' },
-            { name: 'Safety inspection', project: 'UMass', priority: 'medium', due: 'Morning' },
-            { name: 'Quality walkthrough', project: 'Hartford Plaza', priority: 'low', due: 'This Week' }
+            { name: 'Complete daily report', project: 'JHU Library', priority: 'medium', due: 'End of Day' }
         ]
     },
     'shop-drawings': {
@@ -253,69 +154,157 @@ const roleSkills = {
             { name: 'Submittal Packages', status: 'active' }
         ],
         tasks: [
-            { name: 'Complete parapet details', project: 'Boston Medical', priority: 'high', due: 'Monday' },
-            { name: 'Revise curb flashing', project: 'MIT Dorm', priority: 'medium', due: 'This Week' },
-            { name: 'Update cover sheet', project: 'JHU Library', priority: 'low', due: 'Next Week' }
+            { name: 'Complete parapet details', project: 'Boston Medical', priority: 'high', due: 'Monday' }
         ]
     }
 };
 
 // ============================================================================
-// PROJECT LOADING
+// API FUNCTIONS
 // ============================================================================
 
-function loadProjects() {
+async function loadProjectsFromAPI() {
     const grid = document.getElementById('projects-grid');
     if (!grid) return;
 
-    grid.innerHTML = sampleProjects.map(project => createProjectCard(project)).join('');
+    try {
+        const response = await fetch('/api/company/projects');
+        if (response.ok) {
+            const data = await response.json();
+            projectsData = data.projects || [];
+
+            if (projectsData.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">No projects yet</p>
+                        <button class="btn btn-primary" onclick="openNewProject()">Create First Project</button>
+                    </div>
+                `;
+            } else {
+                grid.innerHTML = projectsData.map(project => createProjectCard(project)).join('');
+            }
+            console.log('✓ Loaded', projectsData.length, 'projects from API');
+        } else {
+            throw new Error('API response not OK');
+        }
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        // Fallback to sample data
+        projectsData = sampleProjects;
+        grid.innerHTML = projectsData.map(project => createProjectCard(project)).join('');
+    }
 }
 
+async function loadMetricsFromAPI() {
+    try {
+        const response = await fetch('/api/company/metrics');
+        if (response.ok) {
+            const data = await response.json();
+
+            const activeProjects = document.getElementById('active-projects');
+            const pendingBids = document.getElementById('pending-bids');
+            const roadblocks = document.getElementById('roadblocks');
+            const revenueMtd = document.getElementById('revenue-mtd');
+
+            if (activeProjects) activeProjects.textContent = data.active_projects || 0;
+            if (pendingBids) pendingBids.textContent = data.pending_bids || 0;
+            if (roadblocks) roadblocks.textContent = data.roadblocks || 0;
+            if (revenueMtd) revenueMtd.textContent = data.revenue_mtd || '$0';
+
+            console.log('✓ Loaded metrics from API');
+        }
+    } catch (error) {
+        console.error('Error fetching metrics:', error);
+    }
+}
+
+async function createProjectAPI(projectData) {
+    try {
+        const response = await fetch('/api/company/projects', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(projectData)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✓ Project created:', data);
+            return data;
+        } else {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to create project');
+        }
+    } catch (error) {
+        console.error('Error creating project:', error);
+        throw error;
+    }
+}
+
+// ============================================================================
+// PROJECT CARD
+// ============================================================================
+
 function createProjectCard(project) {
+    // Handle both API format and legacy format
+    const id = project.id || project.project_id;
+    const name = project.name;
+    const client = project.client || '';
+    const status = project.status || 'yellow';
+    const value = project.value || '';
+    const progress = project.progress || 0;
+    const assignee = project.assignee || 'Unassigned';
+    const initials = assignee.substring(0, 2).toUpperCase();
+    const dueDate = project.dueDate || project.created || new Date().toISOString();
+    const phase = project.phase || 'Bidding';
+
     return `
-        <div class="project-card status-${project.status}" data-status="${project.status}" onclick="openProject(${project.id})">
+        <div class="project-card status-${status}" data-status="${status}" data-id="${id}" onclick="openProject('${id}')">
             <div class="project-header">
                 <div>
-                    <div class="project-name">${project.name}</div>
-                    <div class="project-client">${project.client}</div>
+                    <div class="project-name">${name}</div>
+                    <div class="project-client">${client}</div>
                 </div>
                 <div class="project-status">
-                    <span class="traffic-light ${project.status}"></span>
+                    <span class="traffic-light ${status}"></span>
                 </div>
             </div>
             <div class="project-stats">
                 <div class="project-stat">
-                    <span class="project-stat-value">${project.value}</span>
+                    <span class="project-stat-value">${value}</span>
                     <span class="project-stat-label">Contract</span>
                 </div>
                 <div class="project-stat">
-                    <span class="project-stat-value">${project.phase}</span>
+                    <span class="project-stat-value">${phase}</span>
                     <span class="project-stat-label">Phase</span>
                 </div>
                 <div class="project-stat">
-                    <span class="project-stat-value">${formatDate(project.dueDate)}</span>
+                    <span class="project-stat-value">${formatDate(dueDate)}</span>
                     <span class="project-stat-label">Due</span>
                 </div>
             </div>
             <div class="project-progress">
                 <div class="progress-header">
                     <span class="progress-label">Progress</span>
-                    <span class="progress-value">${project.progress}%</span>
+                    <span class="progress-value">${progress}%</span>
                 </div>
                 <div class="progress-bar-bg">
-                    <div class="progress-bar-fill ${project.status}" style="width: ${project.progress}%"></div>
+                    <div class="progress-bar-fill ${status}" style="width: ${progress}%"></div>
                 </div>
             </div>
             <div class="project-assignee">
-                <div class="assignee-avatar">${project.initials}</div>
-                <span class="assignee-name">${project.assignee}</span>
+                <div class="assignee-avatar">${initials}</div>
+                <span class="assignee-name">${assignee}</span>
             </div>
         </div>
     `;
 }
 
 function formatDate(dateStr) {
+    if (!dateStr) return 'TBD';
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return 'TBD';
     const month = date.toLocaleDateString('en-US', { month: 'short' });
     const day = date.getDate();
     return `${month} ${day}`;
@@ -329,11 +318,20 @@ function loadActivityFeed() {
     const feed = document.getElementById('activity-feed');
     if (!feed) return;
 
-    feed.innerHTML = sampleActivities.map(activity => createActivityItem(activity)).join('');
+    // Try to fetch from API
+    fetch('/api/company/activity')
+        .then(response => response.json())
+        .then(data => {
+            const activities = data.activities || sampleActivities;
+            feed.innerHTML = activities.map(activity => createActivityItem(activity)).join('');
+        })
+        .catch(() => {
+            feed.innerHTML = sampleActivities.map(activity => createActivityItem(activity)).join('');
+        });
 }
 
 function createActivityItem(activity) {
-    const iconSvg = getActivityIcon(activity.icon);
+    const iconSvg = getActivityIcon(activity.icon || 'file-text');
     return `
         <div class="activity-item">
             <div class="activity-icon ${activity.type}">
@@ -472,7 +470,7 @@ function closeNewProjectModal() {
     document.getElementById('new-project-form').reset();
 }
 
-function createProject(event) {
+async function createProject(event) {
     event.preventDefault();
 
     const name = document.getElementById('project-name').value;
@@ -481,29 +479,40 @@ function createProject(event) {
     const startDate = document.getElementById('project-start').value;
     const pm = document.getElementById('project-pm').value;
 
-    // Create new project object
-    const newProject = {
-        id: sampleProjects.length + 1,
-        name: name,
-        client: client || 'TBD',
-        status: 'yellow',
-        value: value || 'TBD',
-        progress: 0,
-        assignee: pm || 'Unassigned',
-        initials: pm ? pm.substring(0, 2).toUpperCase() : 'UN',
-        dueDate: startDate || new Date().toISOString().split('T')[0],
-        phase: 'Bidding'
-    };
+    // Show loading state
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Creating...';
+    submitBtn.disabled = true;
 
-    // Add to projects array
-    sampleProjects.unshift(newProject);
+    try {
+        // Call API to create project
+        const result = await createProjectAPI({
+            name: name,
+            client: client || '',
+            value: value || '',
+            startDate: startDate || '',
+            pm: pm || 'Unassigned'
+        });
 
-    // Reload projects grid
-    loadProjects();
+        if (result.success) {
+            // Reload projects from API
+            await loadProjectsFromAPI();
+            await loadMetricsFromAPI();
 
-    // Close modal and show toast
-    closeNewProjectModal();
-    showToast('Project created successfully!', 'success');
+            // Close modal and show success
+            closeNewProjectModal();
+            showToast('Project created successfully!', 'success');
+        } else {
+            throw new Error(result.error || 'Unknown error');
+        }
+    } catch (error) {
+        console.error('Failed to create project:', error);
+        showToast('Failed to create project: ' + error.message, 'error');
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
 }
 
 // ============================================================================
@@ -511,14 +520,14 @@ function createProject(event) {
 // ============================================================================
 
 function openProject(projectId) {
-    const project = sampleProjects.find(p => p.id === projectId);
-    if (!project) return;
+    const project = projectsData.find(p => (p.id || p.project_id) == projectId);
+    if (!project) {
+        showToast('Project not found', 'error');
+        return;
+    }
 
-    // For now, show a toast with project info
     showToast(`Opening ${project.name}...`, 'info');
-
-    // TODO: Navigate to project detail page
-    // window.location.href = `/project/${projectId}`;
+    // TODO: Navigate to project detail page or open modal
 }
 
 // ============================================================================
@@ -527,11 +536,11 @@ function openProject(projectId) {
 
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <span>${message}</span>
-    `;
+    toast.innerHTML = `<span>${message}</span>`;
     container.appendChild(toast);
 
     setTimeout(() => {
@@ -556,38 +565,17 @@ document.head.appendChild(style);
 
 function refreshDashboard() {
     showToast('Refreshing dashboard...', 'info');
-    loadProjects();
+    loadProjectsFromAPI();
     loadActivityFeed();
-    updateMetrics();
-}
-
-function updateMetrics() {
-    // Simulate metric updates
-    const activeProjects = document.getElementById('active-projects');
-    const pendingBids = document.getElementById('pending-bids');
-    const roadblocks = document.getElementById('roadblocks');
-
-    if (activeProjects) activeProjects.textContent = sampleProjects.length;
-    if (pendingBids) pendingBids.textContent = sampleProjects.filter(p => p.phase === 'Bidding' || p.phase === 'Estimating').length;
-    if (roadblocks) roadblocks.textContent = sampleProjects.filter(p => p.status === 'red').length;
+    loadMetricsFromAPI();
 }
 
 function startAutoRefresh() {
     // Update metrics every 30 seconds
-    setInterval(updateMetrics, 30000);
+    setInterval(loadMetricsFromAPI, 30000);
 
-    // Check for new activities every minute
-    setInterval(() => {
-        // Simulate new activity
-        const newActivity = {
-            type: 'info',
-            icon: 'file-text',
-            text: 'Dashboard updated automatically',
-            time: 'Just now',
-            project: 'System'
-        };
-        // Could add to feed here if needed
-    }, 60000);
+    // Refresh projects every 2 minutes
+    setInterval(loadProjectsFromAPI, 120000);
 }
 
 // ============================================================================
@@ -613,51 +601,3 @@ document.addEventListener('keydown', (e) => {
         refreshDashboard();
     }
 });
-
-// ============================================================================
-// API INTEGRATION (Future)
-// ============================================================================
-
-async function fetchProjects() {
-    try {
-        const response = await fetch('/api/company/projects');
-        if (response.ok) {
-            const data = await response.json();
-            return data.projects;
-        }
-    } catch (error) {
-        console.error('Error fetching projects:', error);
-    }
-    return sampleProjects;
-}
-
-async function fetchActivityFeed() {
-    try {
-        const response = await fetch('/api/company/activity');
-        if (response.ok) {
-            const data = await response.json();
-            return data.activities;
-        }
-    } catch (error) {
-        console.error('Error fetching activity:', error);
-    }
-    return sampleActivities;
-}
-
-async function saveProject(projectData) {
-    try {
-        const response = await fetch('/api/company/projects', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(projectData)
-        });
-        if (response.ok) {
-            return await response.json();
-        }
-    } catch (error) {
-        console.error('Error saving project:', error);
-    }
-    return null;
-}

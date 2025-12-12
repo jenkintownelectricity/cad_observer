@@ -267,3 +267,148 @@ class HealthResponse(BaseModel):
     database: str
     redis: str
     version: str = "1.0.0"
+
+
+# =============================================================================
+# FORM TEMPLATE SCHEMAS
+# =============================================================================
+
+class FormFieldSchema(BaseModel):
+    """Individual field in a form template"""
+    name: str
+    label: str
+    type: str = Field(default="text", pattern="^(text|number|date|time|datetime|checkbox|select|textarea|signature|photo|gps)$")
+    required: bool = False
+    default_value: Optional[str] = None
+    options: Optional[List[str]] = None  # For select fields
+    position: Optional[Dict[str, Any]] = None  # {x, y, width, height} for layout
+
+
+class FormTemplateCreate(BaseModel):
+    """Create a new form template"""
+    name: str = Field(..., min_length=1, max_length=255)
+    form_type: str = Field(..., min_length=1, max_length=100)  # daily_report, inspection, jha, etc.
+    description: Optional[str] = None
+    is_custom: bool = True  # True = user's format, False = ROOFIO format
+    fields: Optional[List[FormFieldSchema]] = None
+    layout: Optional[Dict[str, Any]] = None
+    roofio_additions: Optional[Dict[str, bool]] = Field(
+        default={"logo": True, "timestamp": True, "gps": True, "watermark": False}
+    )
+
+
+class FormTemplateUpdate(BaseModel):
+    """Update form template"""
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    is_default: Optional[bool] = None
+    fields: Optional[List[FormFieldSchema]] = None
+    layout: Optional[Dict[str, Any]] = None
+    roofio_additions: Optional[Dict[str, bool]] = None
+    status: Optional[str] = Field(None, pattern="^(active|archived|draft)$")
+
+
+class FormTemplateResponse(BaseModel):
+    """Form template response"""
+    template_id: UUID
+    agency_id: UUID
+    name: str
+    form_type: str
+    description: Optional[str] = None
+    is_custom: bool = True
+    is_default: bool = False
+    source_file_url: Optional[str] = None
+    source_file_type: Optional[str] = None
+    fields: Optional[List[Dict[str, Any]]] = None
+    layout: Optional[Dict[str, Any]] = None
+    roofio_additions: Optional[Dict[str, bool]] = None
+    preview_url: Optional[str] = None
+    times_used: int = 0
+    status: str = "active"
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class FormTemplateListResponse(BaseModel):
+    """List of form templates"""
+    templates: List[FormTemplateResponse]
+    total: int
+
+
+# =============================================================================
+# FORM SUBMISSION SCHEMAS
+# =============================================================================
+
+class FormSubmissionCreate(BaseModel):
+    """Submit a filled form"""
+    template_id: Optional[UUID] = None
+    project_id: Optional[UUID] = None
+    form_type: str
+    data: Dict[str, Any]
+    attachments: Optional[List[Dict[str, str]]] = None  # [{name, url, type}]
+    signature_url: Optional[str] = None
+    signed_by: Optional[str] = None
+    gps_latitude: Optional[float] = None
+    gps_longitude: Optional[float] = None
+    device_info: Optional[Dict[str, Any]] = None
+
+
+class FormSubmissionResponse(BaseModel):
+    """Form submission response"""
+    submission_id: UUID
+    agency_id: UUID
+    project_id: Optional[UUID] = None
+    template_id: Optional[UUID] = None
+    form_type: str
+    data: Dict[str, Any]
+    attachments: Optional[List[Dict[str, str]]] = None
+    signature_url: Optional[str] = None
+    signed_by: Optional[str] = None
+    signed_at: Optional[datetime] = None
+    gps_latitude: Optional[float] = None
+    gps_longitude: Optional[float] = None
+    status: str = "draft"
+    created_at: datetime
+    submitted_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# =============================================================================
+# DOCUMENT SCAN / CAMERA SCHEMAS
+# =============================================================================
+
+class ScanRequest(BaseModel):
+    """Request to process a scanned/photographed document"""
+    output_format: str = Field(
+        default="pdf",
+        pattern="^(pdf|png|jpg|docx|xlsx|json)$"
+    )
+    enhance: bool = True  # Auto-enhance (contrast, straighten, crop)
+    extract_text: bool = False  # OCR text extraction
+    extract_fields: bool = False  # AI field extraction for form creation
+
+
+class ScanResponse(BaseModel):
+    """Response from document scan processing"""
+    scan_id: UUID
+    original_url: str
+    processed_url: str
+    output_format: str
+    extracted_text: Optional[str] = None
+    extracted_fields: Optional[List[FormFieldSchema]] = None
+    processing_time_ms: int
+    created_at: datetime
+
+
+class FormFromScanRequest(BaseModel):
+    """Create a form template from a scanned document"""
+    scan_id: UUID
+    name: str
+    form_type: str
+    description: Optional[str] = None
+    confirm_fields: bool = False  # If true, use AI-extracted fields as-is

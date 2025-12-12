@@ -433,6 +433,525 @@ async def review_ai_action(
 
 
 # =============================================================================
+# FORM TEMPLATE ENDPOINTS
+# =============================================================================
+
+form_router = APIRouter(prefix="/forms", tags=["Form Templates"])
+scan_router = APIRouter(prefix="/scan", tags=["Document Scanner"])
+
+
+# Import form-related schemas
+from .schemas import (
+    FormTemplateCreate,
+    FormTemplateUpdate,
+    FormTemplateResponse,
+    FormTemplateListResponse,
+    FormSubmissionCreate,
+    FormSubmissionResponse,
+    ScanRequest,
+    ScanResponse,
+    FormFromScanRequest,
+)
+
+# Valid form types
+VALID_FORM_TYPES = [
+    "daily_report", "inspection", "jha", "toolbox_talk", "incident_report",
+    "safety_inspection", "material_receiving", "punch_list", "rfi",
+    "change_order", "submittal", "photo_log", "time_sheet", "equipment_log"
+]
+
+
+@form_router.get("/types")
+async def list_form_types():
+    """Get all available form types"""
+    return {
+        "form_types": VALID_FORM_TYPES,
+        "descriptions": {
+            "daily_report": "Daily field report documenting work completed",
+            "inspection": "Quality control inspection checklist",
+            "jha": "Job Hazard Analysis for safety planning",
+            "toolbox_talk": "Safety meeting documentation",
+            "incident_report": "Safety incident or accident report",
+            "safety_inspection": "Site safety inspection checklist",
+            "material_receiving": "Material delivery verification",
+            "punch_list": "Deficiency and correction tracking",
+            "rfi": "Request for Information",
+            "change_order": "Contract change documentation",
+            "submittal": "Product approval request",
+            "photo_log": "Photo documentation log",
+            "time_sheet": "Labor time tracking",
+            "equipment_log": "Equipment usage log"
+        }
+    }
+
+
+@form_router.get("/templates", response_model=FormTemplateListResponse)
+async def list_form_templates(
+    agency_id: UUID = Depends(get_agency_id),
+    form_type: Optional[str] = None,
+    is_custom: Optional[bool] = None,
+    status: str = Query("active", pattern="^(active|archived|draft|all)$")
+):
+    """List form templates for the agency"""
+    from common.database import get_session
+    from common.models import FormTemplate
+    from sqlalchemy import select
+
+    async with get_session() as session:
+        query = select(FormTemplate).where(FormTemplate.agency_id == agency_id)
+
+        if form_type:
+            query = query.where(FormTemplate.form_type == form_type)
+        if is_custom is not None:
+            query = query.where(FormTemplate.is_custom == is_custom)
+        if status != "all":
+            query = query.where(FormTemplate.status == status)
+
+        query = query.order_by(FormTemplate.form_type, FormTemplate.name)
+        result = await session.execute(query)
+        templates = result.scalars().all()
+
+        return FormTemplateListResponse(
+            templates=[FormTemplateResponse.model_validate(t) for t in templates],
+            total=len(templates)
+        )
+
+
+@form_router.post("/templates", response_model=FormTemplateResponse, status_code=201)
+async def create_form_template(
+    template: FormTemplateCreate,
+    agency_id: UUID = Depends(get_agency_id),
+    x_user_id: Optional[str] = Header(None)
+):
+    """Create a new form template"""
+    from common.database import get_session
+    from common.models import FormTemplate
+    from uuid import uuid4
+
+    user_id = UUID(x_user_id) if x_user_id else None
+
+    async with get_session() as session:
+        new_template = FormTemplate(
+            template_id=uuid4(),
+            agency_id=agency_id,
+            name=template.name,
+            form_type=template.form_type,
+            description=template.description,
+            is_custom=template.is_custom,
+            fields=template.fields if template.fields else [],
+            layout=template.layout,
+            roofio_additions=template.roofio_additions or {"logo": True, "timestamp": True, "gps": True},
+            created_by=user_id,
+            status="active"
+        )
+        session.add(new_template)
+        await session.commit()
+        await session.refresh(new_template)
+        return new_template
+
+
+@form_router.get("/templates/{template_id}", response_model=FormTemplateResponse)
+async def get_form_template(
+    template_id: UUID,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """Get a specific form template"""
+    from common.database import get_session
+    from common.models import FormTemplate
+    from sqlalchemy import select
+
+    async with get_session() as session:
+        query = select(FormTemplate).where(
+            FormTemplate.template_id == template_id,
+            FormTemplate.agency_id == agency_id
+        )
+        result = await session.execute(query)
+        template = result.scalar_one_or_none()
+
+        if not template:
+            raise HTTPException(status_code=404, detail="Form template not found")
+        return template
+
+
+@form_router.patch("/templates/{template_id}", response_model=FormTemplateResponse)
+async def update_form_template(
+    template_id: UUID,
+    updates: FormTemplateUpdate,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """Update a form template"""
+    from common.database import get_session
+    from common.models import FormTemplate
+    from sqlalchemy import select
+    from datetime import datetime
+
+    update_data = updates.model_dump(exclude_unset=True)
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+
+    async with get_session() as session:
+        query = select(FormTemplate).where(
+            FormTemplate.template_id == template_id,
+            FormTemplate.agency_id == agency_id
+        )
+        result = await session.execute(query)
+        template = result.scalar_one_or_none()
+
+        if not template:
+            raise HTTPException(status_code=404, detail="Form template not found")
+
+        for key, value in update_data.items():
+            setattr(template, key, value)
+        template.updated_at = datetime.utcnow()
+
+        await session.commit()
+        await session.refresh(template)
+        return template
+
+
+@form_router.delete("/templates/{template_id}", response_model=MessageResponse)
+async def delete_form_template(
+    template_id: UUID,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """Delete a form template (soft delete - sets status to archived)"""
+    from common.database import get_session
+    from common.models import FormTemplate
+    from sqlalchemy import select
+    from datetime import datetime
+
+    async with get_session() as session:
+        query = select(FormTemplate).where(
+            FormTemplate.template_id == template_id,
+            FormTemplate.agency_id == agency_id
+        )
+        result = await session.execute(query)
+        template = result.scalar_one_or_none()
+
+        if not template:
+            raise HTTPException(status_code=404, detail="Form template not found")
+
+        template.status = "archived"
+        template.updated_at = datetime.utcnow()
+        await session.commit()
+
+        return MessageResponse(message="Form template archived successfully")
+
+
+@form_router.post("/templates/{template_id}/set-default", response_model=FormTemplateResponse)
+async def set_default_template(
+    template_id: UUID,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """Set a template as the default for its form type"""
+    from common.database import get_session
+    from common.models import FormTemplate
+    from sqlalchemy import select, update
+    from datetime import datetime
+
+    async with get_session() as session:
+        # Get the template
+        query = select(FormTemplate).where(
+            FormTemplate.template_id == template_id,
+            FormTemplate.agency_id == agency_id
+        )
+        result = await session.execute(query)
+        template = result.scalar_one_or_none()
+
+        if not template:
+            raise HTTPException(status_code=404, detail="Form template not found")
+
+        # Unset any existing default for this form type
+        await session.execute(
+            update(FormTemplate)
+            .where(
+                FormTemplate.agency_id == agency_id,
+                FormTemplate.form_type == template.form_type,
+                FormTemplate.is_default == True
+            )
+            .values(is_default=False)
+        )
+
+        # Set this one as default
+        template.is_default = True
+        template.updated_at = datetime.utcnow()
+        await session.commit()
+        await session.refresh(template)
+
+        return template
+
+
+@form_router.get("/preference/{form_type}")
+async def get_form_preference(
+    form_type: str,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """
+    Get the preferred format (custom vs ROOFIO) for a form type.
+    Returns the default template if one exists, otherwise indicates first-time setup needed.
+    """
+    from common.database import get_session
+    from common.models import FormTemplate
+    from sqlalchemy import select
+
+    async with get_session() as session:
+        # Look for default template
+        query = select(FormTemplate).where(
+            FormTemplate.agency_id == agency_id,
+            FormTemplate.form_type == form_type,
+            FormTemplate.is_default == True,
+            FormTemplate.status == "active"
+        )
+        result = await session.execute(query)
+        default_template = result.scalar_one_or_none()
+
+        if default_template:
+            return {
+                "has_preference": True,
+                "use_custom": default_template.is_custom,
+                "template_id": str(default_template.template_id),
+                "template_name": default_template.name
+            }
+
+        # No default - check if any templates exist
+        query = select(FormTemplate).where(
+            FormTemplate.agency_id == agency_id,
+            FormTemplate.form_type == form_type,
+            FormTemplate.status == "active"
+        )
+        result = await session.execute(query)
+        templates = result.scalars().all()
+
+        return {
+            "has_preference": False,
+            "use_custom": None,
+            "available_templates": len(templates),
+            "first_time_setup": len(templates) == 0
+        }
+
+
+# =============================================================================
+# DOCUMENT SCANNER ENDPOINTS (CamScan-like feature)
+# =============================================================================
+
+@scan_router.post("/upload", response_model=ScanResponse)
+async def upload_and_process_scan(
+    agency_id: UUID = Depends(get_agency_id),
+    output_format: str = Query("pdf", pattern="^(pdf|png|jpg|docx|xlsx)$"),
+    enhance: bool = Query(True, description="Auto-enhance image quality"),
+    extract_text: bool = Query(False, description="Run OCR text extraction"),
+    extract_fields: bool = Query(False, description="AI extract form fields")
+):
+    """
+    Upload a scanned/photographed document for processing.
+
+    This is the CamScan-like feature that:
+    1. Accepts an image (camera capture or file upload)
+    2. Auto-enhances (straighten, crop, adjust contrast)
+    3. Converts to requested format (PDF, image, Word, Excel)
+    4. Optionally extracts text via OCR
+    5. Optionally extracts form fields via AI for template creation
+
+    File should be sent as multipart/form-data with field name 'file'.
+    """
+    from uuid import uuid4
+    from datetime import datetime
+    import time
+
+    # Note: In production, this would:
+    # 1. Accept file upload via python-multipart
+    # 2. Process with Pillow for enhancement
+    # 3. Use Tesseract/EasyOCR for text extraction
+    # 4. Use Groq AI for field extraction
+    # 5. Convert to requested format
+
+    start_time = time.time()
+    scan_id = uuid4()
+
+    # Placeholder response - actual implementation would process the file
+    return ScanResponse(
+        scan_id=scan_id,
+        original_url=f"/uploads/scans/{scan_id}/original.jpg",
+        processed_url=f"/uploads/scans/{scan_id}/processed.{output_format}",
+        output_format=output_format,
+        extracted_text="[OCR text would appear here if extract_text=true]" if extract_text else None,
+        extracted_fields=[
+            {"name": "date", "label": "Date", "type": "date", "required": True},
+            {"name": "project_name", "label": "Project Name", "type": "text", "required": True},
+            {"name": "inspector", "label": "Inspector", "type": "text", "required": True},
+            {"name": "notes", "label": "Notes", "type": "textarea", "required": False},
+            {"name": "signature", "label": "Signature", "type": "signature", "required": True},
+        ] if extract_fields else None,
+        processing_time_ms=int((time.time() - start_time) * 1000) + 150,  # Simulated processing time
+        created_at=datetime.utcnow()
+    )
+
+
+@scan_router.post("/create-template", response_model=FormTemplateResponse, status_code=201)
+async def create_template_from_scan(
+    request: FormFromScanRequest,
+    agency_id: UUID = Depends(get_agency_id),
+    x_user_id: Optional[str] = Header(None)
+):
+    """
+    Create a form template from a previously scanned document.
+
+    Uses the AI-extracted fields from the scan to create a matching template
+    with ROOFIO flavor (logo, timestamp, GPS tracking).
+    """
+    from common.database import get_session
+    from common.models import FormTemplate
+    from uuid import uuid4
+
+    user_id = UUID(x_user_id) if x_user_id else None
+
+    # In production, this would fetch the scan and its extracted fields
+    # For now, use sample fields
+    extracted_fields = [
+        {"name": "date", "label": "Date", "type": "date", "required": True},
+        {"name": "project_name", "label": "Project Name", "type": "text", "required": True},
+        {"name": "inspector", "label": "Inspector", "type": "text", "required": True},
+        {"name": "location", "label": "Location", "type": "text", "required": False},
+        {"name": "notes", "label": "Notes", "type": "textarea", "required": False},
+        {"name": "photo", "label": "Photo", "type": "photo", "required": False},
+        {"name": "signature", "label": "Signature", "type": "signature", "required": True},
+    ]
+
+    async with get_session() as session:
+        new_template = FormTemplate(
+            template_id=uuid4(),
+            agency_id=agency_id,
+            name=request.name,
+            form_type=request.form_type,
+            description=request.description or f"Created from scanned document",
+            is_custom=True,
+            source_file_url=f"/uploads/scans/{request.scan_id}/original.jpg",
+            source_file_type="jpg",
+            fields=extracted_fields,
+            roofio_additions={"logo": True, "timestamp": True, "gps": True, "watermark": False},
+            created_by=user_id,
+            status="draft"  # Start as draft for user review
+        )
+        session.add(new_template)
+        await session.commit()
+        await session.refresh(new_template)
+        return new_template
+
+
+@scan_router.get("/formats")
+async def list_output_formats():
+    """Get available output formats for document scanning"""
+    return {
+        "formats": [
+            {"id": "pdf", "name": "PDF Document", "description": "Portable document, best for sharing"},
+            {"id": "png", "name": "PNG Image", "description": "High quality image with transparency"},
+            {"id": "jpg", "name": "JPEG Image", "description": "Compressed image, smaller file size"},
+            {"id": "docx", "name": "Word Document", "description": "Editable text document (requires OCR)"},
+            {"id": "xlsx", "name": "Excel Spreadsheet", "description": "Spreadsheet format (requires OCR)"},
+        ]
+    }
+
+
+# =============================================================================
+# FORM SUBMISSION ENDPOINTS
+# =============================================================================
+
+@form_router.post("/submissions", response_model=FormSubmissionResponse, status_code=201)
+async def submit_form(
+    submission: FormSubmissionCreate,
+    agency_id: UUID = Depends(get_agency_id),
+    x_user_id: Optional[str] = Header(None)
+):
+    """Submit a filled form"""
+    from common.database import get_session
+    from common.models import FormSubmission, FormTemplate
+    from sqlalchemy import select
+    from uuid import uuid4
+    from datetime import datetime
+
+    user_id = UUID(x_user_id) if x_user_id else None
+
+    async with get_session() as session:
+        # Update template usage count if template_id provided
+        if submission.template_id:
+            query = select(FormTemplate).where(FormTemplate.template_id == submission.template_id)
+            result = await session.execute(query)
+            template = result.scalar_one_or_none()
+            if template:
+                template.times_used = (template.times_used or 0) + 1
+
+        new_submission = FormSubmission(
+            submission_id=uuid4(),
+            agency_id=agency_id,
+            project_id=submission.project_id,
+            template_id=submission.template_id,
+            form_type=submission.form_type,
+            data=submission.data,
+            attachments=submission.attachments,
+            signature_url=submission.signature_url,
+            signed_by=submission.signed_by,
+            signed_at=datetime.utcnow() if submission.signature_url else None,
+            gps_latitude=submission.gps_latitude,
+            gps_longitude=submission.gps_longitude,
+            device_info=submission.device_info,
+            submitted_by=user_id,
+            status="submitted",
+            submitted_at=datetime.utcnow()
+        )
+        session.add(new_submission)
+        await session.commit()
+        await session.refresh(new_submission)
+        return new_submission
+
+
+@form_router.get("/submissions")
+async def list_form_submissions(
+    agency_id: UUID = Depends(get_agency_id),
+    project_id: Optional[UUID] = None,
+    form_type: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = Query(50, le=200),
+    offset: int = Query(0, ge=0)
+):
+    """List form submissions"""
+    from common.database import get_session
+    from common.models import FormSubmission
+    from sqlalchemy import select, func
+
+    async with get_session() as session:
+        query = select(FormSubmission).where(FormSubmission.agency_id == agency_id)
+
+        if project_id:
+            query = query.where(FormSubmission.project_id == project_id)
+        if form_type:
+            query = query.where(FormSubmission.form_type == form_type)
+        if status:
+            query = query.where(FormSubmission.status == status)
+
+        query = query.order_by(FormSubmission.created_at.desc()).limit(limit).offset(offset)
+        result = await session.execute(query)
+        submissions = result.scalars().all()
+
+        # Get total count
+        count_query = select(func.count(FormSubmission.submission_id)).where(
+            FormSubmission.agency_id == agency_id
+        )
+        if project_id:
+            count_query = count_query.where(FormSubmission.project_id == project_id)
+        if form_type:
+            count_query = count_query.where(FormSubmission.form_type == form_type)
+        total_result = await session.execute(count_query)
+        total = total_result.scalar() or 0
+
+        return {
+            "submissions": [FormSubmissionResponse.model_validate(s) for s in submissions],
+            "total": total,
+            "limit": limit,
+            "offset": offset
+        }
+
+
+# =============================================================================
 # EXPORTS
 # =============================================================================
 
@@ -443,4 +962,6 @@ __all__ = [
     "project_router",
     "position_router",
     "ai_router",
+    "form_router",
+    "scan_router",
 ]

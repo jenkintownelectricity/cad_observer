@@ -345,6 +345,183 @@ def ensure_agency_exists(agency_id: str = None) -> str:
 
 
 # =============================================================================
+# FORM TEMPLATE API
+# =============================================================================
+
+def list_form_types() -> Dict:
+    """Get available form types"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.get(
+            f"{API_BASE_URL}/forms/types",
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def list_form_templates(form_type: str = None, status: str = "active") -> Dict:
+    """List form templates for the agency"""
+    params = {"status": status}
+    if form_type:
+        params["form_type"] = form_type
+
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.get(
+            f"{API_BASE_URL}/forms/templates",
+            params=params,
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def create_form_template(name: str, form_type: str, is_custom: bool = True, **kwargs) -> Dict:
+    """Create a new form template"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.post(
+            f"{API_BASE_URL}/forms/templates",
+            json={"name": name, "form_type": form_type, "is_custom": is_custom, **kwargs},
+            headers=_get_headers()
+        )
+        if response.status_code == 201:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def get_form_template(template_id: str) -> Optional[Dict]:
+    """Get a specific form template"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.get(
+            f"{API_BASE_URL}/forms/templates/{template_id}",
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        if response.status_code == 404:
+            return None
+        raise APIError(response.text, response.status_code)
+
+
+def update_form_template(template_id: str, **kwargs) -> Dict:
+    """Update a form template"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.patch(
+            f"{API_BASE_URL}/forms/templates/{template_id}",
+            json=kwargs,
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def set_default_template(template_id: str) -> Dict:
+    """Set a template as default for its form type"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.post(
+            f"{API_BASE_URL}/forms/templates/{template_id}/set-default",
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def get_form_preference(form_type: str) -> Dict:
+    """Get user's preferred format for a form type"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.get(
+            f"{API_BASE_URL}/forms/preference/{form_type}",
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def submit_form(form_type: str, data: Dict, **kwargs) -> Dict:
+    """Submit a filled form"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.post(
+            f"{API_BASE_URL}/forms/submissions",
+            json={"form_type": form_type, "data": data, **kwargs},
+            headers=_get_headers()
+        )
+        if response.status_code == 201:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def list_form_submissions(form_type: str = None, project_id: str = None, limit: int = 50) -> Dict:
+    """List form submissions"""
+    params = {"limit": limit}
+    if form_type:
+        params["form_type"] = form_type
+    if project_id:
+        params["project_id"] = project_id
+
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.get(
+            f"{API_BASE_URL}/forms/submissions",
+            params=params,
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+# =============================================================================
+# DOCUMENT SCANNER API
+# =============================================================================
+
+def get_scan_formats() -> Dict:
+    """Get available scan output formats"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.get(
+            f"{API_BASE_URL}/scan/formats",
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def process_scan(output_format: str = "pdf", enhance: bool = True, extract_text: bool = False, extract_fields: bool = False) -> Dict:
+    """Process an uploaded scan"""
+    params = {
+        "output_format": output_format,
+        "enhance": enhance,
+        "extract_text": extract_text,
+        "extract_fields": extract_fields
+    }
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.post(
+            f"{API_BASE_URL}/scan/upload",
+            params=params,
+            headers=_get_headers()
+        )
+        if response.status_code == 200:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+def create_template_from_scan(scan_id: str, name: str, form_type: str, **kwargs) -> Dict:
+    """Create a form template from a scanned document"""
+    with httpx.Client(timeout=API_TIMEOUT) as client:
+        response = client.post(
+            f"{API_BASE_URL}/scan/create-template",
+            json={"scan_id": scan_id, "name": name, "form_type": form_type, **kwargs},
+            headers=_get_headers()
+        )
+        if response.status_code == 201:
+            return response.json()
+        raise APIError(response.text, response.status_code)
+
+
+# =============================================================================
 # EXPORTS
 # =============================================================================
 
@@ -388,4 +565,20 @@ __all__ = [
 
     # Convenience
     "ensure_agency_exists",
+
+    # Form Templates
+    "list_form_types",
+    "list_form_templates",
+    "create_form_template",
+    "get_form_template",
+    "update_form_template",
+    "set_default_template",
+    "get_form_preference",
+    "submit_form",
+    "list_form_submissions",
+
+    # Document Scanner
+    "get_scan_formats",
+    "process_scan",
+    "create_template_from_scan",
 ]
