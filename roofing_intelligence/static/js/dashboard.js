@@ -167,6 +167,11 @@ async function loadProjectsFromAPI() {
     const grid = document.getElementById('projects-grid');
     if (!grid) return;
 
+    // Show skeleton loading state
+    if (window.UX?.Loader && !grid.querySelector('.project-card')) {
+        window.UX.Loader.showSkeleton(grid, 3);
+    }
+
     try {
         const response = await fetch('/api/company/projects');
         if (response.ok) {
@@ -478,12 +483,16 @@ async function createProject(event) {
     const value = document.getElementById('project-value').value;
     const startDate = document.getElementById('project-start').value;
     const pm = document.getElementById('project-pm').value;
+    const phase = document.getElementById('project-phase')?.value || 'bidding';
 
-    // Show loading state
+    // Show loading state using UX utilities if available
     const submitBtn = event.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Creating...';
-    submitBtn.disabled = true;
+    if (window.UX?.Loader) {
+        window.UX.Loader.buttonLoading(submitBtn, true);
+    } else {
+        submitBtn.textContent = 'Creating...';
+        submitBtn.disabled = true;
+    }
 
     try {
         // Call API to create project
@@ -492,7 +501,8 @@ async function createProject(event) {
             client: client || '',
             value: value || '',
             startDate: startDate || '',
-            pm: pm || 'Unassigned'
+            pm: pm || 'Unassigned',
+            phase: phase
         });
 
         if (result.success) {
@@ -510,8 +520,17 @@ async function createProject(event) {
         console.error('Failed to create project:', error);
         showToast('Failed to create project: ' + error.message, 'error');
     } finally {
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+        // Restore button state
+        if (window.UX?.Loader) {
+            window.UX.Loader.buttonLoading(submitBtn, false);
+        } else {
+            submitBtn.textContent = 'Create Project';
+            submitBtn.disabled = false;
+        }
+        // Clear auto-save data after successful creation
+        if (window.UX?.AutoSave) {
+            window.UX.AutoSave.clear('new-project');
+        }
     }
 }
 

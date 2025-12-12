@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ux-utilities.css') }}">
 </head>
 <body>
     <!-- Animated Background -->
@@ -25,6 +26,15 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="APPIO" class="logo-img">
                 </a>
             </div>
+
+            <!-- Mobile Nav Toggle -->
+            <button class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
 
             <nav class="nav">
                 <a href="/dashboard" class="nav-link active">Dashboard</a>
@@ -506,34 +516,61 @@
         <div class="modal-content glass wide">
             <div class="modal-header">
                 <h3>New Project</h3>
+                <div class="auto-save-indicator">
+                    <span class="auto-save-dot"></span>
+                    <span class="auto-save-text">Draft</span>
+                </div>
                 <button class="modal-close" onclick="closeNewProjectModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="new-project-form" onsubmit="createProject(event)" autocomplete="off">
-                    <div class="form-group">
-                        <label for="project-name">Project Name *</label>
-                        <input type="text" id="project-name" name="project-name" required
-                               placeholder="e.g., JHU Library Roofing"
-                               autocomplete="off" inputmode="text">
-                    </div>
-                    <div class="form-group">
-                        <label for="project-client">Client / GC</label>
-                        <input type="text" id="project-client" name="project-client"
-                               placeholder="e.g., Turner Construction"
-                               autocomplete="organization" inputmode="text">
-                    </div>
-                    <div class="form-row">
+                <!-- Form Progress -->
+                <div class="form-progress">
+                    <div class="form-progress-bar" style="width: 0%"></div>
+                </div>
+
+                <form id="new-project-form" onsubmit="createProject(event)" autocomplete="off"
+                      data-validate="true" data-autosave="new-project" data-progress="true">
+
+                    <!-- Step 1: Basic Info -->
+                    <div class="form-section">
                         <div class="form-group">
+                            <label for="project-name">
+                                Project Name *
+                                <span class="help-icon tooltip" data-tooltip="Enter a clear, descriptive name">?</span>
+                            </label>
+                            <input type="text" id="project-name" name="project-name" required
+                                   placeholder="e.g., JHU Library Roofing"
+                                   autocomplete="off" inputmode="text"
+                                   data-validate="required,minLength:3">
+                            <span class="input-hint">Use project location + type (e.g., "UMass Waterproofing")</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="project-client">Client / General Contractor</label>
+                            <input type="text" id="project-client" name="project-client"
+                                   placeholder="e.g., Turner Construction"
+                                   autocomplete="organization" inputmode="text">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Financial -->
+                    <div class="form-row">
+                        <div class="form-group input-currency">
                             <label for="project-value">Contract Value</label>
                             <input type="text" id="project-value" name="project-value"
                                    placeholder="$250,000"
-                                   inputmode="decimal" pattern="[\$,\d\.]*">
+                                   inputmode="decimal"
+                                   data-format="currency"
+                                   data-validate="currency">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group input-date">
                             <label for="project-start">Start Date</label>
-                            <input type="date" id="project-start" name="project-start">
+                            <input type="date" id="project-start" name="project-start"
+                                   data-min-today="true">
                         </div>
                     </div>
+
+                    <!-- Step 3: Assignment -->
                     <div class="form-row">
                         <div class="form-group">
                             <label for="project-pm">Assigned PM</label>
@@ -555,9 +592,12 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn-secondary" onclick="closeNewProjectModal()">Cancel</button>
-                        <button type="submit" class="btn-primary">Create Project</button>
+                        <button type="submit" class="btn-primary" id="create-project-btn">
+                            <span class="btn-text">Create Project</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -567,6 +607,39 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="/dashboard" class="bottom-nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="/projects" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Projects</span>
+        </a>
+        <a href="/analysis" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span>Analysis</span>
+        </a>
+        <a href="/integrations" class="bottom-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Load UX Utilities first, then dashboard JS -->
+    <script src="{{ url_for('static', filename='js/ux-utilities.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

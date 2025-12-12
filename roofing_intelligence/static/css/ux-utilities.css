@@ -1,0 +1,864 @@
+/* ============================================================================
+   UX UTILITIES - User-Loved Features
+   Loading states, skeletons, validation, tooltips, touch targets
+   ============================================================================ */
+
+/* ============================================================================
+   1. LOADING STATES & SKELETON SCREENS
+   Users hate waiting without feedback
+   ============================================================================ */
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--glass-border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-spinner.large {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Button loading state */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Skeleton loading */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-tertiary) 25%,
+        var(--glass-bg) 50%,
+        var(--bg-tertiary) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5em;
+    border-radius: 4px;
+}
+
+.skeleton-text.short { width: 40%; }
+.skeleton-text.medium { width: 70%; }
+.skeleton-text.long { width: 100%; }
+
+.skeleton-card {
+    height: 200px;
+    border-radius: var(--radius-lg);
+}
+
+.skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.skeleton-button {
+    height: 48px;
+    width: 120px;
+    border-radius: var(--radius-md);
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Page loading overlay */
+.page-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+.page-loading.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.page-loading .loading-text {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ============================================================================
+   2. TOUCH TARGETS - 48px minimum for mobile
+   Tiny targets = frustrated users
+   ============================================================================ */
+
+/* Base touch target size */
+.touch-target {
+    min-width: 48px;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* All interactive elements get proper sizing */
+button,
+.btn,
+.btn-primary,
+.btn-secondary,
+.action-btn,
+.filter-btn,
+input[type="checkbox"],
+input[type="radio"],
+.clickable {
+    min-height: 44px;
+}
+
+@media (max-width: 768px) {
+    button,
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .action-btn,
+    .filter-btn {
+        min-height: 48px;
+        padding: 12px 16px;
+    }
+
+    /* Larger tap areas for small buttons */
+    .action-btn-sm {
+        min-height: 48px;
+        padding: 12px 16px;
+    }
+
+    /* Icon-only buttons need square sizing */
+    .icon-btn {
+        min-width: 48px;
+        min-height: 48px;
+    }
+}
+
+/* Checkbox and radio custom styling with proper size */
+.custom-checkbox,
+.custom-radio {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    cursor: pointer;
+    padding: 8px 0;
+}
+
+.custom-checkbox input,
+.custom-radio input {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* ============================================================================
+   3. FRIENDLY VALIDATION - No scary red errors
+   Users hate aggressive error messages
+   ============================================================================ */
+
+/* Input states */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Valid state - subtle green */
+.form-group.valid input,
+.form-group.valid select,
+.form-group.valid textarea {
+    border-color: var(--success);
+}
+
+.form-group.valid::after {
+    content: '\2713';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--success);
+    font-weight: bold;
+}
+
+/* Invalid state - gentle warning */
+.form-group.invalid input,
+.form-group.invalid select,
+.form-group.invalid textarea {
+    border-color: var(--warning);
+    background: rgba(234, 179, 8, 0.05);
+}
+
+/* Error state - only after interaction */
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: var(--error);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Validation messages */
+.validation-message {
+    display: none;
+    font-size: 0.8125rem;
+    margin-top: 6px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-group.invalid .validation-message,
+.form-group.error .validation-message {
+    display: block;
+}
+
+.validation-message.hint {
+    background: rgba(234, 179, 8, 0.1);
+    color: var(--warning);
+}
+
+.validation-message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.validation-message.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success);
+}
+
+/* Inline validation icon */
+.form-group {
+    position: relative;
+}
+
+.validation-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    width: 20px;
+    height: 20px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.form-group.valid .validation-icon.check,
+.form-group.invalid .validation-icon.warning,
+.form-group.error .validation-icon.error {
+    opacity: 1;
+}
+
+/* ============================================================================
+   4. PROGRESS INDICATORS
+   Users need to know how much is left
+   ============================================================================ */
+
+/* Step progress */
+.step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.step-progress-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    position: relative;
+}
+
+.step-progress-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background: var(--glass-border);
+}
+
+.step-progress-item.completed:not(:last-child)::after {
+    background: var(--success);
+}
+
+.step-progress-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+}
+
+.step-progress-item.active .step-progress-number {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.step-progress-item.completed .step-progress-number {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+.step-progress-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.step-progress-item.active .step-progress-label {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.step-progress-item.completed .step-progress-label {
+    color: var(--success);
+}
+
+/* Form progress bar */
+.form-progress {
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.form-progress-bar {
+    height: 100%;
+    background: var(--gradient-1);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+/* Progress text */
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* ============================================================================
+   5. CONTEXTUAL HELP & TOOLTIPS
+   Users appreciate guidance when needed
+   ============================================================================ */
+
+/* Help icon */
+.help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: help;
+    margin-left: 6px;
+    transition: var(--transition-fast);
+}
+
+.help-icon:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+}
+
+.tooltip::before,
+.tooltip::after {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.tooltip::before {
+    content: attr(data-tooltip);
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+    box-shadow: var(--glass-shadow);
+}
+
+.tooltip::after {
+    content: '';
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--bg-secondary);
+}
+
+.tooltip:hover::before,
+.tooltip:hover::after,
+.tooltip:focus::before,
+.tooltip:focus::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Input hints */
+.input-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Character counter */
+.char-counter {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 4px;
+}
+
+.char-counter.warning {
+    color: var(--warning);
+}
+
+.char-counter.error {
+    color: var(--error);
+}
+
+/* ============================================================================
+   6. AUTO-SAVE INDICATOR
+   Users don't want to lose their work
+   ============================================================================ */
+
+.auto-save-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.auto-save-indicator.saving {
+    color: var(--accent);
+}
+
+.auto-save-indicator.saved {
+    color: var(--success);
+}
+
+.auto-save-indicator.error {
+    color: var(--error);
+}
+
+.auto-save-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.auto-save-indicator.saving .auto-save-dot {
+    background: var(--accent);
+    animation: pulse-save 1s infinite;
+}
+
+.auto-save-indicator.saved .auto-save-dot {
+    background: var(--success);
+}
+
+@keyframes pulse-save {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ============================================================================
+   7. REDUCED ANIMATIONS FOR PERFORMANCE
+   Heavy animations slow down older phones
+   ============================================================================ */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Lighter animations for mobile */
+@media (max-width: 768px) {
+    /* Disable background animation on mobile */
+    .bg-gradient {
+        animation: none;
+    }
+
+    /* Faster transitions */
+    * {
+        transition-duration: 0.15s !important;
+    }
+
+    /* Disable hover transforms on mobile */
+    .project-card:hover,
+    .seat-card:hover,
+    .metric-card:hover,
+    .stat-card:hover {
+        transform: none;
+    }
+
+    /* Simpler skeleton animation */
+    .skeleton {
+        animation: skeleton-pulse 1.5s infinite;
+    }
+
+    @keyframes skeleton-pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
+}
+
+/* ============================================================================
+   8. IMPROVED MOBILE NAVIGATION
+   69% of sites fail at mobile nav
+   ============================================================================ */
+
+/* Mobile nav toggle */
+.mobile-nav-toggle {
+    display: none;
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.mobile-nav-toggle svg {
+    width: 24px;
+    height: 24px;
+}
+
+@media (max-width: 768px) {
+    .mobile-nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--bg-primary);
+        flex-direction: column;
+        padding: 80px 20px 20px;
+        gap: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 99;
+    }
+
+    .nav.open {
+        transform: translateX(0);
+    }
+
+    .nav-link {
+        width: 100%;
+        padding: 16px 20px;
+        font-size: 1.125rem;
+        border-radius: 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .nav-link:first-child {
+        border-top: 1px solid var(--glass-border);
+    }
+}
+
+/* Bottom navigation for mobile */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--glass-border);
+    padding: 8px 0;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+}
+
+@media (max-width: 768px) {
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 16px;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.6875rem;
+        min-width: 64px;
+    }
+
+    .bottom-nav-item svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .bottom-nav-item.active {
+        color: var(--accent);
+    }
+
+    /* Add bottom padding to main content */
+    .main {
+        padding-bottom: 80px;
+    }
+}
+
+/* ============================================================================
+   9. SMART FORM INPUTS
+   Smart keyboards = happy users
+   ============================================================================ */
+
+/* Currency input styling */
+.input-currency {
+    position: relative;
+}
+
+.input-currency::before {
+    content: '$';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-weight: 500;
+    pointer-events: none;
+}
+
+.input-currency input {
+    padding-left: 28px !important;
+}
+
+/* Phone input styling */
+.input-phone input {
+    letter-spacing: 0.5px;
+}
+
+/* Date input styling */
+.input-date {
+    position: relative;
+}
+
+.input-date input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.input-date input[type="date"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    cursor: pointer;
+    padding: 8px;
+    position: absolute;
+    right: 8px;
+}
+
+/* ============================================================================
+   10. INSTANT FEEDBACK STATES
+   Immediate response = trust
+   ============================================================================ */
+
+/* Button click feedback */
+button:active,
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* Input focus glow */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Success pulse */
+.success-pulse {
+    animation: success-pulse 0.5s ease;
+}
+
+@keyframes success-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+    100% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+}
+
+/* Error shake */
+.error-shake {
+    animation: error-shake 0.4s ease;
+}
+
+@keyframes error-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+/* ============================================================================
+   11. EMPTY STATES
+   Guide users when there's no data
+   ============================================================================ */
+
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    background: var(--bg-tertiary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.empty-state-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-state-text {
+    font-size: 0.875rem;
+    margin-bottom: 24px;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ============================================================================
+   12. WHITE SPACE & BREATHING ROOM
+   Clean, not cramped
+   ============================================================================ */
+
+/* Increased spacing on mobile */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 0.5rem 0;
+    }
+
+    .section-title {
+        margin-bottom: 1.25rem;
+    }
+
+    /* More padding in cards */
+    .project-card,
+    .seat-card,
+    .metric-card {
+        padding: 1.25rem;
+    }
+}
