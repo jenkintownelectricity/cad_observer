@@ -1,0 +1,844 @@
+/**
+ * ROOFIO Document Intelligence Center
+ * Styles for document cards with 3 states: empty, filled, parsed
+ * Version control "fan" effect and parsed data display
+ */
+
+/* ============================================================================
+   PAGE LAYOUT
+   ============================================================================ */
+
+.page-header {
+    padding: 2rem;
+    margin-bottom: 1rem;
+}
+
+.page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.page-title-section h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.page-title-section p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.page-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.project-selector select {
+    padding: 0.5rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+}
+
+.action-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background: var(--accent-hover);
+}
+
+.action-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ============================================================================
+   DOCUMENT STATS BAR
+   ============================================================================ */
+
+.doc-stats-bar {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 2rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+.doc-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.doc-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.doc-stat-value.parsed {
+    color: var(--success);
+}
+
+.doc-stat-value.missing {
+    color: var(--warning);
+}
+
+.doc-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   DOCUMENT CATEGORIES
+   ============================================================================ */
+
+.doc-categories {
+    padding: 0 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.doc-category {
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+}
+
+.category-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.category-icon {
+    font-size: 1.25rem;
+}
+
+.category-title h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.category-count {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    background: var(--surface);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.category-toggle {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+.category-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.doc-category.collapsed .category-toggle {
+    transform: rotate(-90deg);
+}
+
+.doc-category.collapsed .doc-grid {
+    display: none;
+}
+
+/* ============================================================================
+   DOCUMENT GRID
+   ============================================================================ */
+
+.doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+/* ============================================================================
+   DOCUMENT CARDS - 3 STATES
+   ============================================================================ */
+
+.doc-card {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: visible;
+}
+
+.doc-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent);
+}
+
+/* Version Cards (fan effect behind main card) */
+.doc-versions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+}
+
+.version-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: var(--surface-alt);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.version-card.v2 {
+    transform: translate(4px, -4px);
+    opacity: 0.7;
+}
+
+.version-card.v3 {
+    transform: translate(8px, -8px);
+    opacity: 0.5;
+}
+
+.doc-card-main {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+}
+
+/* Document Icons */
+.doc-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.doc-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Icon colors by type */
+.doc-icon.contract { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+.doc-icon.specs { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+.doc-icon.drawings { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+.doc-icon.addenda { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.doc-icon.bond { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.doc-icon.assembly { background: linear-gradient(135deg, #ec4899, #db2777); color: white; }
+.doc-icon.product { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
+.doc-icon.shop { background: linear-gradient(135deg, #14b8a6, #0d9488); color: white; }
+.doc-icon.daily { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+.doc-icon.safety { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+.doc-icon.photos { background: linear-gradient(135deg, #a855f7, #9333ea); color: white; }
+.doc-icon.rfi { background: linear-gradient(135deg, #eab308, #ca8a04); color: white; }
+.doc-icon.sov { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+.doc-icon.billing { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; }
+.doc-icon.lien { background: linear-gradient(135deg, #84cc16, #65a30d); color: white; }
+.doc-icon.co { background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; }
+
+/* Empty state icon */
+.doc-icon.empty {
+    background: var(--surface-alt);
+    border: 2px dashed var(--border);
+    color: var(--text-tertiary);
+}
+
+.doc-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.doc-info h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.doc-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.doc-meta.needed {
+    color: var(--warning);
+    font-weight: 500;
+}
+
+.doc-status {
+    flex-shrink: 0;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+}
+
+.status-badge.parsed {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--success);
+}
+
+.status-badge.approved {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+}
+
+.status-badge.success {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--success);
+}
+
+.status-badge.warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+}
+
+/* Parse Button */
+.parse-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.parse-btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.05);
+}
+
+.parse-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================================================
+   EMPTY STATE CARD
+   ============================================================================ */
+
+.doc-card.empty {
+    border-style: dashed;
+    background: transparent;
+}
+
+.doc-card.empty:hover {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.doc-card.empty .doc-card-main {
+    background: transparent;
+}
+
+/* ============================================================================
+   PARSED DATA DISPLAY
+   ============================================================================ */
+
+.doc-parsed-data {
+    position: relative;
+    z-index: 1;
+    padding: 0 1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    background: var(--card-bg);
+    border-radius: 0 0 10px 10px;
+}
+
+.parsed-item {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 0.25rem 0.5rem;
+    background: var(--surface-alt);
+    border-radius: 4px;
+    border-left: 2px solid var(--accent);
+}
+
+.parsed-item strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.parsed-item.warning {
+    border-left-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+/* ============================================================================
+   PARSER MARKETPLACE MODAL
+   ============================================================================ */
+
+.parser-marketplace {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.parser-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.section-desc {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.parser-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.parser-card {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.parser-card:hover {
+    border-color: var(--accent);
+}
+
+.parser-card.included {
+    border-color: var(--success);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.parser-card.premium {
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.parser-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.parser-card h5 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.parser-card p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.parser-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
+
+.parser-status.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--success);
+}
+
+.parser-price {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+}
+
+.parser-card .btn-primary.small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.enterprise-cta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+}
+
+.enterprise-note {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================================================
+   UPLOAD MODAL
+   ============================================================================ */
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    background: var(--surface-alt);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+}
+
+.upload-area:hover {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.upload-area svg {
+    width: 48px;
+    height: 48px;
+    color: var(--text-tertiary);
+    margin-bottom: 1rem;
+}
+
+.upload-area p {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.upload-options {
+    margin-bottom: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.checkbox-label input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+}
+
+/* ============================================================================
+   MODAL LARGE
+   ============================================================================ */
+
+.modal-large {
+    max-width: 900px;
+    width: 95%;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .page-header-content {
+        flex-direction: column;
+    }
+
+    .page-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .doc-stats-bar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .doc-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .parser-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .enterprise-cta {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+@keyframes pulse-parsed {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.doc-card.parsing .doc-icon {
+    animation: pulse-parsed 1s ease-in-out infinite;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.doc-parsed-data {
+    animation: slideUp 0.3s ease-out;
+}
+
+/* ============================================================================
+   INTEGRATION SOURCE BADGES
+   Show where documents came from (Outlook, Dropbox, Drive, etc.)
+   ============================================================================ */
+
+.doc-source-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--card-bg);
+    font-size: 14px;
+}
+
+/* Outlook badge */
+.doc-source-badge.outlook {
+    background: linear-gradient(135deg, #0078d4, #005a9e);
+    color: white;
+}
+
+/* Gmail badge */
+.doc-source-badge.gmail {
+    background: linear-gradient(135deg, #ea4335, #c5221f);
+    color: white;
+}
+
+/* Dropbox badge */
+.doc-source-badge.dropbox {
+    background: linear-gradient(135deg, #0061ff, #0052cc);
+    color: white;
+}
+
+/* Google Drive badge */
+.doc-source-badge.gdrive {
+    background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335);
+    color: white;
+}
+
+/* Box badge */
+.doc-source-badge.box {
+    background: linear-gradient(135deg, #0061d5, #004bb5);
+    color: white;
+}
+
+/* OneDrive badge */
+.doc-source-badge.onedrive {
+    background: linear-gradient(135deg, #094ab2, #0364b8);
+    color: white;
+}
+
+/* Procore badge */
+.doc-source-badge.procore {
+    background: linear-gradient(135deg, #f47920, #e5691a);
+    color: white;
+}
+
+/* PlanGrid badge */
+.doc-source-badge.plangrid {
+    background: linear-gradient(135deg, #1e88e5, #1565c0);
+    color: white;
+}
+
+/* Manual upload badge */
+.doc-source-badge.manual {
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+/* Badge tooltip on hover */
+.doc-source-badge::after {
+    content: attr(data-source);
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+
+.doc-source-badge:hover::after {
+    opacity: 1;
+}
+
+/* Pulse animation for newly synced */
+@keyframes syncPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(0, 120, 212, 0.5), 0 0 0 4px rgba(0, 120, 212, 0.2);
+    }
+}
+
+.doc-source-badge.just-synced {
+    animation: syncPulse 2s ease-in-out 3;
+}
+
+/* New document notification dot */
+.doc-card.new-sync::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    z-index: 10;
+    animation: pulse-parsed 1s ease-in-out infinite;
+}
+
+/* Time ago badge for recent syncs */
+.doc-sync-time {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    padding: 0.125rem 0.375rem;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.625rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+.doc-sync-time.recent {
+    color: var(--success);
+    font-weight: 600;
+}

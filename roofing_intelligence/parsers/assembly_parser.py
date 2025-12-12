@@ -1,12 +1,228 @@
+"""
+Assembly Letter Parser - Extracts roof system components
+
+Parses manufacturer assembly letters to extract:
+- System components (membrane, insulation, cover board, etc.)
+- Attachment methods
+- FM/UL approvals
+- Warranty information
+"""
+
 import re
 from collections import OrderedDict
-from parsers.text_cleaner import clean_rtf_text
+from .base_parser import BaseParser, ParserResult, ConfidenceLevel
+
+
+class AssemblyLetterParser(BaseParser):
+    """
+    Parser for manufacturer assembly letters (Carlisle, GAF, Firestone, etc.)
+    Wraps the existing detailed parsing logic with the new suggestion framework.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.doc_type = "assembly-letter"
+        self.version = "1.0.0"
+
+        self.manufacturers = {
+            'Carlisle': r'(?i)carlisle',
+            'Mule-Hide': r'(?i)mule[-\s]?hide',
+            'GAF': r'(?i)\bGAF\b',
+            'Firestone': r'(?i)firestone',
+            'Johns Manville': r'(?i)johns\s+manville',
+            'Siplast': r'(?i)siplast',
+            'SOPREMA': r'(?i)soprema',
+            'Versico': r'(?i)versico',
+        }
+
+    def _extract_data(self, content: str, result: ParserResult):
+        """Extract assembly letter data using suggestion framework"""
+
+        # -----------------------------------------------------------------
+        # MANUFACTURER
+        # -----------------------------------------------------------------
+        for name, pattern in self.manufacturers.items():
+            if re.search(pattern, content[:2000]):
+                result.add_suggestion(
+                    'manufacturer',
+                    name,
+                    ConfidenceLevel.HIGH,
+                    source_text=f"Found: {name}"
+                )
+                break
+
+        # -----------------------------------------------------------------
+        # SYSTEM TYPE
+        # -----------------------------------------------------------------
+        system_types = [
+            ('TPO', r'(?i)\bTPO\b'),
+            ('PVC', r'(?i)\bPVC\b'),
+            ('EPDM', r'(?i)\bEPDM\b'),
+            ('SBS Modified Bitumen', r'(?i)SBS|modified\s+bitumen'),
+            ('Built-Up', r'(?i)built[-\s]?up|BUR'),
+        ]
+
+        for system_name, pattern in system_types:
+            if re.search(pattern, content[:1000]):
+                result.add_suggestion(
+                    'system_type',
+                    system_name,
+                    ConfidenceLevel.HIGH,
+                    source_text=system_name
+                )
+                break
+
+        # -----------------------------------------------------------------
+        # MEMBRANE
+        # -----------------------------------------------------------------
+        membrane_pattern = r'(?i)(\d+[-\s]?mils?\s+[A-Za-z\-]+\s+(?:TPO|PVC|EPDM|membrane)[^\n.]*)'
+        membrane_match = re.search(membrane_pattern, content)
+        if membrane_match:
+            result.add_suggestion(
+                'membrane',
+                membrane_match.group(1).strip(),
+                ConfidenceLevel.HIGH,
+                source_text=membrane_match.group(0)
+            )
+
+        # -----------------------------------------------------------------
+        # INSULATION LAYERS
+        # -----------------------------------------------------------------
+        insul_patterns = [
+            r'(?i)(\d+\.?\d*"?\s*(?:thick\s+)?polyiso[^\n.]*)',
+            r'(?i)insulation[:\s]+([^\n]+)',
+        ]
+
+        for pattern in insul_patterns:
+            matches = re.findall(pattern, content)
+            for i, match in enumerate(matches[:3], 1):
+                result.add_suggestion(
+                    f'insulation_layer_{i}',
+                    match.strip()[:200],
+                    ConfidenceLevel.MEDIUM,
+                    source_text=match
+                )
+
+        # -----------------------------------------------------------------
+        # COVER BOARD
+        # -----------------------------------------------------------------
+        cover_patterns = [
+            r'(?i)cover\s*board[:\s]+([^\n]+)',
+            r'(?i)(DensDeck[^\n]+)',
+            r'(?i)gypsum[-\s]fiber[:\s]+([^\n]+)',
+        ]
+
+        for pattern in cover_patterns:
+            match = re.search(pattern, content)
+            if match:
+                result.add_suggestion(
+                    'cover_board',
+                    match.group(1).strip()[:200],
+                    ConfidenceLevel.MEDIUM,
+                    source_text=match.group(0)
+                )
+                break
+
+        # -----------------------------------------------------------------
+        # VAPOR BARRIER
+        # -----------------------------------------------------------------
+        vapor_match = re.search(r'(?i)vapor\s+(?:retarder|barrier)[:\s]+([^\n]+)', content)
+        if vapor_match:
+            result.add_suggestion(
+                'vapor_barrier',
+                vapor_match.group(1).strip()[:200],
+                ConfidenceLevel.MEDIUM,
+                source_text=vapor_match.group(0)
+            )
+
+        # -----------------------------------------------------------------
+        # DECK TYPE
+        # -----------------------------------------------------------------
+        deck_match = re.search(r'(?i)deck[:\s]+([^\n]+?)(?=\s*$|\s*Canopy|\n\n)', content)
+        if deck_match:
+            result.add_suggestion(
+                'deck_type',
+                deck_match.group(1).strip()[:150],
+                ConfidenceLevel.MEDIUM,
+                source_text=deck_match.group(0)
+            )
+
+        # -----------------------------------------------------------------
+        # FM APPROVAL
+        # -----------------------------------------------------------------
+        fm_match = re.search(r'(?i)RoofNav\s*#?\s*([\d\-]+)', content)
+        if fm_match:
+            result.add_suggestion(
+                'fm_roofnav',
+                fm_match.group(1),
+                ConfidenceLevel.HIGH,
+                source_text=fm_match.group(0)
+            )
+
+        fm_rating = re.search(r'FM\s*(\d-\d+)', content)
+        if fm_rating:
+            result.add_suggestion(
+                'fm_wind_rating',
+                f"FM {fm_rating.group(1)}",
+                ConfidenceLevel.HIGH,
+                source_text=fm_rating.group(0)
+            )
+
+        # -----------------------------------------------------------------
+        # UL RATING
+        # -----------------------------------------------------------------
+        ul_match = re.search(r'(?i)UL\s+(?:Class\s+)?([A-C])', content)
+        if ul_match:
+            result.add_suggestion(
+                'ul_rating',
+                f"Class {ul_match.group(1)}",
+                ConfidenceLevel.HIGH,
+                source_text=ul_match.group(0)
+            )
+
+        # -----------------------------------------------------------------
+        # PROJECT INFO
+        # -----------------------------------------------------------------
+        project_match = re.search(r'(?i)(?:RE|Re|Subject):\s*([^\n]+)', content[:1000])
+        if project_match:
+            name = project_match.group(1).strip()
+            name = re.sub(r'(?i)\s*[-–]?\s*To\s+Whom\s+[Ii]t\s+May\s+Concern.*', '', name)
+            if name:
+                result.add_suggestion(
+                    'project_name',
+                    name[:150],
+                    ConfidenceLevel.MEDIUM,
+                    source_text=project_match.group(0)
+                )
+
+        # -----------------------------------------------------------------
+        # DATE
+        # -----------------------------------------------------------------
+        date_match = re.search(r'([A-Za-z]+\s+\d+,\s+\d{4})', content[:800])
+        if date_match:
+            result.add_suggestion(
+                'letter_date',
+                date_match.group(1),
+                ConfidenceLevel.HIGH,
+                source_text=date_match.group(0)
+            )
+
+
+# =========================================================================
+# LEGACY FUNCTIONS (kept for backward compatibility)
+# =========================================================================
+
+def clean_rtf_text(text):
+    """Clean RTF formatting from text."""
+    if not text:
+        return ""
+    # Basic RTF cleaning
+    text = re.sub(r'\\[a-z]+\d*\s?', '', text)
+    text = re.sub(r'[{}]', '', text)
+    return text.strip()
+
 
 def parse_assembly_letter(text):
-    """
-    Parse assembly letter matching Excel template format.
-    Extracts each component and attachment method separately.
-    """
     text = clean_rtf_text(text)
     
     manufacturer = extract_manufacturer(text)

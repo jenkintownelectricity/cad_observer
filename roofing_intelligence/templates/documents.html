@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Intelligence | ROOFIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/documents.css') }}">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header glass">
+        <div class="header-content">
+            <div class="logo">
+                <a href="/dashboard" class="logo-link">
+                    <span class="logo-text">ROOFIO</span>
+                    <span class="logo-badge">AI</span>
+                </a>
+            </div>
+
+            <button class="mobile-nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+
+            <nav class="nav">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/projects" class="nav-link">Projects</a>
+                <a href="/documents" class="nav-link active">Documents</a>
+                <a href="/control-center" class="nav-link">Control</a>
+                <a href="/digital-foreman" class="nav-link">Foreman</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="page-header-content">
+                <div class="page-title-section">
+                    <h1>Document Intelligence Center</h1>
+                    <p>AI-powered document parsing • Single source of truth • Version control</p>
+                </div>
+                <div class="page-actions">
+                    <div class="project-selector">
+                        <select id="project-select" onchange="loadProjectDocuments(this.value)">
+                            <option value="">Select Project...</option>
+                            <option value="jhu-library">JHU Library Roofing</option>
+                            <option value="umass-waterproofing">UMass Waterproofing</option>
+                            <option value="boston-medical">Boston Medical Center</option>
+                        </select>
+                    </div>
+                    <button class="action-btn primary" onclick="openUploadModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload Document
+                    </button>
+                    <button class="action-btn" onclick="openParserMarketplace()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Parser Skills
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Document Stats -->
+        <section class="doc-stats-bar">
+            <div class="doc-stat">
+                <span class="doc-stat-value" id="total-docs">0</span>
+                <span class="doc-stat-label">Total Documents</span>
+            </div>
+            <div class="doc-stat">
+                <span class="doc-stat-value parsed" id="parsed-docs">0</span>
+                <span class="doc-stat-label">AI Parsed</span>
+            </div>
+            <div class="doc-stat">
+                <span class="doc-stat-value missing" id="missing-docs">0</span>
+                <span class="doc-stat-label">Missing/Needed</span>
+            </div>
+            <div class="doc-stat">
+                <span class="doc-stat-value" id="active-parsers">12</span>
+                <span class="doc-stat-label">Active Parsers</span>
+            </div>
+        </section>
+
+        <!-- Document Categories -->
+        <div class="doc-categories">
+
+            <!-- PRE-CONSTRUCTION DOCUMENTS -->
+            <section class="doc-category">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon">📋</span>
+                        <h2>Pre-Construction</h2>
+                        <span class="category-count">8 documents</span>
+                    </div>
+                    <button class="category-toggle" onclick="toggleCategory(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="doc-grid">
+                    <!-- Contract - Filled & Parsed -->
+                    <div class="doc-card filled parsed" data-doc-type="contract" onclick="openDocument('contract')">
+                        <div class="doc-versions">
+                            <div class="version-card v3"></div>
+                            <div class="version-card v2"></div>
+                        </div>
+                        <div class="doc-card-main">
+                            <div class="doc-icon contract">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Contract</h3>
+                                <span class="doc-meta">v3 • Dec 10, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>Value:</strong> $450,000</div>
+                            <div class="parsed-item"><strong>Retainage:</strong> 10%</div>
+                            <div class="parsed-item"><strong>Duration:</strong> 90 days</div>
+                            <div class="parsed-item warning"><strong>⚠️ Flag:</strong> Liquidated damages $500/day</div>
+                        </div>
+                    </div>
+
+                    <!-- Specs - Filled & Parsed -->
+                    <div class="doc-card filled parsed" data-doc-type="specs" onclick="openDocument('specs')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon specs">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Specifications</h3>
+                                <span class="doc-meta">07 50 00 • Dec 5, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>System:</strong> TPO 60 mil fully adhered</div>
+                            <div class="parsed-item"><strong>Insulation:</strong> 2 layers polyiso R-30</div>
+                            <div class="parsed-item"><strong>Warranty:</strong> 20-year NDL</div>
+                        </div>
+                    </div>
+
+                    <!-- Drawings - Filled & Parsed -->
+                    <div class="doc-card filled parsed" data-doc-type="drawings" onclick="openDocument('drawings')">
+                        <div class="doc-versions">
+                            <div class="version-card v2"></div>
+                        </div>
+                        <div class="doc-card-main">
+                            <div class="doc-icon drawings">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Roof Plan</h3>
+                                <span class="doc-meta">A-501 • Dec 8, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>Area:</strong> 45,000 SF</div>
+                            <div class="parsed-item"><strong>Drains:</strong> 12 roof drains, 4 overflow</div>
+                            <div class="parsed-item"><strong>Coping:</strong> 850 LF aluminum</div>
+                            <div class="parsed-item"><strong>Penetrations:</strong> 24 RTUs, 8 VTRs</div>
+                        </div>
+                    </div>
+
+                    <!-- Addenda - Filled, not parsed -->
+                    <div class="doc-card filled" data-doc-type="addenda" onclick="openDocument('addenda')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon addenda">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Addenda</h3>
+                                <span class="doc-meta">Add #1-3 • Dec 2, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <button class="parse-btn" onclick="event.stopPropagation(); parseDocument('addenda')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                    </svg>
+                                    Parse
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estimate - Empty/Needed -->
+                    <div class="doc-card empty" data-doc-type="estimate" onclick="uploadDocument('estimate')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Estimate/Takeoff</h3>
+                                <span class="doc-meta needed">⚠️ Needed for billing</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insurance Cert - Empty -->
+                    <div class="doc-card empty" data-doc-type="insurance" onclick="uploadDocument('insurance')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Insurance Certificate</h3>
+                                <span class="doc-meta needed">⚠️ Required by GC</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bond - Filled -->
+                    <div class="doc-card filled" data-doc-type="bond" onclick="openDocument('bond')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon bond">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Performance Bond</h3>
+                                <span class="doc-meta">Dec 1, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <button class="parse-btn" onclick="event.stopPropagation(); parseDocument('bond')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                    </svg>
+                                    Parse
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subcontract - Empty -->
+                    <div class="doc-card empty" data-doc-type="subcontract" onclick="uploadDocument('subcontract')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Subcontract Agreement</h3>
+                                <span class="doc-meta">Optional</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SUBMITTALS & SHOP DRAWINGS -->
+            <section class="doc-category">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon">📐</span>
+                        <h2>Submittals & Shop Drawings</h2>
+                        <span class="category-count">6 documents</span>
+                    </div>
+                    <button class="category-toggle" onclick="toggleCategory(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="doc-grid">
+                    <!-- Assembly Letter - Filled & Parsed -->
+                    <div class="doc-card filled parsed" data-doc-type="assembly-letter" onclick="openDocument('assembly-letter')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon assembly">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Assembly Letter</h3>
+                                <span class="doc-meta">Carlisle • Dec 9, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>H1:</strong> Carlisle SureWeld 60 mil TPO</div>
+                            <div class="parsed-item"><strong>H2:</strong> Metal deck, 1/2" DensDeck mech attached</div>
+                            <div class="parsed-item"><strong>H3:</strong> 2 layers 2.6" polyiso in foam adhesive</div>
+                            <div class="parsed-item"><strong>H4:</strong> 5/8" DensDeck Prime in foam adhesive</div>
+                            <div class="parsed-item"><strong>H5:</strong> TPO membrane fully adhered LVOC</div>
+                        </div>
+                    </div>
+
+                    <!-- Product Data - Filled -->
+                    <div class="doc-card filled" data-doc-type="product-data" onclick="openDocument('product-data')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon product">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Product Data Sheets</h3>
+                                <span class="doc-meta">12 sheets • Dec 6, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <button class="parse-btn" onclick="event.stopPropagation(); parseDocument('product-data')">Parse</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shop Drawings - Filled & Parsed -->
+                    <div class="doc-card filled parsed" data-doc-type="shop-drawings" onclick="openDocument('shop-drawings')">
+                        <div class="doc-versions">
+                            <div class="version-card v3"></div>
+                            <div class="version-card v2"></div>
+                        </div>
+                        <div class="doc-card-main">
+                            <div class="doc-icon shop">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Shop Drawings</h3>
+                                <span class="doc-meta">v3 Approved • Dec 11, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge approved">Approved</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>Sheets:</strong> SD-1 thru SD-8</div>
+                            <div class="parsed-item"><strong>Details:</strong> 24 flashing details</div>
+                            <div class="parsed-item"><strong>Status:</strong> Approved as noted</div>
+                        </div>
+                    </div>
+
+                    <!-- MSDS - Empty -->
+                    <div class="doc-card empty" data-doc-type="msds" onclick="uploadDocument('msds')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>MSDS/SDS Sheets</h3>
+                                <span class="doc-meta needed">⚠️ Required for site</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warranty Doc - Empty -->
+                    <div class="doc-card empty" data-doc-type="warranty-doc" onclick="uploadDocument('warranty-doc')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Warranty Application</h3>
+                                <span class="doc-meta">Post-completion</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Reports - Empty -->
+                    <div class="doc-card empty" data-doc-type="test-reports" onclick="uploadDocument('test-reports')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Test Reports</h3>
+                                <span class="doc-meta">FM/UL approvals</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FIELD DOCUMENTS -->
+            <section class="doc-category">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon">🏗️</span>
+                        <h2>Field Documents</h2>
+                        <span class="category-count">5 documents</span>
+                    </div>
+                    <button class="category-toggle" onclick="toggleCategory(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="doc-grid">
+                    <!-- Daily Reports -->
+                    <div class="doc-card filled parsed" data-doc-type="daily-reports" onclick="openDocument('daily-reports')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon daily">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Daily Reports</h3>
+                                <span class="doc-meta">47 reports • Latest: Today</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>SF Complete:</strong> 32,400 SF (72%)</div>
+                            <div class="parsed-item"><strong>Man-Hours:</strong> 2,340 total</div>
+                            <div class="parsed-item"><strong>Weather Days:</strong> 4 delays</div>
+                        </div>
+                    </div>
+
+                    <!-- JHAs -->
+                    <div class="doc-card filled" data-doc-type="jhas" onclick="openDocument('jhas')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon safety">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    <path d="M9 12l2 2 4-4"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>JHAs / Safety</h3>
+                                <span class="doc-meta">47 JHAs signed</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge success">Current</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photos -->
+                    <div class="doc-card filled" data-doc-type="photos" onclick="openDocument('photos')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon photos">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Progress Photos</h3>
+                                <span class="doc-meta">342 photos</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge">View All</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RFIs -->
+                    <div class="doc-card filled parsed" data-doc-type="rfis" onclick="openDocument('rfis')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon rfi">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>RFIs</h3>
+                                <span class="doc-meta">8 total • 2 open</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge warning">2 Pending</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item warning"><strong>RFI #7:</strong> Drain location conflict - 3 days</div>
+                            <div class="parsed-item warning"><strong>RFI #8:</strong> Coping height clarification - 1 day</div>
+                        </div>
+                    </div>
+
+                    <!-- Punch List -->
+                    <div class="doc-card empty" data-doc-type="punch-list" onclick="uploadDocument('punch-list')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Punch List</h3>
+                                <span class="doc-meta">Not yet created</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BILLING & CLOSEOUT -->
+            <section class="doc-category">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon">💰</span>
+                        <h2>Billing & Closeout</h2>
+                        <span class="category-count">6 documents</span>
+                    </div>
+                    <button class="category-toggle" onclick="toggleCategory(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="doc-grid">
+                    <!-- SOV -->
+                    <div class="doc-card filled parsed" data-doc-type="sov" onclick="openDocument('sov')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon sov">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Schedule of Values</h3>
+                                <span class="doc-meta">Approved • Dec 3, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>Total:</strong> $450,000</div>
+                            <div class="parsed-item"><strong>Billed:</strong> $324,000 (72%)</div>
+                            <div class="parsed-item"><strong>Retainage:</strong> $32,400</div>
+                        </div>
+                    </div>
+
+                    <!-- Pay Apps -->
+                    <div class="doc-card filled" data-doc-type="pay-apps" onclick="openDocument('pay-apps')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon billing">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Pay Applications</h3>
+                                <span class="doc-meta">App #4 • Dec 1, 2024</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge warning">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lien Waivers -->
+                    <div class="doc-card filled" data-doc-type="lien-waivers" onclick="openDocument('lien-waivers')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon lien">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <path d="M9 15l2 2 4-4"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Lien Waivers</h3>
+                                <span class="doc-meta">Through App #3</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge success">Current</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Change Orders -->
+                    <div class="doc-card filled parsed" data-doc-type="change-orders" onclick="openDocument('change-orders')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon co">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Change Orders</h3>
+                                <span class="doc-meta">2 COs • $18,500</span>
+                            </div>
+                            <div class="doc-status">
+                                <span class="status-badge parsed">AI Parsed</span>
+                            </div>
+                        </div>
+                        <div class="doc-parsed-data">
+                            <div class="parsed-item"><strong>CO #1:</strong> Add drain - $8,500</div>
+                            <div class="parsed-item"><strong>CO #2:</strong> Coping upgrade - $10,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Final Warranty -->
+                    <div class="doc-card empty" data-doc-type="final-warranty" onclick="uploadDocument('final-warranty')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Final Warranty</h3>
+                                <span class="doc-meta">Post-completion</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Closeout Package -->
+                    <div class="doc-card empty" data-doc-type="closeout" onclick="uploadDocument('closeout')">
+                        <div class="doc-card-main">
+                            <div class="doc-icon empty">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="doc-info">
+                                <h3>Closeout Package</h3>
+                                <span class="doc-meta">Post-completion</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Document Viewer Modal -->
+    <div class="modal hidden" id="document-modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="doc-modal-title">Document Viewer</h3>
+                <button class="modal-close" onclick="closeModal('document-modal')">×</button>
+            </div>
+            <div class="modal-body" id="doc-modal-body">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Parser Marketplace Modal -->
+    <div class="modal hidden" id="parser-modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Parser Skills Marketplace</h3>
+                <button class="modal-close" onclick="closeModal('parser-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="parser-marketplace">
+                    <div class="parser-section">
+                        <h4>🎁 Free Parsers (Included)</h4>
+                        <div class="parser-grid">
+                            <div class="parser-card included">
+                                <div class="parser-icon">📋</div>
+                                <h5>Contract Skimmer</h5>
+                                <p>Extract key terms, retainage, duration, flags tricky clauses</p>
+                                <span class="parser-status active">Active</span>
+                            </div>
+                            <div class="parser-card included">
+                                <div class="parser-icon">📐</div>
+                                <h5>Roof Plan Reader</h5>
+                                <p>Extracts drains, penetrations, coping, areas from drawings</p>
+                                <span class="parser-status active">Active</span>
+                            </div>
+                            <div class="parser-card included">
+                                <div class="parser-icon">🔧</div>
+                                <h5>Assembly Letter Parser</h5>
+                                <p>Parses manufacturer assembly letters into system components</p>
+                                <span class="parser-status active">Active</span>
+                            </div>
+                            <div class="parser-card included">
+                                <div class="parser-icon">📊</div>
+                                <h5>SOV Extractor</h5>
+                                <p>Extracts line items, values, percentages from SOVs</p>
+                                <span class="parser-status active">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="parser-section">
+                        <h4>⭐ Premium Parsers</h4>
+                        <div class="parser-grid">
+                            <div class="parser-card premium">
+                                <div class="parser-icon">⚠️</div>
+                                <h5>Contract Red Flag AI</h5>
+                                <p>Deep analysis of indemnification, liability, insurance requirements</p>
+                                <span class="parser-price">$199 one-time</span>
+                                <button class="btn-primary small" onclick="purchaseParser('contract-redflag')">Purchase</button>
+                            </div>
+                            <div class="parser-card premium">
+                                <div class="parser-icon">📑</div>
+                                <h5>Spec Section Analyzer</h5>
+                                <p>Full 07 50 00 / 07 62 00 parsing with compliance checking</p>
+                                <span class="parser-price">$299 one-time</span>
+                                <button class="btn-primary small" onclick="purchaseParser('spec-analyzer')">Purchase</button>
+                            </div>
+                            <div class="parser-card premium">
+                                <div class="parser-icon">📈</div>
+                                <h5>Bid Tabulation AI</h5>
+                                <p>Compares your bid against competition, suggests pricing</p>
+                                <span class="parser-price">$499 one-time</span>
+                                <button class="btn-primary small" onclick="purchaseParser('bid-tab')">Purchase</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="parser-section">
+                        <h4>🏢 Enterprise Custom Parsers</h4>
+                        <p class="section-desc">Need a parser specific to your workflows? We'll build it for you.</p>
+                        <div class="enterprise-cta">
+                            <button class="btn-primary" onclick="requestCustomParser()">Request Custom Parser</button>
+                            <span class="enterprise-note">Starting at $1,999 • Includes training & support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal hidden" id="upload-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="upload-modal-title">Upload Document</h3>
+                <button class="modal-close" onclick="closeModal('upload-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p>Drop files here or click to browse</p>
+                    <span class="upload-hint">PDF, DWG, DOC, XLS supported</span>
+                    <input type="file" id="file-input" hidden multiple accept=".pdf,.dwg,.doc,.docx,.xls,.xlsx">
+                </div>
+                <div class="upload-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="auto-parse" checked>
+                        <span>Auto-parse with AI after upload</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-secondary" onclick="closeModal('upload-modal')">Cancel</button>
+                    <button class="btn-primary" onclick="processUpload()">Upload & Parse</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/ux-utilities.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/documents.js') }}"></script>
+</body>
+</html>
