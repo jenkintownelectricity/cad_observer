@@ -20,6 +20,21 @@ import threading
 from datetime import datetime
 import PyPDF2
 
+# Import API client for backend connection
+try:
+    import api_client
+    API_AVAILABLE = api_client.is_api_available()
+    if API_AVAILABLE:
+        print("✓ Connected to ROOFIO Backend API")
+        # Set agency ID (use env var or default)
+        agency_id = os.getenv('ROOFIO_AGENCY_ID', '3cfd5441-d5fc-4857-8fb9-3dc7be7a37d5')
+        api_client.set_agency_id(agency_id)
+        print(f"  Agency ID: {agency_id}")
+except ImportError:
+    API_AVAILABLE = False
+    api_client = None
+    print("⚠ API client not available, using local storage")
+
 # Import parsers
 from parsers.roof_page_filter import filter_roof_pages, get_roof_page_numbers
 from parsers.arch_drawing_parser import parse_architectural_drawing
@@ -392,6 +407,26 @@ COMPANY_DATA = {
 @app.route('/api/company/projects', methods=['GET'])
 def get_company_projects():
     """Get all company projects."""
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.list_projects()
+            # Transform API response to match frontend expectations
+            projects = []
+            for p in result.get('projects', []):
+                projects.append({
+                    'id': p['project_id'],
+                    'name': p['name'],
+                    'client': p.get('gc_contact', {}).get('name', '') if p.get('gc_contact') else '',
+                    'value': f"${p.get('contract_amount', 0):,.0f}" if p.get('contract_amount') else '',
+                    'status': 'green' if p.get('status') in ['complete', 'awarded'] else 'yellow' if p.get('status') == 'bidding' else 'red',
+                    'progress': 100 if p.get('status') == 'complete' else 50 if p.get('status') == 'in_progress' else 0,
+                    'phase': p.get('status', 'Bidding').replace('_', ' ').title(),
+                    'assignee': 'Team',
+                    'created': p.get('created_at', '')
+                })
+            return jsonify({'projects': projects})
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
     return jsonify({'projects': COMPANY_DATA['projects']})
 
 
@@ -402,6 +437,38 @@ def create_company_project():
     if not data or 'name' not in data:
         return jsonify({'error': 'Project name required'}), 400
 
+    if API_AVAILABLE and api_client:
+        try:
+            # Build address from data
+            address = {
+                'street': data.get('address', ''),
+                'city': data.get('city', ''),
+                'state': data.get('state', ''),
+                'zip': data.get('zip', '')
+            }
+            result = api_client.create_project(
+                name=data['name'],
+                address=address,
+                project_type=data.get('project_type', 'commercial'),
+                gc_contact={'name': data.get('client', '')},
+                contract_amount=float(data.get('value', '0').replace('$', '').replace(',', '') or 0)
+            )
+            project = {
+                'id': result['project_id'],
+                'name': result['name'],
+                'client': data.get('client', ''),
+                'value': data.get('value', ''),
+                'status': 'yellow',
+                'progress': 0,
+                'phase': 'Bidding',
+                'assignee': data.get('pm', 'Unassigned'),
+                'created': result.get('created_at', datetime.now().isoformat())
+            }
+            return jsonify({'success': True, 'project': project})
+        except Exception as e:
+            print(f"API error: {e}, falling back to local")
+
+    # Fallback to local storage
     project = {
         'id': len(COMPANY_DATA['projects']) + 1,
         'name': data['name'],
