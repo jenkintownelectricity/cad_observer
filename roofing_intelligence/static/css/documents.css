@@ -694,3 +694,151 @@
 .doc-parsed-data {
     animation: slideUp 0.3s ease-out;
 }
+
+/* ============================================================================
+   INTEGRATION SOURCE BADGES
+   Show where documents came from (Outlook, Dropbox, Drive, etc.)
+   ============================================================================ */
+
+.doc-source-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--card-bg);
+    font-size: 14px;
+}
+
+/* Outlook badge */
+.doc-source-badge.outlook {
+    background: linear-gradient(135deg, #0078d4, #005a9e);
+    color: white;
+}
+
+/* Gmail badge */
+.doc-source-badge.gmail {
+    background: linear-gradient(135deg, #ea4335, #c5221f);
+    color: white;
+}
+
+/* Dropbox badge */
+.doc-source-badge.dropbox {
+    background: linear-gradient(135deg, #0061ff, #0052cc);
+    color: white;
+}
+
+/* Google Drive badge */
+.doc-source-badge.gdrive {
+    background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335);
+    color: white;
+}
+
+/* Box badge */
+.doc-source-badge.box {
+    background: linear-gradient(135deg, #0061d5, #004bb5);
+    color: white;
+}
+
+/* OneDrive badge */
+.doc-source-badge.onedrive {
+    background: linear-gradient(135deg, #094ab2, #0364b8);
+    color: white;
+}
+
+/* Procore badge */
+.doc-source-badge.procore {
+    background: linear-gradient(135deg, #f47920, #e5691a);
+    color: white;
+}
+
+/* PlanGrid badge */
+.doc-source-badge.plangrid {
+    background: linear-gradient(135deg, #1e88e5, #1565c0);
+    color: white;
+}
+
+/* Manual upload badge */
+.doc-source-badge.manual {
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+/* Badge tooltip on hover */
+.doc-source-badge::after {
+    content: attr(data-source);
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+
+.doc-source-badge:hover::after {
+    opacity: 1;
+}
+
+/* Pulse animation for newly synced */
+@keyframes syncPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(0, 120, 212, 0.5), 0 0 0 4px rgba(0, 120, 212, 0.2);
+    }
+}
+
+.doc-source-badge.just-synced {
+    animation: syncPulse 2s ease-in-out 3;
+}
+
+/* New document notification dot */
+.doc-card.new-sync::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    z-index: 10;
+    animation: pulse-parsed 1s ease-in-out infinite;
+}
+
+/* Time ago badge for recent syncs */
+.doc-sync-time {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    padding: 0.125rem 0.375rem;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.625rem;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+.doc-sync-time.recent {
+    color: var(--success);
+    font-weight: 600;
+}

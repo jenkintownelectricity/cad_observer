@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROOFIO - We Beat You To It</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           SCENE CONTAINER
+           ============================================================ */
+        .scene-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scene {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           SCENE 1: THE ARCHITECT'S OFFICE - 8:47 AM
+           ============================================================ */
+        .office-scene {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .character {
+            position: relative;
+            text-align: center;
+        }
+
+        .character-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .architect-avatar {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+        }
+
+        .character-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .character-role {
+            font-size: 0.875rem;
+            color: #888;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            background: white;
+            color: #1a1a2e;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            max-width: 280px;
+            font-size: 0.9375rem;
+            line-height: 1.4;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: scale(0.8);
+            animation: bubblePop 0.3s ease forwards;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            bottom: -8px;
+            left: 30px;
+            transform: rotate(45deg);
+        }
+
+        @keyframes bubblePop {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Email Panel */
+        .email-panel {
+            background: #1e1e2e;
+            border-radius: 12px;
+            width: 400px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .email-header {
+            background: #0078d4;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .email-header span {
+            font-weight: 600;
+        }
+
+        .email-body {
+            padding: 1rem;
+        }
+
+        .email-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #2a2a3e;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .email-item:hover {
+            background: #3a3a4e;
+        }
+
+        .email-item.unread {
+            border-left: 3px solid #0078d4;
+        }
+
+        .email-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f47920, #e5691a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .email-content {
+            flex: 1;
+        }
+
+        .email-from {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .email-subject {
+            color: #ccc;
+            font-size: 0.8125rem;
+        }
+
+        .email-time {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .attachment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(0, 120, 212, 0.2);
+            border-radius: 4px;
+            font-size: 0.6875rem;
+            color: #0078d4;
+            margin-top: 0.25rem;
+        }
+
+        /* ============================================================
+           SCENE 2: ROOFIO WORKING - BEHIND THE SCENES
+           ============================================================ */
+        .roofio-brain {
+            text-align: center;
+        }
+
+        .brain-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .brain-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+            animation: brainPulse 2s ease-in-out infinite;
+        }
+
+        .brain-circle:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-color: rgba(99, 102, 241, 0.3);
+            animation-delay: 0s;
+        }
+
+        .brain-circle:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-color: rgba(99, 102, 241, 0.5);
+            animation-delay: 0.2s;
+        }
+
+        .brain-circle:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-color: rgba(99, 102, 241, 0.7);
+            animation-delay: 0.4s;
+        }
+
+        .brain-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+        }
+
+        @keyframes brainPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .process-step {
+            background: #1e1e2e;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            width: 140px;
+            opacity: 0;
+            animation: stepAppear 0.5s ease forwards;
+        }
+
+        .process-step:nth-child(1) { animation-delay: 0.2s; }
+        .process-step:nth-child(2) { animation-delay: 0.5s; }
+        .process-step:nth-child(3) { animation-delay: 0.8s; }
+        .process-step:nth-child(4) { animation-delay: 1.1s; }
+
+        @keyframes stepAppear {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .step-status {
+            font-size: 0.6875rem;
+            color: #22c55e;
+            margin-top: 0.25rem;
+        }
+
+        /* ============================================================
+           SCENE 3: THE REVEAL - ROOFIO APP
+           ============================================================ */
+        .app-mockup {
+            background: #12121a;
+            border-radius: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .app-content {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .doc-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .demo-doc-card {
+            background: #1e1e2e;
+            border-radius: 10px;
+            padding: 1rem;
+            position: relative;
+            border: 1px solid #2a2a3e;
+            transition: all 0.3s;
+        }
+
+        .demo-doc-card.highlight {
+            border-color: #6366f1;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            animation: cardGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes cardGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+        }
+
+        /* Source Badge on Card */
+        .demo-source-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0078d4, #005a9e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 2px solid #12121a;
+            animation: badgePop 0.5s ease forwards;
+        }
+
+        @keyframes badgePop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .demo-badge-tooltip {
+            position: absolute;
+            top: 24px;
+            right: -20px;
+            background: #1e1e2e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.625rem;
+            white-space: nowrap;
+            opacity: 0;
+            animation: tooltipShow 0.3s ease 1s forwards;
+        }
+
+        @keyframes tooltipShow {
+            to { opacity: 1; }
+        }
+
+        .demo-doc-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .demo-doc-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .demo-doc-meta {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .demo-doc-meta.synced {
+            color: #22c55e;
+        }
+
+        /* New badge */
+        .new-indicator {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: #6366f1;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        /* Parsed Data Preview */
+        .parsed-preview {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #2a2a3e;
+            font-size: 0.6875rem;
+        }
+
+        .parsed-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            color: #888;
+        }
+
+        .parsed-row strong {
+            color: #ccc;
+        }
+
+        /* ============================================================
+           SCENE 4: TIME COMPARISON - SPLIT SCREEN
+           ============================================================ */
+        .split-screen {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .split-panel {
+            background: #1e1e2e;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .split-panel.roofio {
+            border: 2px solid #22c55e;
+        }
+
+        .panel-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .traditional .panel-badge {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .roofio .panel-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .time-display {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .traditional .time-display {
+            color: #ef4444;
+        }
+
+        .roofio .time-display {
+            color: #22c55e;
+        }
+
+        .panel-steps {
+            text-align: left;
+            padding: 1rem;
+            background: #12121a;
+            border-radius: 8px;
+        }
+
+        .panel-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            font-size: 0.8125rem;
+            color: #888;
+        }
+
+        .panel-step .check {
+            color: #22c55e;
+        }
+
+        .panel-step .wait {
+            color: #ef4444;
+        }
+
+        /* ============================================================
+           SCENE 5: TAGLINE FINALE
+           ============================================================ */
+        .finale {
+            text-align: center;
+        }
+
+        .finale-logo {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: logoShine 3s ease-in-out infinite;
+        }
+
+        @keyframes logoShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .tagline {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2rem;
+        }
+
+        .tagline .highlight {
+            color: #22c55e;
+        }
+
+        .sub-tagline {
+            font-size: 1.125rem;
+            color: #888;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           CONTROLS
+           ============================================================ */
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .control-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .scene-indicator {
+            display: flex;
+            gap: 0.5rem;
+            position: fixed;
+            bottom: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .scene-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.3s;
+        }
+
+        .scene-dot.active {
+            background: #6366f1;
+            transform: scale(1.2);
+        }
+
+        /* Scene titles */
+        .scene-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .scene-title .time {
+            font-size: 0.875rem;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .scene-title h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="scene-container">
+    <!-- SCENE 1: Email arrives at architect's office -->
+    <div class="scene active" id="scene1">
+        <div class="scene-title">
+            <div class="time">8:47 AM - Monday Morning</div>
+            <h2>The Architect Forwards a Document</h2>
+        </div>
+
+        <div class="office-scene">
+            <div class="character">
+                <div class="character-avatar architect-avatar">
+                    <span>JM</span>
+                </div>
+                <div class="character-name">James Miller</div>
+                <div class="character-role">Project Architect</div>
+                <div class="speech-bubble" style="top: -80px; left: 80px; animation-delay: 1s;">
+                    "Let me forward this revised roof plan to the sub..."
+                </div>
+            </div>
+
+            <div class="email-panel">
+                <div class="email-header">
+                    <span>Outlook</span>
+                </div>
+                <div class="email-body">
+                    <div class="email-item unread">
+                        <div class="email-avatar">RC</div>
+                        <div class="email-content">
+                            <div class="email-from">Roofing Co</div>
+                            <div class="email-subject">FW: A1002 Roof Plan Rev 3</div>
+                            <div class="attachment-badge">
+                                <span>A1002_RoofPlan_Rev3.pdf</span>
+                            </div>
+                        </div>
+                        <div class="email-time">8:47 AM</div>
+                    </div>
+                    <div class="email-item">
+                        <div class="email-avatar" style="background: #666;">BT</div>
+                        <div class="email-content">
+                            <div class="email-from">Bob Thompson</div>
+                            <div class="email-subject">Re: Meeting tomorrow</div>
+                        </div>
+                        <div class="email-time">8:30 AM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENE 2: ROOFIO working behind the scenes -->
+    <div class="scene" id="scene2">
+        <div class="scene-title">
+            <div class="time">8:47 AM - Instantly</div>
+            <h2>ROOFIO Gets to Work</h2>
+        </div>
+
+        <div class="roofio-brain">
+            <div class="brain-container">
+                <div class="brain-circle"></div>
+                <div class="brain-circle"></div>
+                <div class="brain-circle"></div>
+                <div class="brain-icon">ROOFIO</div>
+            </div>
+
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-icon">OUTLOOK</div>
+                    <div class="step-label">Email Detected</div>
+                    <div class="step-status">Connected</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-icon">PDF</div>
+                    <div class="step-label">Extracting Data</div>
+                    <div class="step-status">32,450 SF</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-icon">AI</div>
+                    <div class="step-label">Parsing Details</div>
+                    <div class="step-status">12 items found</div>
+                </div>
+                <div class="process-step">
+                    <div class="step-icon">CHECK</div>
+                    <div class="step-label">Auto-Response</div>
+                    <div class="step-status">Queued</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENE 3: The Reveal - ROOFIO App -->
+    <div class="scene" id="scene3">
+        <div class="scene-title">
+            <div class="time">9:04 AM - 17 Minutes Later</div>
+            <h2>Before He Even Reads His Email...</h2>
+        </div>
+
+        <div class="app-mockup">
+            <div class="app-header">
+                <div class="app-logo">
+                    <span>ROOFIO</span>
+                </div>
+                <span style="color: rgba(255,255,255,0.8);">Downtown Office Tower</span>
+            </div>
+            <div class="app-content">
+                <div class="project-title">Submittals & Shop Drawings</div>
+                <div class="doc-cards-grid">
+                    <div class="demo-doc-card">
+                        <div class="demo-doc-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">SPEC</div>
+                        <div class="demo-doc-name">Specifications</div>
+                        <div class="demo-doc-meta">07 50 00 - v2.1</div>
+                    </div>
+
+                    <div class="demo-doc-card highlight">
+                        <div class="new-indicator"></div>
+                        <div class="demo-source-badge">O</div>
+                        <div class="demo-badge-tooltip">via Outlook</div>
+                        <div class="demo-doc-icon">A1002</div>
+                        <div class="demo-doc-name">Roof Plan A</div>
+                        <div class="demo-doc-meta synced">Rev 3 - Synced 17m ago</div>
+                        <div class="parsed-preview">
+                            <div class="parsed-row"><span>Area:</span><strong>32,450 SF</strong></div>
+                            <div class="parsed-row"><span>Drains:</span><strong>8 primary + 4 overflow</strong></div>
+                            <div class="parsed-row"><span>RTUs:</span><strong>6 units</strong></div>
+                        </div>
+                    </div>
+
+                    <div class="demo-doc-card">
+                        <div class="demo-doc-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">SOV</div>
+                        <div class="demo-doc-name">Schedule of Values</div>
+                        <div class="demo-doc-meta">App #3 - Current</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENE 4: Time Comparison -->
+    <div class="scene" id="scene4">
+        <div class="scene-title">
+            <div class="time">The Difference</div>
+            <h2>Traditional vs. ROOFIO</h2>
+        </div>
+
+        <div class="split-screen">
+            <div class="split-panel traditional">
+                <div class="panel-badge">TRADITIONAL</div>
+                <div class="time-display">4+ Hours</div>
+
+                <div class="panel-steps">
+                    <div class="panel-step"><span class="wait">WAIT</span> Check email manually</div>
+                    <div class="panel-step"><span class="wait">WAIT</span> Download attachment</div>
+                    <div class="panel-step"><span class="wait">WAIT</span> Open PDF, review</div>
+                    <div class="panel-step"><span class="wait">WAIT</span> Manual data entry</div>
+                    <div class="panel-step"><span class="wait">WAIT</span> Draft response</div>
+                    <div class="panel-step"><span class="wait">WAIT</span> Send acknowledgment</div>
+                </div>
+            </div>
+
+            <div class="split-panel roofio">
+                <div class="panel-badge">ROOFIO</div>
+                <div class="time-display">17 min</div>
+
+                <div class="panel-steps">
+                    <div class="panel-step"><span class="check">DONE</span> Auto-detected email</div>
+                    <div class="panel-step"><span class="check">DONE</span> Extracted + parsed</div>
+                    <div class="panel-step"><span class="check">DONE</span> Data populated</div>
+                    <div class="panel-step"><span class="check">DONE</span> Personalized response</div>
+                    <div class="panel-step"><span class="check">DONE</span> Sent automatically</div>
+                    <div class="panel-step"><span class="check">DONE</span> You see results in app</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENE 5: Finale -->
+    <div class="scene" id="scene5">
+        <div class="finale">
+            <div class="finale-logo">ROOFIO</div>
+            <div class="tagline">We <span class="highlight">Beat You To It</span></div>
+            <p class="sub-tagline">
+                Your integrations at work. Outlook badge on the document.
+                Parsed data waiting. Response already sent.
+                <br><br>
+                <strong>Check the app before your email.</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Controls -->
+<div class="scene-indicator">
+    <div class="scene-dot active"></div>
+    <div class="scene-dot"></div>
+    <div class="scene-dot"></div>
+    <div class="scene-dot"></div>
+    <div class="scene-dot"></div>
+</div>
+
+<div class="controls">
+    <button class="control-btn" id="prevBtn" disabled>Previous</button>
+    <button class="control-btn" id="nextBtn">Next</button>
+    <button class="control-btn" id="autoBtn">Auto Play</button>
+</div>
+
+<script>
+    let currentScene = 1;
+    const totalScenes = 5;
+    let autoPlay = null;
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const autoBtn = document.getElementById('autoBtn');
+
+    function showScene(num) {
+        // Hide all scenes
+        document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.scene-dot').forEach(d => d.classList.remove('active'));
+
+        // Show current scene
+        document.getElementById(`scene${num}`).classList.add('active');
+        document.querySelectorAll('.scene-dot')[num - 1].classList.add('active');
+
+        // Update buttons
+        prevBtn.disabled = num === 1;
+        nextBtn.disabled = num === totalScenes;
+
+        currentScene = num;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentScene > 1) showScene(currentScene - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentScene < totalScenes) showScene(currentScene + 1);
+    });
+
+    autoBtn.addEventListener('click', () => {
+        if (autoPlay) {
+            clearInterval(autoPlay);
+            autoPlay = null;
+            autoBtn.textContent = 'Auto Play';
+        } else {
+            autoPlay = setInterval(() => {
+                if (currentScene < totalScenes) {
+                    showScene(currentScene + 1);
+                } else {
+                    showScene(1);
+                }
+            }, 4000);
+            autoBtn.textContent = 'Stop';
+        }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' && currentScene < totalScenes) {
+            showScene(currentScene + 1);
+        } else if (e.key === 'ArrowLeft' && currentScene > 1) {
+            showScene(currentScene - 1);
+        }
+    });
+</script>
+
+</body>
+</html>
