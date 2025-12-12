@@ -16,7 +16,16 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from common.database import get_engine, Base
-from common.models import Agency, User, Project, AuditLog, AIActionLog, PositionConfig
+from common.models import (
+    Agency,
+    User,
+    Project,
+    AuditLog,
+    AIActionLog,
+    PositionConfig,
+    FormTemplate,
+    FormSubmission,
+)
 
 
 async def init_database():

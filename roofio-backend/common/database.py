@@ -320,4 +320,10 @@ __all__ = [
     # Helpers
     "transaction",
     "execute_raw_sql",
+
+    # Backward compatibility alias
+    "get_session",
 ]
+
+# Alias for backward compatibility with routes.py
+get_session = get_db_session

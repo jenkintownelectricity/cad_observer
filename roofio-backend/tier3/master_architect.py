@@ -39,8 +39,8 @@ from enum import Enum
 import anthropic
 from upstash_redis import Redis
 
-# Internal modules
-from brain.knowledge import knowledge_base, KnowledgeCategory
+# Internal modules (now local to tier3)
+from .knowledge import knowledge_base, KnowledgeCategory
 
 
 # Initialize clients
