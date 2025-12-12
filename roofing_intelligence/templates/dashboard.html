@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Dashboard | APPIO</title>
+    <title>ROOFIO Dashboard | AI-Powered Roofing OS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +23,8 @@
         <div class="header-content">
             <div class="logo">
                 <a href="/dashboard" class="logo-link">
-                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="APPIO" class="logo-img">
+                    <span class="logo-text">ROOFIO</span>
+                    <span class="logo-badge">AI</span>
                 </a>
             </div>
 
@@ -38,12 +39,11 @@
 
             <nav class="nav">
                 <a href="/dashboard" class="nav-link active">Dashboard</a>
-                <a href="/analysis" class="nav-link">Analysis</a>
-                <a href="/roofio" class="nav-link">Roofio</a>
+                <a href="/projects" class="nav-link">Projects</a>
+                <a href="/roofio" class="nav-link">HIVE215</a>
                 <a href="/control-center" class="nav-link">Control</a>
                 <a href="/digital-foreman" class="nav-link">Foreman</a>
                 <a href="/integrations" class="nav-link">Integrations</a>
-                <a href="/projects" class="nav-link">Projects</a>
             </nav>
 
             <div class="header-actions">
@@ -76,8 +76,8 @@
         <section class="company-overview">
             <div class="overview-header">
                 <div class="overview-title">
-                    <h1>Company Dashboard</h1>
-                    <p>Real-time visibility across all operations</p>
+                    <h1>ROOFIO Command Center</h1>
+                    <p>AI-powered visibility across all operations</p>
                 </div>
                 <div class="overview-actions">
                     <button class="action-btn" onclick="refreshDashboard()">
@@ -86,6 +86,15 @@
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                         </svg>
                         Refresh
+                    </button>
+                    <button class="action-btn voice" onclick="openVoiceCommand()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        HIVE215
                     </button>
                     <button class="action-btn primary" onclick="openNewProject()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -150,15 +159,157 @@
                         <span class="metric-label">Revenue MTD</span>
                     </div>
                 </div>
+                <div class="metric-card">
+                    <div class="metric-icon red">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="metric-data">
+                        <span class="metric-value" id="safety-incidents">0</span>
+                        <span class="metric-label">Safety Incidents</span>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Role-Based Seats Grid -->
+        <!-- Cross-Module Intelligence Panel -->
+        <section class="intelligence-section glass">
+            <div class="intelligence-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px; margin-right: 8px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
+                    Cross-Module Intelligence
+                </h2>
+                <span class="ai-badge">AI ACTIVE</span>
+            </div>
+            <div class="intelligence-feed" id="intelligence-feed">
+                <div class="intel-item warning">
+                    <div class="intel-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 19V6l12 6-12 7z"></path>
+                        </svg>
+                    </div>
+                    <div class="intel-content">
+                        <div class="intel-trigger">Weather delay logged at JHU Library</div>
+                        <div class="intel-actions">
+                            <span class="intel-action">→ Schedule updated</span>
+                            <span class="intel-action">→ Cash flow adjusted</span>
+                            <span class="intel-action">→ Delay claim logged</span>
+                            <span class="intel-action">→ PM notified</span>
+                        </div>
+                    </div>
+                    <span class="intel-time">2 min ago</span>
+                </div>
+                <div class="intel-item success">
+                    <div class="intel-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="intel-content">
+                        <div class="intel-trigger">Submittal approved for UMass</div>
+                        <div class="intel-actions">
+                            <span class="intel-action">→ Material order released</span>
+                            <span class="intel-action">→ Drawings updated</span>
+                            <span class="intel-action">→ Delivery scheduled</span>
+                        </div>
+                    </div>
+                    <span class="intel-time">15 min ago</span>
+                </div>
+                <div class="intel-item alert">
+                    <div class="intel-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="intel-content">
+                        <div class="intel-trigger">Invoice 60+ days overdue - Hartford Plaza</div>
+                        <div class="intel-actions">
+                            <span class="intel-action">→ Collections escalated</span>
+                            <span class="intel-action">→ Lien rights preserved</span>
+                            <span class="intel-action">→ Owner notified</span>
+                        </div>
+                    </div>
+                    <span class="intel-time">1 hour ago</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8 AI Seats Grid -->
         <section class="seats-section">
-            <h2 class="section-title">Team Seats</h2>
-            <div class="seats-grid">
-                <!-- Project Manager Seat -->
-                <div class="seat-card" data-role="pm" onclick="openSeatDetail('pm')">
+            <div class="section-header">
+                <h2 class="section-title">8 AI Seats</h2>
+                <p class="section-subtitle">Your AI-powered roofing team</p>
+            </div>
+            <div class="seats-grid ai-seats">
+
+                <!-- AI Estimator Seat -->
+                <div class="seat-card ai-seat" data-role="estimator" onclick="openSeatDetail('estimator')">
+                    <div class="seat-header">
+                        <div class="seat-avatar estimator">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                <line x1="4" y1="10" x2="20" y2="10"></line>
+                                <line x1="10" y1="4" x2="10" y2="20"></line>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>AI Estimator</h3>
+                            <span class="seat-tagline">Win more bids</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Aerial Measurement</span>
+                        <span class="feature-tag">Material Pricing</span>
+                        <span class="feature-tag">Photo-to-Estimate</span>
+                        <span class="feature-tag">Bid Win/Loss AI</span>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">1</span>
+                                <span class="label">Due Today</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">3</span>
+                                <span class="label">In Progress</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">67%</span>
+                                <span class="label">Hit Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item urgent">
+                            <span class="traffic-light red"></span>
+                            <span class="queue-text">Boston Medical - Bid Due 5PM</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">MIT Dorm - Takeoff Complete</span>
+                        </div>
+                    </div>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openEstimateForm()">New Estimate</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openSeatDetail('estimator')">View Queue</button>
+                    </div>
+                </div>
+
+                <!-- AI Project Manager Seat -->
+                <div class="seat-card ai-seat" data-role="pm" onclick="openSeatDetail('pm')">
                     <div class="seat-header">
                         <div class="seat-avatar pm">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -167,12 +318,18 @@
                             </svg>
                         </div>
                         <div class="seat-info">
-                            <h3>Project Manager</h3>
-                            <span class="seat-user">Active User</span>
+                            <h3>AI Project Manager</h3>
+                            <span class="seat-tagline">Never miss a detail</span>
                         </div>
                         <div class="seat-status">
                             <span class="status-dot online"></span>
                         </div>
+                    </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Gantt Charts</span>
+                        <span class="feature-tag">RFI Tracking</span>
+                        <span class="feature-tag">Meeting AI</span>
+                        <span class="feature-tag">Delay Claims</span>
                     </div>
                     <div class="seat-tasks">
                         <div class="task-summary">
@@ -199,121 +356,181 @@
                             <span class="traffic-light yellow"></span>
                             <span class="queue-text">UMass - Submittal Review</span>
                         </div>
-                        <div class="queue-item normal">
-                            <span class="traffic-light green"></span>
-                            <span class="queue-text">Hartford Plaza - On Track</span>
-                        </div>
                     </div>
-                    <div class="seat-skills">
-                        <span class="skill-tag">Estimating</span>
-                        <span class="skill-tag">RFIs</span>
-                        <span class="skill-tag">Scheduling</span>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openRFIForm()">New RFI</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openSubmittalForm()">Submittal</button>
                     </div>
                 </div>
 
-                <!-- Estimator Seat -->
-                <div class="seat-card" data-role="estimator" onclick="openSeatDetail('estimator')">
+                <!-- AI Superintendent Seat -->
+                <div class="seat-card ai-seat" data-role="superintendent" onclick="openSeatDetail('superintendent')">
                     <div class="seat-header">
-                        <div class="seat-avatar estimator">
+                        <div class="seat-avatar superintendent">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
-                                <line x1="4" y1="10" x2="20" y2="10"></line>
-                                <line x1="10" y1="4" x2="10" y2="20"></line>
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
                             </svg>
                         </div>
                         <div class="seat-info">
-                            <h3>Estimator</h3>
-                            <span class="seat-user">Active User</span>
+                            <h3>AI Superintendent</h3>
+                            <span class="seat-tagline">Field visibility</span>
                         </div>
                         <div class="seat-status">
                             <span class="status-dot online"></span>
                         </div>
                     </div>
-                    <div class="seat-tasks">
-                        <div class="task-summary">
-                            <div class="task-count urgent">
-                                <span class="count">1</span>
-                                <span class="label">Due Today</span>
-                            </div>
-                            <div class="task-count pending">
-                                <span class="count">3</span>
-                                <span class="label">In Progress</span>
-                            </div>
-                            <div class="task-count completed">
-                                <span class="count">2</span>
-                                <span class="label">Submitted</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="seat-queue">
-                        <div class="queue-item urgent">
-                            <span class="traffic-light red"></span>
-                            <span class="queue-text">Boston Medical - Bid Due 5PM</span>
-                        </div>
-                        <div class="queue-item normal">
-                            <span class="traffic-light green"></span>
-                            <span class="queue-text">MIT Dorm - Takeoff Complete</span>
-                        </div>
-                    </div>
-                    <div class="seat-skills">
-                        <span class="skill-tag">Takeoffs</span>
-                        <span class="skill-tag">Pricing</span>
-                        <span class="skill-tag">Bid Prep</span>
-                    </div>
-                </div>
-
-                <!-- Operations Seat -->
-                <div class="seat-card" data-role="operations" onclick="openSeatDetail('operations')">
-                    <div class="seat-header">
-                        <div class="seat-avatar operations">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"></circle>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                            </svg>
-                        </div>
-                        <div class="seat-info">
-                            <h3>Operations</h3>
-                            <span class="seat-user">Active User</span>
-                        </div>
-                        <div class="seat-status">
-                            <span class="status-dot online"></span>
-                        </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Daily Logs</span>
+                        <span class="feature-tag">Photo Progress</span>
+                        <span class="feature-tag">Voice Logging</span>
+                        <span class="feature-tag">Weather Alerts</span>
                     </div>
                     <div class="seat-tasks">
                         <div class="task-summary">
                             <div class="task-count urgent">
                                 <span class="count">0</span>
-                                <span class="label">Urgent</span>
+                                <span class="label">Issues</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">3</span>
+                                <span class="label">Active Crews</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">12K</span>
+                                <span class="label">SF Today</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">JHU - Membrane 80% Complete</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">UMass - Flashing Day 2</span>
+                        </div>
+                    </div>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openDailyLogForm()">Daily Log</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openPhotoCapture()">Photos</button>
+                    </div>
+                </div>
+
+                <!-- AI QC Manager Seat -->
+                <div class="seat-card ai-seat" data-role="qc" onclick="openSeatDetail('qc')">
+                    <div class="seat-header">
+                        <div class="seat-avatar qc">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"></path>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>AI QC Manager</h3>
+                            <span class="seat-tagline">Catch defects early</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Defect AI</span>
+                        <span class="feature-tag">Checklists</span>
+                        <span class="feature-tag">Punch Lists</span>
+                        <span class="feature-tag">Crew Scoring</span>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count urgent">
+                                <span class="count">2</span>
+                                <span class="label">NCRs Open</span>
                             </div>
                             <div class="task-count pending">
                                 <span class="count">4</span>
-                                <span class="label">Scheduling</span>
+                                <span class="label">Inspections</span>
                             </div>
                             <div class="task-count completed">
-                                <span class="count">6</span>
-                                <span class="label">Dispatched</span>
+                                <span class="count">98%</span>
+                                <span class="label">Pass Rate</span>
                             </div>
                         </div>
                     </div>
                     <div class="seat-queue">
                         <div class="queue-item warning">
                             <span class="traffic-light yellow"></span>
-                            <span class="queue-text">Crew 3 - Weather Hold Tomorrow</span>
+                            <span class="queue-text">JHU - Fish mouth detected (Photo AI)</span>
                         </div>
                         <div class="queue-item normal">
                             <span class="traffic-light green"></span>
-                            <span class="queue-text">Material Delivery - Confirmed</span>
+                            <span class="queue-text">UMass - Final inspection ready</span>
                         </div>
                     </div>
-                    <div class="seat-skills">
-                        <span class="skill-tag">Scheduling</span>
-                        <span class="skill-tag">Dispatch</span>
-                        <span class="skill-tag">Safety</span>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openInspectionForm()">Inspection</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openPunchListForm()">Punch List</button>
                     </div>
                 </div>
 
-                <!-- Accounting Seat -->
-                <div class="seat-card" data-role="accounting" onclick="openSeatDetail('accounting')">
+                <!-- AI Safety Director Seat -->
+                <div class="seat-card ai-seat" data-role="safety" onclick="openSeatDetail('safety')">
+                    <div class="seat-header">
+                        <div class="seat-avatar safety">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <div class="seat-info">
+                            <h3>AI Safety Director</h3>
+                            <span class="seat-tagline">Zero incidents</span>
+                        </div>
+                        <div class="seat-status">
+                            <span class="status-dot online"></span>
+                        </div>
+                    </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Dynamic JHAs</span>
+                        <span class="feature-tag">PPE AI</span>
+                        <span class="feature-tag">Certifications</span>
+                        <span class="feature-tag">Heat Illness</span>
+                    </div>
+                    <div class="seat-tasks">
+                        <div class="task-summary">
+                            <div class="task-count success">
+                                <span class="count">0</span>
+                                <span class="label">Incidents</span>
+                            </div>
+                            <div class="task-count pending">
+                                <span class="count">3</span>
+                                <span class="label">Expiring Certs</span>
+                            </div>
+                            <div class="task-count completed">
+                                <span class="count">124</span>
+                                <span class="label">Days Safe</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seat-queue">
+                        <div class="queue-item warning">
+                            <span class="traffic-light yellow"></span>
+                            <span class="queue-text">Heat advisory tomorrow - 95°F</span>
+                        </div>
+                        <div class="queue-item normal">
+                            <span class="traffic-light green"></span>
+                            <span class="queue-text">All crews OSHA 30 compliant</span>
+                        </div>
+                    </div>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openJHAForm()">New JHA</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openToolboxTalkForm()">Toolbox Talk</button>
+                    </div>
+                </div>
+
+                <!-- AI Accounting Seat -->
+                <div class="seat-card ai-seat" data-role="accounting" onclick="openSeatDetail('accounting')">
                     <div class="seat-header">
                         <div class="seat-avatar accounting">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -322,12 +539,18 @@
                             </svg>
                         </div>
                         <div class="seat-info">
-                            <h3>Accounting</h3>
-                            <span class="seat-user">Active User</span>
+                            <h3>AI Accounting</h3>
+                            <span class="seat-tagline">Get paid faster</span>
                         </div>
                         <div class="seat-status">
                             <span class="status-dot online"></span>
                         </div>
+                    </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">AIA G702/G703</span>
+                        <span class="feature-tag">Job Costing</span>
+                        <span class="feature-tag">AI Collections</span>
+                        <span class="feature-tag">Lien Waivers</span>
                     </div>
                     <div class="seat-tasks">
                         <div class="task-summary">
@@ -348,75 +571,76 @@
                     <div class="seat-queue">
                         <div class="queue-item urgent">
                             <span class="traffic-light red"></span>
-                            <span class="queue-text">Hartford - 60 Days Overdue</span>
+                            <span class="queue-text">Hartford - 60 Days Overdue ($45K)</span>
                         </div>
                         <div class="queue-item warning">
                             <span class="traffic-light yellow"></span>
-                            <span class="queue-text">Payroll Due Friday</span>
+                            <span class="queue-text">JHU - Draw #3 Ready to Submit</span>
                         </div>
                     </div>
-                    <div class="seat-skills">
-                        <span class="skill-tag">AR</span>
-                        <span class="skill-tag">AP</span>
-                        <span class="skill-tag">Payroll</span>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openAIABillingForm()">AIA Billing</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openChangeOrderForm()">Change Order</button>
                     </div>
                 </div>
 
-                <!-- Field/Superintendent Seat -->
-                <div class="seat-card" data-role="field" onclick="openSeatDetail('field')">
+                <!-- AI Operations Seat -->
+                <div class="seat-card ai-seat" data-role="operations" onclick="openSeatDetail('operations')">
                     <div class="seat-header">
-                        <div class="seat-avatar field">
+                        <div class="seat-avatar operations">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                             </svg>
                         </div>
                         <div class="seat-info">
-                            <h3>Superintendent</h3>
-                            <span class="seat-user">3 Active Crews</span>
+                            <h3>AI Operations</h3>
+                            <span class="seat-tagline">Materials on time</span>
                         </div>
                         <div class="seat-status">
                             <span class="status-dot online"></span>
                         </div>
                     </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Predictive Orders</span>
+                        <span class="feature-tag">Price Compare</span>
+                        <span class="feature-tag">Delivery Track</span>
+                        <span class="feature-tag">Inventory</span>
+                    </div>
                     <div class="seat-tasks">
                         <div class="task-summary">
                             <div class="task-count urgent">
                                 <span class="count">0</span>
-                                <span class="label">Safety Issues</span>
+                                <span class="label">Urgent</span>
                             </div>
                             <div class="task-count pending">
-                                <span class="count">3</span>
-                                <span class="label">Daily Reports</span>
+                                <span class="count">4</span>
+                                <span class="label">In Transit</span>
                             </div>
                             <div class="task-count completed">
-                                <span class="count">12</span>
-                                <span class="label">Sq Completed</span>
+                                <span class="count">6</span>
+                                <span class="label">Delivered</span>
                             </div>
                         </div>
                     </div>
                     <div class="seat-queue">
-                        <div class="queue-item normal">
-                            <span class="traffic-light green"></span>
-                            <span class="queue-text">JHU - Membrane 80% Complete</span>
+                        <div class="queue-item warning">
+                            <span class="traffic-light yellow"></span>
+                            <span class="queue-text">TPO price spike +8% - Alert</span>
                         </div>
                         <div class="queue-item normal">
                             <span class="traffic-light green"></span>
-                            <span class="queue-text">UMass - Flashing Day 2</span>
+                            <span class="queue-text">JHU material delivery confirmed</span>
                         </div>
                     </div>
-                    <div class="seat-skills">
-                        <span class="skill-tag">Daily Reports</span>
-                        <span class="skill-tag">Safety</span>
-                        <span class="skill-tag">QC</span>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openPurchaseOrderForm()">New PO</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openVendorCompare()">Compare</button>
                     </div>
                 </div>
 
-                <!-- Shop Drawings Seat -->
-                <div class="seat-card" data-role="shop-drawings" onclick="openSeatDetail('shop-drawings')">
+                <!-- AI Shop Drawings Seat -->
+                <div class="seat-card ai-seat" data-role="shop-drawings" onclick="openSeatDetail('shop-drawings')">
                     <div class="seat-header">
                         <div class="seat-avatar shop-drawings">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -426,12 +650,18 @@
                             </svg>
                         </div>
                         <div class="seat-info">
-                            <h3>Shop Drawings</h3>
-                            <span class="seat-user">CAD Queue</span>
+                            <h3>AI Shop Drawings</h3>
+                            <span class="seat-tagline">Details that win</span>
                         </div>
                         <div class="seat-status">
                             <span class="status-dot online"></span>
                         </div>
+                    </div>
+                    <div class="seat-features">
+                        <span class="feature-tag">Spec-to-Detail AI</span>
+                        <span class="feature-tag">Assembly Letters</span>
+                        <span class="feature-tag">RFI Engine</span>
+                        <span class="feature-tag">Detail Library</span>
                     </div>
                     <div class="seat-tasks">
                         <div class="task-summary">
@@ -459,10 +689,9 @@
                             <span class="queue-text">MIT - Parapet Details Review</span>
                         </div>
                     </div>
-                    <div class="seat-skills">
-                        <span class="skill-tag">AutoCAD</span>
-                        <span class="skill-tag">Details</span>
-                        <span class="skill-tag">Submittals</span>
+                    <div class="seat-actions">
+                        <button class="seat-btn" onclick="event.stopPropagation(); openDrawingForm()">New Drawing</button>
+                        <button class="seat-btn secondary" onclick="event.stopPropagation(); openDetailLibrary()">Library</button>
                     </div>
                 </div>
             </div>
@@ -496,10 +725,14 @@
         </section>
     </main>
 
+    <!-- ============================================ -->
+    <!-- MODALS FOR ALL 8 AI SEATS                   -->
+    <!-- ============================================ -->
+
     <!-- Seat Detail Modal -->
     <div class="modal hidden" id="seat-modal">
         <div class="modal-backdrop" onclick="closeSeatModal()"></div>
-        <div class="modal-content glass">
+        <div class="modal-content glass wide">
             <div class="modal-header">
                 <h3 id="modal-title">Role Details</h3>
                 <button class="modal-close" onclick="closeSeatModal()">&times;</button>
@@ -523,54 +756,34 @@
                 <button class="modal-close" onclick="closeNewProjectModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- Form Progress -->
                 <div class="form-progress">
                     <div class="form-progress-bar" style="width: 0%"></div>
                 </div>
-
                 <form id="new-project-form" onsubmit="createProject(event)" autocomplete="off"
                       data-validate="true" data-autosave="new-project" data-progress="true">
-
-                    <!-- Step 1: Basic Info -->
                     <div class="form-section">
                         <div class="form-group">
-                            <label for="project-name">
-                                Project Name *
-                                <span class="help-icon tooltip" data-tooltip="Enter a clear, descriptive name">?</span>
-                            </label>
+                            <label for="project-name">Project Name *</label>
                             <input type="text" id="project-name" name="project-name" required
-                                   placeholder="e.g., JHU Library Roofing"
-                                   autocomplete="off" inputmode="text"
-                                   data-validate="required,minLength:3">
-                            <span class="input-hint">Use project location + type (e.g., "UMass Waterproofing")</span>
+                                   placeholder="e.g., JHU Library Roofing">
                         </div>
-
                         <div class="form-group">
                             <label for="project-client">Client / General Contractor</label>
                             <input type="text" id="project-client" name="project-client"
-                                   placeholder="e.g., Turner Construction"
-                                   autocomplete="organization" inputmode="text">
+                                   placeholder="e.g., Turner Construction">
                         </div>
                     </div>
-
-                    <!-- Step 2: Financial -->
                     <div class="form-row">
-                        <div class="form-group input-currency">
+                        <div class="form-group">
                             <label for="project-value">Contract Value</label>
                             <input type="text" id="project-value" name="project-value"
-                                   placeholder="$250,000"
-                                   inputmode="decimal"
-                                   data-format="currency"
-                                   data-validate="currency">
+                                   placeholder="$250,000" data-format="currency">
                         </div>
-                        <div class="form-group input-date">
+                        <div class="form-group">
                             <label for="project-start">Start Date</label>
-                            <input type="date" id="project-start" name="project-start"
-                                   data-min-today="true">
+                            <input type="date" id="project-start" name="project-start">
                         </div>
                     </div>
-
-                    <!-- Step 3: Assignment -->
                     <div class="form-row">
                         <div class="form-group">
                             <label for="project-pm">Assigned PM</label>
@@ -592,14 +805,917 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-actions">
                         <button type="button" class="btn-secondary" onclick="closeNewProjectModal()">Cancel</button>
-                        <button type="submit" class="btn-primary" id="create-project-btn">
-                            <span class="btn-text">Create Project</span>
-                        </button>
+                        <button type="submit" class="btn-primary">Create Project</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Estimator - New Estimate Modal -->
+    <div class="modal hidden" id="estimate-modal">
+        <div class="modal-backdrop" onclick="closeModal('estimate-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;margin-right:8px;">
+                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                        <line x1="4" y1="10" x2="20" y2="10"></line>
+                        <line x1="10" y1="4" x2="10" y2="20"></line>
+                    </svg>
+                    New Estimate
+                </h3>
+                <button class="modal-close" onclick="closeModal('estimate-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="estimate-form" onsubmit="submitEstimate(event)">
+                    <div class="form-section">
+                        <h4>Project Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Project Name *</label>
+                                <input type="text" name="est_project_name" required placeholder="e.g., Boston Medical Center">
+                            </div>
+                            <div class="form-group">
+                                <label>Bid Due Date *</label>
+                                <input type="datetime-local" name="est_due_date" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>General Contractor</label>
+                                <input type="text" name="est_gc" placeholder="e.g., Turner Construction">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" name="est_contact" placeholder="pm@contractor.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Roof Details</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Roof Type *</label>
+                                <select name="est_roof_type" required>
+                                    <option value="">Select type...</option>
+                                    <option value="tpo">TPO Single-Ply</option>
+                                    <option value="epdm">EPDM Rubber</option>
+                                    <option value="pvc">PVC Membrane</option>
+                                    <option value="built-up">Built-Up (BUR)</option>
+                                    <option value="mod-bit">Modified Bitumen</option>
+                                    <option value="metal">Standing Seam Metal</option>
+                                    <option value="spray-foam">Spray Foam</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Square Footage *</label>
+                                <input type="number" name="est_sqft" required placeholder="e.g., 45000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" name="est_address" placeholder="123 Main St, Boston MA">
+                            </div>
+                            <div class="form-group">
+                                <label>Stories / Access</label>
+                                <select name="est_access">
+                                    <option value="ground">Ground Level</option>
+                                    <option value="1-2">1-2 Stories</option>
+                                    <option value="3-5">3-5 Stories</option>
+                                    <option value="high-rise">High Rise (6+)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>AI Assistance</h4>
+                        <div class="ai-tools-grid">
+                            <button type="button" class="ai-tool-btn" onclick="runAerialMeasurement()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                                </svg>
+                                Aerial Measurement
+                            </button>
+                            <button type="button" class="ai-tool-btn" onclick="getMaterialPrices()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                                Live Material Prices
+                            </button>
+                            <button type="button" class="ai-tool-btn" onclick="photoToEstimate()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                Photo-to-Estimate
+                            </button>
+                            <button type="button" class="ai-tool-btn" onclick="checkBidHistory()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                </svg>
+                                Bid Win/Loss Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('estimate-modal')">Cancel</button>
+                        <button type="button" class="btn-secondary" onclick="saveEstimateDraft()">Save Draft</button>
+                        <button type="submit" class="btn-primary">Generate Estimate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI PM - RFI Modal -->
+    <div class="modal hidden" id="rfi-modal">
+        <div class="modal-backdrop" onclick="closeModal('rfi-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>New RFI</h3>
+                <button class="modal-close" onclick="closeModal('rfi-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="rfi-form" onsubmit="submitRFI(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="rfi_project" required>
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                                <option value="boston">Boston Medical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>RFI Number</label>
+                            <input type="text" name="rfi_number" value="RFI-013" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject *</label>
+                        <input type="text" name="rfi_subject" required placeholder="Brief description of the question">
+                    </div>
+                    <div class="form-group">
+                        <label>Question / Request *</label>
+                        <textarea name="rfi_question" required rows="4" placeholder="Detailed description of information needed..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Reference Drawing</label>
+                            <input type="text" name="rfi_drawing" placeholder="e.g., A-301, Detail 5">
+                        </div>
+                        <div class="form-group">
+                            <label>Spec Section</label>
+                            <input type="text" name="rfi_spec" placeholder="e.g., 07 62 00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Attachments</label>
+                        <div class="file-upload-area" onclick="document.getElementById('rfi-files').click()">
+                            <input type="file" id="rfi-files" name="rfi_files" multiple hidden>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Click or drag files to upload</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('rfi-modal')">Cancel</button>
+                        <button type="submit" class="btn-primary">Submit RFI</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Superintendent - Daily Log Modal -->
+    <div class="modal hidden" id="daily-log-modal">
+        <div class="modal-backdrop" onclick="closeModal('daily-log-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>Daily Field Report</h3>
+                <button class="modal-close" onclick="closeModal('daily-log-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="daily-log-form" onsubmit="submitDailyLog(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="log_project" required>
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" name="log_date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Weather Conditions</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Temperature</label>
+                                <input type="text" name="log_temp" placeholder="72°F">
+                            </div>
+                            <div class="form-group">
+                                <label>Conditions</label>
+                                <select name="log_weather">
+                                    <option value="clear">Clear</option>
+                                    <option value="cloudy">Cloudy</option>
+                                    <option value="rain">Rain</option>
+                                    <option value="snow">Snow</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Wind</label>
+                                <input type="text" name="log_wind" placeholder="10 mph">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Manpower</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Foremen</label>
+                                <input type="number" name="log_foremen" min="0" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Journeymen</label>
+                                <input type="number" name="log_journeymen" min="0" value="4">
+                            </div>
+                            <div class="form-group">
+                                <label>Apprentices</label>
+                                <input type="number" name="log_apprentices" min="0" value="2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Work Performed</h4>
+                        <div class="form-group">
+                            <label>Description of Work *</label>
+                            <textarea name="log_work" required rows="4" placeholder="Describe work completed today..."></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Area / Location</label>
+                                <input type="text" name="log_area" placeholder="e.g., Section A, West Wing">
+                            </div>
+                            <div class="form-group">
+                                <label>Square Feet Completed</label>
+                                <input type="number" name="log_sqft" placeholder="e.g., 1500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Photos</h4>
+                        <div class="photo-grid" id="daily-log-photos">
+                            <div class="photo-upload-btn" onclick="document.getElementById('log-photos').click()">
+                                <input type="file" id="log-photos" accept="image/*" multiple hidden onchange="previewPhotos(event, 'daily-log-photos')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span>Add Photos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="log_delay">
+                            Weather delay occurred today
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('daily-log-modal')">Cancel</button>
+                        <button type="button" class="btn-secondary" onclick="voiceLogEntry()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:4px;">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            </svg>
+                            Voice Entry
+                        </button>
+                        <button type="submit" class="btn-primary">Submit Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI QC - Inspection Modal -->
+    <div class="modal hidden" id="inspection-modal">
+        <div class="modal-backdrop" onclick="closeModal('inspection-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>Quality Inspection</h3>
+                <button class="modal-close" onclick="closeModal('inspection-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="inspection-form" onsubmit="submitInspection(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="insp_project" required>
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Inspection Type *</label>
+                            <select name="insp_type" required>
+                                <option value="">Select type...</option>
+                                <option value="substrate">Substrate Prep</option>
+                                <option value="membrane">Membrane Installation</option>
+                                <option value="flashing">Flashing Details</option>
+                                <option value="penetrations">Penetrations</option>
+                                <option value="final">Final / Punch</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Checklist Items</h4>
+                        <div class="checklist" id="inspection-checklist">
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chk1" name="chk_surface_clean">
+                                <label for="chk1">Surface clean and dry</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chk2" name="chk_primer_applied">
+                                <label for="chk2">Primer properly applied</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chk3" name="chk_seams_welded">
+                                <label for="chk3">All seams properly welded</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chk4" name="chk_flashings_complete">
+                                <label for="chk4">Flashings complete and sealed</label>
+                            </div>
+                            <div class="checklist-item">
+                                <input type="checkbox" id="chk5" name="chk_no_defects">
+                                <label for="chk5">No visible defects</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>AI Defect Detection</h4>
+                        <div class="ai-scan-area" id="defect-scan-area">
+                            <div class="ai-scan-btn" onclick="runDefectDetection()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <span>Upload Photo for AI Defect Scan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes / Observations</label>
+                        <textarea name="insp_notes" rows="3" placeholder="Additional observations..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Result *</label>
+                            <select name="insp_result" required>
+                                <option value="pass">Pass</option>
+                                <option value="pass_notes">Pass with Notes</option>
+                                <option value="fail">Fail - NCR Required</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Inspector</label>
+                            <input type="text" name="insp_inspector" value="Current User" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('inspection-modal')">Cancel</button>
+                        <button type="submit" class="btn-primary">Submit Inspection</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Safety - JHA Modal -->
+    <div class="modal hidden" id="jha-modal">
+        <div class="modal-backdrop" onclick="closeModal('jha-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>Job Hazard Analysis (JHA)</h3>
+                <button class="modal-close" onclick="closeModal('jha-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="jha-form" onsubmit="submitJHA(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="jha_project" required onchange="loadDynamicJHA(this.value)">
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" name="jha_date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Work Activity *</label>
+                        <input type="text" name="jha_activity" required placeholder="e.g., TPO Membrane Installation">
+                    </div>
+
+                    <div class="form-section">
+                        <h4>AI-Generated Hazards</h4>
+                        <p class="ai-hint">Based on today's weather and work activity</p>
+                        <div class="hazard-list" id="jha-hazards">
+                            <div class="hazard-item">
+                                <div class="hazard-header">
+                                    <span class="hazard-icon warning">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                        </svg>
+                                    </span>
+                                    <span class="hazard-name">Heat Exposure</span>
+                                    <span class="hazard-risk high">HIGH</span>
+                                </div>
+                                <div class="hazard-controls">
+                                    <label><input type="checkbox" checked> Provide water and shade breaks every 30 min</label>
+                                    <label><input type="checkbox" checked> Monitor crew for heat illness symptoms</label>
+                                    <label><input type="checkbox" checked> Start work early, end before peak heat</label>
+                                </div>
+                            </div>
+                            <div class="hazard-item">
+                                <div class="hazard-header">
+                                    <span class="hazard-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                        </svg>
+                                    </span>
+                                    <span class="hazard-name">Fall Hazard - Open Roof Edge</span>
+                                    <span class="hazard-risk medium">MEDIUM</span>
+                                </div>
+                                <div class="hazard-controls">
+                                    <label><input type="checkbox" checked> Install warning line 6' from edge</label>
+                                    <label><input type="checkbox" checked> Tie-off required within 6' of edge</label>
+                                    <label><input type="checkbox" checked> Verify harness inspection current</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Required PPE</h4>
+                        <div class="ppe-grid">
+                            <label class="ppe-item"><input type="checkbox" checked> Hard Hat</label>
+                            <label class="ppe-item"><input type="checkbox" checked> Safety Glasses</label>
+                            <label class="ppe-item"><input type="checkbox" checked> Work Boots</label>
+                            <label class="ppe-item"><input type="checkbox" checked> Gloves</label>
+                            <label class="ppe-item"><input type="checkbox" checked> Fall Protection</label>
+                            <label class="ppe-item"><input type="checkbox"> Respirator</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Crew Acknowledgment</label>
+                        <div class="signature-area" id="jha-signatures">
+                            <button type="button" class="btn-secondary" onclick="collectSignatures()">
+                                Collect Crew Signatures
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('jha-modal')">Cancel</button>
+                        <button type="submit" class="btn-primary">Submit JHA</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Accounting - AIA Billing Modal -->
+    <div class="modal hidden" id="aia-billing-modal">
+        <div class="modal-backdrop" onclick="closeModal('aia-billing-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>AIA G702/G703 Billing</h3>
+                <button class="modal-close" onclick="closeModal('aia-billing-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="aia-form" onsubmit="submitAIABilling(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="aia_project" required onchange="loadSOV(this.value)">
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Application Number</label>
+                            <input type="text" name="aia_app_no" value="3" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Period To</label>
+                            <input type="date" name="aia_period">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Schedule of Values</h4>
+                        <div class="sov-table-container">
+                            <table class="sov-table" id="sov-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Description</th>
+                                        <th>Scheduled Value</th>
+                                        <th>Previous</th>
+                                        <th>This Period</th>
+                                        <th>% Complete</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Mobilization</td>
+                                        <td>$15,000</td>
+                                        <td>$15,000</td>
+                                        <td><input type="number" value="0" class="sov-input"></td>
+                                        <td>100%</td>
+                                        <td>$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Substrate Prep</td>
+                                        <td>$45,000</td>
+                                        <td>$45,000</td>
+                                        <td><input type="number" value="0" class="sov-input"></td>
+                                        <td>100%</td>
+                                        <td>$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>TPO Membrane</td>
+                                        <td>$180,000</td>
+                                        <td>$90,000</td>
+                                        <td><input type="number" value="45000" class="sov-input"></td>
+                                        <td>75%</td>
+                                        <td>$45,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>Flashing</td>
+                                        <td>$60,000</td>
+                                        <td>$20,000</td>
+                                        <td><input type="number" value="20000" class="sov-input"></td>
+                                        <td>67%</td>
+                                        <td>$20,000</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2"><strong>TOTAL</strong></td>
+                                        <td><strong>$300,000</strong></td>
+                                        <td><strong>$170,000</strong></td>
+                                        <td><strong>$65,000</strong></td>
+                                        <td><strong>78%</strong></td>
+                                        <td><strong>$65,000</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Summary</h4>
+                        <div class="billing-summary">
+                            <div class="summary-row">
+                                <span>Original Contract Sum:</span>
+                                <span>$300,000.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Change Orders:</span>
+                                <span>$12,500.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Contract Sum to Date:</span>
+                                <span>$312,500.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total Completed & Stored:</span>
+                                <span>$235,000.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Retainage (10%):</span>
+                                <span>$23,500.00</span>
+                            </div>
+                            <div class="summary-row highlight">
+                                <span>Less Previous Certificates:</span>
+                                <span>$153,000.00</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>CURRENT PAYMENT DUE:</span>
+                                <span>$58,500.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('aia-billing-modal')">Cancel</button>
+                        <button type="button" class="btn-secondary" onclick="previewAIA()">Preview PDF</button>
+                        <button type="submit" class="btn-primary">Generate G702/G703</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Operations - Purchase Order Modal -->
+    <div class="modal hidden" id="po-modal">
+        <div class="modal-backdrop" onclick="closeModal('po-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>New Purchase Order</h3>
+                <button class="modal-close" onclick="closeModal('po-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="po-form" onsubmit="submitPurchaseOrder(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="po_project" required>
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Vendor *</label>
+                            <select name="po_vendor" required>
+                                <option value="">Select vendor...</option>
+                                <option value="abc">ABC Supply</option>
+                                <option value="beacon">Beacon Roofing</option>
+                                <option value="srs">SRS Distribution</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Live Price Comparison</h4>
+                        <div class="price-compare-grid" id="price-compare">
+                            <div class="price-card best">
+                                <div class="vendor-name">ABC Supply</div>
+                                <div class="vendor-price">$4,250</div>
+                                <div class="vendor-delivery">2 days</div>
+                                <span class="best-badge">BEST PRICE</span>
+                            </div>
+                            <div class="price-card">
+                                <div class="vendor-name">Beacon</div>
+                                <div class="vendor-price">$4,380</div>
+                                <div class="vendor-delivery">1 day</div>
+                            </div>
+                            <div class="price-card">
+                                <div class="vendor-name">SRS</div>
+                                <div class="vendor-price">$4,425</div>
+                                <div class="vendor-delivery">3 days</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Line Items</h4>
+                        <table class="po-items-table" id="po-items">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Unit</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" placeholder="e.g., 60 mil TPO White"></td>
+                                    <td><input type="number" value="50"></td>
+                                    <td>
+                                        <select>
+                                            <option>Rolls</option>
+                                            <option>SF</option>
+                                            <option>LF</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" value="$85.00"></td>
+                                    <td>$4,250.00</td>
+                                    <td><button type="button" class="remove-row">×</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn-secondary small" onclick="addPOLine()">+ Add Line</button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Delivery Date</label>
+                            <input type="date" name="po_delivery">
+                        </div>
+                        <div class="form-group">
+                            <label>Ship To</label>
+                            <select name="po_shipto">
+                                <option>Job Site - JHU Library</option>
+                                <option>Warehouse</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('po-modal')">Cancel</button>
+                        <button type="submit" class="btn-primary">Create PO</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Shop Drawings - New Drawing Modal -->
+    <div class="modal hidden" id="drawing-modal">
+        <div class="modal-backdrop" onclick="closeModal('drawing-modal')"></div>
+        <div class="modal-content glass wide">
+            <div class="modal-header">
+                <h3>New Shop Drawing</h3>
+                <button class="modal-close" onclick="closeModal('drawing-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="drawing-form" onsubmit="submitDrawing(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Project *</label>
+                            <select name="dwg_project" required>
+                                <option value="">Select project...</option>
+                                <option value="jhu">JHU Library</option>
+                                <option value="umass">UMass Waterproofing</option>
+                                <option value="boston">Boston Medical</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Drawing Number</label>
+                            <input type="text" name="dwg_number" value="SD-001" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Drawing Type *</label>
+                            <select name="dwg_type" required>
+                                <option value="">Select type...</option>
+                                <option value="detail">Detail Drawing</option>
+                                <option value="layout">Roof Layout</option>
+                                <option value="section">Section</option>
+                                <option value="flashing">Flashing Detail</option>
+                                <option value="sequence">Sequence/Phasing</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select name="dwg_priority">
+                                <option value="normal">Normal</option>
+                                <option value="rush">Rush</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Title / Description *</label>
+                        <input type="text" name="dwg_title" required placeholder="e.g., Parapet Flashing at Expansion Joint">
+                    </div>
+
+                    <div class="form-section">
+                        <h4>AI Assistance</h4>
+                        <div class="ai-tools-grid">
+                            <button type="button" class="ai-tool-btn" onclick="specToDetail()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                                Spec-to-Detail AI
+                            </button>
+                            <button type="button" class="ai-tool-btn" onclick="openDetailLibrary()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                                Detail Library
+                            </button>
+                            <button type="button" class="ai-tool-btn" onclick="generateAssemblyLetter()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                </svg>
+                                Assembly Letter
+                            </button>
+                            <button type="button" class="ai-tool-btn" onclick="suggestRFI()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                Suggest RFI
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reference Spec Section</label>
+                        <input type="text" name="dwg_spec" placeholder="e.g., 07 62 00">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="dwg_notes" rows="3" placeholder="Additional drawing requirements..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal('drawing-modal')">Cancel</button>
+                        <button type="submit" class="btn-primary">Create Drawing Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Command Modal -->
+    <div class="modal hidden" id="voice-modal">
+        <div class="modal-backdrop" onclick="closeModal('voice-modal')"></div>
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3>HIVE215 Voice Command</h3>
+                <button class="modal-close" onclick="closeModal('voice-modal')">&times;</button>
+            </div>
+            <div class="modal-body voice-interface">
+                <div class="voice-visual" id="voice-visual">
+                    <div class="voice-ring"></div>
+                    <div class="voice-ring"></div>
+                    <div class="voice-ring"></div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="voice-mic">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                </div>
+                <div class="voice-status" id="voice-status">Tap to speak</div>
+                <div class="voice-transcript" id="voice-transcript"></div>
+                <div class="voice-examples">
+                    <p>Try saying:</p>
+                    <ul>
+                        <li>"What's my cash position across all projects?"</li>
+                        <li>"Create a change order for $12,500 at UMass"</li>
+                        <li>"Who's certified on kettle operation?"</li>
+                        <li>"Give me a status update on JHU Library"</li>
+                    </ul>
+                </div>
+                <button class="voice-btn" id="voice-btn" onclick="toggleVoiceListening()">
+                    Start Listening
+                </button>
             </div>
         </div>
     </div>
@@ -622,12 +1738,12 @@
             </svg>
             <span>Projects</span>
         </a>
-        <a href="/analysis" class="bottom-nav-item">
+        <a href="/roofio" class="bottom-nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
             </svg>
-            <span>Analysis</span>
+            <span>HIVE215</span>
         </a>
         <a href="/integrations" class="bottom-nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
