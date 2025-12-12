@@ -638,8 +638,9 @@
         </a>
     </nav>
 
-    <!-- Load UX Utilities first, then dashboard JS -->
+    <!-- Load UX Utilities first, then interactions, then dashboard JS -->
     <script src="{{ url_for('static', filename='js/ux-utilities.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/interactions.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

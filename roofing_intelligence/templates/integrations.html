@@ -1037,5 +1037,6 @@
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
+    <script src="{{ url_for('static', filename='js/interactions.js') }}"></script>
 </body>
 </html>
