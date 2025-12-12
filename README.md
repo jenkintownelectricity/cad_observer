@@ -28,6 +28,7 @@ Backend Database    [███████████████████�
 Backend API Layer   [████████████████████] 100% - REST API ready!
 Custom Form System  [████████████████████] 100% - Templates + Scanner!
 Mobile Upload       [████████████████████] 100% - iPhone/Android/Web!
+UX/Mobile Design    [████████████████████] 100% - 2025 Best Practices!
 ```
 
 ---
@@ -158,6 +159,30 @@ python app.py
 | Shop Drawings | Full/Assist/Off | CAD details, submittals |
 | Accounting | Full/Assist/Off | Invoicing, payroll |
 | Operations | Full/Assist/Off | Logistics, resources |
+
+### UX Utilities (2025 Best Practices)
+
+Based on research showing **$1 invested in UX = $100 return (9,900% ROI)**:
+
+| File | Purpose |
+|------|---------|
+| `static/css/ux-utilities.css` | Loading states, skeletons, touch targets, tooltips |
+| `static/js/ux-utilities.js` | Auto-format, auto-save, validation, progress tracking |
+
+**Features Users LOVE:**
+- Instant feedback (loading spinners, skeleton screens)
+- Smart keyboards (number pad for phone, decimal for currency)
+- Auto-save (draft restored if modal closes)
+- Large touch targets (48px minimum)
+- Progress indicators (form completion %)
+- Friendly validation (gentle hints, not red errors)
+
+**Features Users HATE (we avoid):**
+- Slow loading (skeleton screens instead)
+- Tiny touch targets (48px minimum)
+- Aggressive red errors (yellow hints instead)
+- iOS zoom bug (16px font on inputs)
+- Heavy animations (reduced on mobile)
 
 ### Integrations Hub (28+ Connectors)
 
@@ -407,6 +432,19 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 ---
 
 # Changelog
+
+### December 12, 2025 - UX Overhaul (2025 Best Practices)
+- **Loading States**: Skeleton screens, button spinners for instant feedback
+- **Auto-Formatting**: Currency ($250,000), phone ((123) 456-7890) auto-format
+- **Auto-Save Forms**: LocalStorage saves form data, prevents data loss
+- **Friendly Validation**: Gentle hints, not aggressive red errors
+- **Smart Keyboards**: inputmode for numeric, tel, email on mobile
+- **Touch Targets**: 48px minimum for all buttons (mobile accessibility)
+- **Bottom Navigation**: iOS/Android-style nav bar for mobile
+- **Mobile Nav Toggle**: Hamburger menu for mobile navigation
+- **Progress Indicators**: Form completion tracking
+- **Reduced Animations**: Better performance on older devices
+- **prefers-reduced-motion**: Respects accessibility settings
 
 ### December 12, 2025 - Custom Form System & REST API
 - **Custom Form Templates**: Use your forms or ROOFIO format with toggle
