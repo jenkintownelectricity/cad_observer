@@ -26,6 +26,8 @@ Roofio AI Skills    [███████████████████�
 Backend Security    [████████████████████] 100% - Phase 1 done
 Backend Database    [████████████████████] 100% - Tables created!
 Backend API Layer   [████████████████████] 100% - REST API ready!
+Custom Form System  [████████████████████] 100% - Templates + Scanner!
+Mobile Upload       [████████████████████] 100% - iPhone/Android/Web!
 ```
 
 ---
@@ -188,7 +190,8 @@ python app.py
 
 **Purpose:** Unified data infrastructure with tiered AI architecture
 **Location:** `roofio-backend/`
-**Status:** Phase 1 Complete (Security Foundation)
+**Run:** `uvicorn main:app --reload --port 8000` → http://127.0.0.1:8000
+**Status:** Phase 3 Complete (REST API + Forms)
 
 ### Infrastructure Status
 
@@ -249,10 +252,62 @@ GROQ_API_KEY=gsk_...
 | Phase | Status | Description |
 |-------|--------|-------------|
 | Phase 1 | ✅ Done | Security foundation (JWT, RBAC, OAuth, encryption) |
-| Phase 2 | 🔜 Next | Tier 1 Python CRUD (users, agencies, projects) |
-| Phase 3 | 🔜 | Tier 2 Groq + RAG integration |
-| Phase 4 | 🔜 | Tier 3 Claude/GPT with failover |
-| Phase 5 | 🔜 | Master Architect self-healing |
+| Phase 2 | ✅ Done | Database tables (users, agencies, projects, forms) |
+| Phase 3 | ✅ Done | REST API + Custom Form System |
+| Phase 4 | 🔜 Next | Tier 2 Groq + RAG integration |
+| Phase 5 | 🔜 | Tier 3 Claude/GPT with failover |
+| Phase 6 | 🔜 | Master Architect self-healing |
+
+### Custom Form System
+
+**Use your forms or ours** - First-time setup asks preference, then respects it.
+
+| Feature | Description |
+|---------|-------------|
+| Format Toggle | Switch between ROOFIO format and your custom format anytime |
+| Template Scanner | Snap a photo of your existing form to digitize it |
+| Field Extraction | AI detects fields from scanned documents |
+| ROOFIO Flavor | Adds logo, GPS, timestamp to your custom forms |
+| Mobile Upload | iPhone camera/photos, Android gallery, web drag-drop |
+
+**Supported File Types:**
+- Images: JPEG, PNG, HEIC, HEIF
+- Documents: PDF, Word (.doc, .docx)
+
+### REST API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check with service status |
+| **Agencies** | | |
+| POST | `/agencies` | Create new agency |
+| GET | `/agencies/{id}` | Get agency details |
+| PUT | `/agencies/{id}` | Update agency |
+| **Users** | | |
+| POST | `/users` | Create user |
+| GET | `/users/{id}` | Get user details |
+| GET | `/agencies/{id}/users` | List agency users |
+| **Projects** | | |
+| POST | `/projects` | Create project |
+| GET | `/projects/{id}` | Get project details |
+| GET | `/agencies/{id}/projects` | List agency projects |
+| **Positions** | | |
+| GET | `/positions` | List all 8 positions |
+| GET | `/positions/{id}/status` | Get position AI status |
+| PUT | `/positions/{id}/mode` | Set AI mode (full/assist/off) |
+| **Forms** | | |
+| GET | `/forms/types` | List available form types |
+| GET | `/forms/templates` | List agency templates |
+| POST | `/forms/templates` | Create new template |
+| GET | `/forms/preference/{type}` | Get format preference |
+| POST | `/forms/preference/{type}` | Set format preference |
+| POST | `/forms/submissions` | Submit filled form |
+| **Scanner** | | |
+| POST | `/scan/upload` | Upload document for scanning |
+| POST | `/scan/create-template` | Create template from scan |
+| GET | `/scan/formats` | List export formats |
+| **AI** | | |
+| POST | `/ai/query` | Query tiered AI system |
 
 ---
 
@@ -285,16 +340,21 @@ cad_observer/
 │           └── digital_foreman/       # Risk Shield
 │
 ├── roofio-backend/                    # ROOFIO BACKEND
-│   ├── common/                        # Phase 1 complete
+│   ├── main.py                        # FastAPI application
+│   ├── common/                        # Core infrastructure
 │   │   ├── config.py                  # Environment config
 │   │   ├── security.py                # JWT, OAuth, RBAC
 │   │   ├── session.py                 # Redis sessions
-│   │   └── database.py                # PostgreSQL async
-│   ├── tier1/                         # Placeholder
-│   ├── tier2/                         # Placeholder
-│   ├── tier3/                         # Placeholder
-│   ├── brain/                         # RAG placeholder
-│   ├── architect/                     # Meta-AI placeholder
+│   │   ├── database.py                # PostgreSQL async
+│   │   └── models.py                  # SQLAlchemy models
+│   ├── api/                           # REST API
+│   │   ├── routes.py                  # All endpoint routers
+│   │   └── schemas.py                 # Pydantic validation
+│   ├── tier1/                         # Python CRUD (active)
+│   ├── tier2/                         # Groq integration
+│   ├── tier3/                         # Claude/GPT fallback
+│   ├── brain/                         # RAG knowledge base
+│   ├── architect/                     # Meta-AI orchestration
 │   └── test_*.py                      # Integration tests
 │
 ├── drop/                              # Archive/experimental
@@ -347,6 +407,14 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 ---
 
 # Changelog
+
+### December 12, 2024 - Custom Form System & REST API
+- **Custom Form Templates**: Use your forms or ROOFIO format with toggle
+- **Document Scanner**: Snap photo of existing forms to digitize them
+- **Mobile Upload**: iPhone camera/photos, Android gallery, web drag-drop
+- **REST API Complete**: Full CRUD for agencies, users, projects, forms
+- **Database Models**: FormTemplate, FormSubmission tables added
+- **Flask-FastAPI Bridge**: Frontend now connected to backend API
 
 ### December 12, 2024 - Repository Restructure
 - Documented 3 distinct applications in README
