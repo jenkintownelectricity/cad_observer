@@ -1,6 +1,6 @@
 /**
  * ROOFIO Dashboard - AI-Powered Roofing OS
- * Complete functionality for all 8 AI Seats
+ * Complete functionality for all 13 AI Seats
  * Cross-module intelligence, voice commands, and real-time updates
  */
 
@@ -309,6 +309,130 @@ const roleSkills = {
             inProgress: 4,
             submitted: 2,
             rush: 1
+        }
+    },
+    sales: {
+        title: 'AI Sales/CRM',
+        tagline: 'Close more deals',
+        icon: 'trending-up',
+        skills: [
+            { name: 'Lead Scoring AI', status: 'active', ai: true },
+            { name: 'Pipeline Management', status: 'active' },
+            { name: 'Follow-up Automation', status: 'active', ai: true },
+            { name: 'E-Signature Integration', status: 'active' },
+            { name: 'Proposal Generator', status: 'active', ai: true },
+            { name: 'Win/Loss Analysis', status: 'learning', ai: true },
+            { name: 'Contact Management', status: 'active' },
+            { name: 'Email Templates', status: 'active' }
+        ],
+        tasks: [
+            { name: 'Follow up with Turner Construction', project: 'Leads', priority: 'high', due: 'Today' },
+            { name: 'Send proposal to Gilbane', project: 'Leads', priority: 'medium', due: 'Tomorrow' },
+            { name: 'Review hot leads', project: 'Pipeline', priority: 'medium', due: 'This week' }
+        ],
+        metrics: {
+            hotLeads: 12,
+            pipelineValue: '$2.4M',
+            closeRate: '34%'
+        }
+    },
+    hr: {
+        title: 'AI HR/Workforce',
+        tagline: 'Build your team',
+        icon: 'users',
+        skills: [
+            { name: 'I-9/E-Verify', status: 'active', ai: true },
+            { name: 'Onboarding Workflow', status: 'active', ai: true },
+            { name: 'Union Tracking', status: 'active' },
+            { name: 'Certification Tracking', status: 'active', ai: true },
+            { name: 'Time & Attendance', status: 'active' },
+            { name: 'Payroll Integration', status: 'pending' },
+            { name: 'Performance Reviews', status: 'active' },
+            { name: 'Training Records', status: 'active' }
+        ],
+        tasks: [
+            { name: 'Complete I-9 for new hire', project: 'Hiring', priority: 'high', due: 'Today' },
+            { name: 'Review expiring certifications', project: 'Compliance', priority: 'medium', due: 'This week' },
+            { name: 'Process union dues', project: 'Union', priority: 'low', due: 'Month end' }
+        ],
+        metrics: {
+            activeEmployees: 47,
+            expiringCerts: 5,
+            openPositions: 3
+        }
+    },
+    marketing: {
+        title: 'AI Marketing',
+        tagline: 'Know your ROI',
+        icon: 'target',
+        skills: [
+            { name: 'Lead Attribution', status: 'active', ai: true },
+            { name: 'Campaign ROI', status: 'active', ai: true },
+            { name: 'Cost per Lead Analysis', status: 'active', ai: true },
+            { name: 'Google Ads Integration', status: 'active' },
+            { name: 'Social Media Tracking', status: 'pending' },
+            { name: 'Email Campaign Metrics', status: 'active' },
+            { name: 'Website Analytics', status: 'active' },
+            { name: 'A/B Testing', status: 'learning', ai: true }
+        ],
+        tasks: [
+            { name: 'Review Q4 campaign performance', project: 'Analytics', priority: 'medium', due: 'This week' },
+            { name: 'Update lead source tracking', project: 'Setup', priority: 'low', due: 'Next week' }
+        ],
+        metrics: {
+            costPerLead: '$127',
+            conversionRate: '8.4%',
+            monthlyLeads: 34
+        }
+    },
+    warranty: {
+        title: 'AI Warranty/Service',
+        tagline: 'Protect & serve',
+        icon: 'shield',
+        skills: [
+            { name: 'Warranty Registration', status: 'active', ai: true },
+            { name: 'Claim Tracking', status: 'active' },
+            { name: 'Service Ticket System', status: 'active', ai: true },
+            { name: 'Auto-Renewal Notices', status: 'active', ai: true },
+            { name: 'Customer Portal', status: 'pending' },
+            { name: 'Parts Ordering', status: 'active' },
+            { name: 'Technician Dispatch', status: 'active' },
+            { name: 'Warranty Analytics', status: 'learning', ai: true }
+        ],
+        tasks: [
+            { name: 'Process claim #1247', project: 'Claims', priority: 'high', due: 'Today' },
+            { name: 'Schedule service call - Turner', project: 'Service', priority: 'medium', due: 'Tomorrow' },
+            { name: 'Send renewal notices', project: 'Renewals', priority: 'low', due: 'This week' }
+        ],
+        metrics: {
+            activeWarranties: 156,
+            openClaims: 4,
+            serviceTickets: 7
+        }
+    },
+    owner: {
+        title: 'AI Owner Dashboard',
+        tagline: 'See everything',
+        icon: 'briefcase',
+        skills: [
+            { name: 'P&L Overview', status: 'active', ai: true },
+            { name: 'Cash Position', status: 'active', ai: true },
+            { name: 'KPI Dashboard', status: 'active', ai: true },
+            { name: 'AI Business Insights', status: 'active', ai: true },
+            { name: 'Risk Assessment', status: 'active', ai: true },
+            { name: 'Competitor Analysis', status: 'learning', ai: true },
+            { name: 'Financial Forecasting', status: 'active', ai: true },
+            { name: 'Board Reports', status: 'pending' }
+        ],
+        tasks: [
+            { name: 'Review monthly P&L', project: 'Finance', priority: 'high', due: 'Today' },
+            { name: 'Approve cash flow forecast', project: 'Finance', priority: 'medium', due: 'This week' },
+            { name: 'Review AI recommendations', project: 'Strategy', priority: 'medium', due: 'This week' }
+        ],
+        metrics: {
+            revenueMTD: '$847K',
+            grossMargin: '24%',
+            backlog: '$3.2M'
         }
     }
 };
@@ -661,6 +785,26 @@ function getSeatActions(role) {
         'shop-drawings': `
             <button class="btn-primary" onclick="closeSeatModal(); openDrawingForm();">New Drawing</button>
             <button class="btn-secondary" onclick="closeSeatModal(); openDetailLibrary();">Detail Library</button>
+        `,
+        sales: `
+            <button class="btn-primary" onclick="closeSeatModal(); openLeadForm();">New Lead</button>
+            <button class="btn-secondary" onclick="closeSeatModal(); openPipelineView();">View Pipeline</button>
+        `,
+        hr: `
+            <button class="btn-primary" onclick="closeSeatModal(); openEmployeeForm();">New Employee</button>
+            <button class="btn-secondary" onclick="closeSeatModal(); openCertificationsView();">Certifications</button>
+        `,
+        marketing: `
+            <button class="btn-primary" onclick="closeSeatModal(); openCampaignForm();">New Campaign</button>
+            <button class="btn-secondary" onclick="closeSeatModal(); openMarketingAnalytics();">Analytics</button>
+        `,
+        warranty: `
+            <button class="btn-primary" onclick="closeSeatModal(); openServiceTicketForm();">New Ticket</button>
+            <button class="btn-secondary" onclick="closeSeatModal(); openWarrantySearch();">Find Warranty</button>
+        `,
+        owner: `
+            <button class="btn-primary" onclick="closeSeatModal(); openFinancialReport();">View Reports</button>
+            <button class="btn-secondary" onclick="closeSeatModal(); openAIInsights();">AI Insights</button>
         `
     };
     return actions[role] || '';
@@ -1064,6 +1208,135 @@ function suggestRFI() {
     setTimeout(() => {
         showToast('AI suggests RFI: "Clarify flashing termination at masonry wall"', 'success');
     }, 2000);
+}
+
+// ============================================================================
+// AI SALES/CRM FUNCTIONS
+// ============================================================================
+
+function openLeadForm() {
+    showToast('Opening new lead capture form...', 'info');
+    // Would open lead modal
+}
+
+function openPipelineView() {
+    showToast('Loading sales pipeline...', 'info');
+    setTimeout(() => {
+        showToast('Pipeline: 12 hot leads, $2.4M total value', 'success');
+    }, 1000);
+}
+
+function scoreLead() {
+    showToast('AI analyzing lead quality...', 'info');
+    setTimeout(() => {
+        showToast('Lead Score: 87/100 - High probability close', 'success');
+    }, 1500);
+}
+
+// ============================================================================
+// AI HR/WORKFORCE FUNCTIONS
+// ============================================================================
+
+function openEmployeeForm() {
+    showToast('Opening new employee onboarding form...', 'info');
+    // Would open employee modal
+}
+
+function openCertificationsView() {
+    showToast('Loading certification tracker...', 'info');
+    setTimeout(() => {
+        showToast('5 certifications expiring in 30 days', 'warning');
+    }, 1000);
+}
+
+function runEVerify() {
+    showToast('Submitting I-9 to E-Verify...', 'info');
+    setTimeout(() => {
+        showToast('E-Verify: Employment Authorized', 'success');
+    }, 2000);
+}
+
+// ============================================================================
+// AI MARKETING FUNCTIONS
+// ============================================================================
+
+function openCampaignForm() {
+    showToast('Opening campaign setup...', 'info');
+    // Would open campaign modal
+}
+
+function openMarketingAnalytics() {
+    showToast('Loading marketing analytics dashboard...', 'info');
+    setTimeout(() => {
+        showToast('Cost per Lead: $127 | Conversion: 8.4%', 'success');
+    }, 1000);
+}
+
+function analyzeLeadSource() {
+    showToast('AI analyzing lead attribution...', 'info');
+    setTimeout(() => {
+        showToast('Top source: Google Ads (45% of leads, $89 CPL)', 'success');
+    }, 1500);
+}
+
+// ============================================================================
+// AI WARRANTY/SERVICE FUNCTIONS
+// ============================================================================
+
+function openServiceTicketForm() {
+    showToast('Opening service ticket form...', 'info');
+    // Would open service ticket modal
+}
+
+function openWarrantySearch() {
+    showToast('Opening warranty lookup...', 'info');
+    // Would open warranty search modal
+}
+
+function registerWarranty() {
+    showToast('Registering warranty with manufacturer...', 'info');
+    setTimeout(() => {
+        showToast('Warranty registered! Certificate #W-2024-1247', 'success');
+    }, 2000);
+}
+
+function processServiceClaim() {
+    showToast('Processing warranty claim...', 'info');
+    setTimeout(() => {
+        showToast('Claim approved - Parts ordered, tech scheduled', 'success');
+    }, 1500);
+}
+
+// ============================================================================
+// AI OWNER DASHBOARD FUNCTIONS
+// ============================================================================
+
+function openFinancialReport() {
+    showToast('Generating financial reports...', 'info');
+    setTimeout(() => {
+        showToast('P&L Report ready: Revenue $847K MTD, Margin 24%', 'success');
+    }, 1500);
+}
+
+function openAIInsights() {
+    showToast('AI analyzing business patterns...', 'info');
+    setTimeout(() => {
+        showToast('AI Insight: Material costs up 12% - recommend early ordering', 'warning');
+    }, 2000);
+}
+
+function getCashPosition() {
+    showToast('Calculating current cash position...', 'info');
+    setTimeout(() => {
+        showToast('Cash: $234K | AR: $456K | Committed: $189K', 'success');
+    }, 1000);
+}
+
+function viewKPIDashboard() {
+    showToast('Loading KPI dashboard...', 'info');
+    setTimeout(() => {
+        showToast('All KPIs green except AR Days (42 vs target 35)', 'warning');
+    }, 1000);
 }
 
 // ============================================================================

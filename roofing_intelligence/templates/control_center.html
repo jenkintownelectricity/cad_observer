@@ -579,6 +579,85 @@
                     { id: "invoice", name: "Generate Invoice", trigger: "Work complete", confidence: 97, status: "completed" }
                 ],
                 forms: ["Pay Application (G702)", "Continuation Sheet (G703)", "Invoice", "Lien Waiver", "Payment Receipt", "Retention Release", "Final Billing", "Cost Report", "Budget Variance", "Cash Flow", "Aging Report"]
+            },
+            {
+                id: "sales",
+                name: "AI Sales/CRM",
+                icon: "📈",
+                color: "#10b981",
+                mode: "full_ai",
+                confidence: 94,
+                formsCount: 8,
+                functions: [
+                    { id: "lead_score", name: "Lead Scoring AI", trigger: "New lead captured", confidence: 96, status: "ready" },
+                    { id: "pipeline_mgmt", name: "Pipeline Management", trigger: "Lead status change", confidence: 93, status: "ready" },
+                    { id: "followup_auto", name: "Follow-up Automation", trigger: "Time-based trigger", confidence: 95, status: "ready" },
+                    { id: "e_signature", name: "E-Signature Request", trigger: "Contract ready", confidence: 98, status: "completed" }
+                ],
+                forms: ["Lead Capture", "Contact Info", "Proposal", "Contract", "Follow-up Log", "Meeting Notes", "E-Sign Request", "Win/Loss Report"]
+            },
+            {
+                id: "hr",
+                name: "AI HR/Workforce",
+                icon: "👥",
+                color: "#8b5cf6",
+                mode: "assist",
+                confidence: 91,
+                formsCount: 10,
+                functions: [
+                    { id: "i9_verify", name: "I-9/E-Verify", trigger: "New hire", confidence: 99, status: "ready" },
+                    { id: "onboarding", name: "Onboarding Workflow", trigger: "Hire confirmed", confidence: 94, status: "ready" },
+                    { id: "union_track", name: "Union Tracking", trigger: "Union member added", confidence: 92, status: "pending_review" },
+                    { id: "cert_track", name: "Certification Tracking", trigger: "Cert expiring", confidence: 96, status: "ready" }
+                ],
+                forms: ["Employee Application", "I-9 Form", "W-4 Form", "Direct Deposit", "Union Card", "Certifications", "Training Record", "PTO Request", "Performance Review", "Termination"]
+            },
+            {
+                id: "marketing",
+                name: "AI Marketing",
+                icon: "📢",
+                color: "#f43f5e",
+                mode: "full_ai",
+                confidence: 93,
+                formsCount: 6,
+                functions: [
+                    { id: "lead_attr", name: "Lead Attribution", trigger: "Lead source tagged", confidence: 95, status: "ready" },
+                    { id: "campaign_roi", name: "Campaign ROI", trigger: "Campaign end", confidence: 92, status: "ready" },
+                    { id: "cost_per_lead", name: "Cost per Lead Analysis", trigger: "Monthly report", confidence: 94, status: "completed" }
+                ],
+                forms: ["Campaign Setup", "Lead Source", "ROI Report", "Cost Analysis", "A/B Test Results", "Marketing Budget"]
+            },
+            {
+                id: "warranty",
+                name: "AI Warranty/Service",
+                icon: "🛡️",
+                color: "#3b82f6",
+                mode: "full_ai",
+                confidence: 97,
+                formsCount: 8,
+                functions: [
+                    { id: "warranty_reg", name: "Warranty Registration", trigger: "Project closeout", confidence: 99, status: "ready" },
+                    { id: "claim_track", name: "Claim Tracking", trigger: "Claim submitted", confidence: 96, status: "ready" },
+                    { id: "service_ticket", name: "Service Ticket", trigger: "Service requested", confidence: 98, status: "completed" },
+                    { id: "auto_renewal", name: "Auto-Renewal Notice", trigger: "Warranty expiring", confidence: 95, status: "ready" }
+                ],
+                forms: ["Warranty Registration", "Warranty Certificate", "Service Ticket", "Claim Form", "Inspection Report", "Renewal Notice", "Parts Order", "Service Log"]
+            },
+            {
+                id: "owner",
+                name: "AI Owner Dashboard",
+                icon: "👔",
+                color: "#fbbf24",
+                mode: "full_ai",
+                confidence: 96,
+                formsCount: 7,
+                functions: [
+                    { id: "pnl_overview", name: "P&L Overview", trigger: "Monthly close", confidence: 98, status: "ready" },
+                    { id: "cash_position", name: "Cash Position", trigger: "Daily update", confidence: 97, status: "completed" },
+                    { id: "kpi_dashboard", name: "KPI Dashboard", trigger: "Real-time", confidence: 95, status: "ready" },
+                    { id: "ai_insights", name: "AI Business Insights", trigger: "Anomaly detected", confidence: 93, status: "ready" }
+                ],
+                forms: ["P&L Report", "Cash Flow Statement", "KPI Summary", "Business Forecast", "Risk Assessment", "Opportunity Report", "Executive Summary"]
             }
         ];
 
