@@ -268,23 +268,89 @@ Key high-impact decisions that impact the architecture.
 
 ---
 
-## 6. Session Workflow
+## 6. Permanent AI Skills (Always Active)
 
-### 6.1. Starting a Session
+These skills are **always active** for every Claude Code session in this repository:
+
+### Skill 1: Commit Curator
+All proposed changes must adhere to the **Conventional Commits** standard:
+- Structure output as small, logical commits
+- Each commit = ONE logical unit of work
+- Format: `type(scope): subject`
+- Explain the "why" in descriptions
+
+### Skill 2: Context Enforcer
+Reference and adhere to Architectural Constraints:
+- All tables use `agency_id` (never organization_id, company_id)
+- NEVER hardcode credential defaults
+- NEVER use relative imports in standalone scripts
+- NO quick fixes - fix root causes only
+
+### Skill 3: Mandatory Validation
+Before every code suggestion:
+1. Propose running appropriate test command
+2. Ask for confirmation before code changes
+3. Verify .env is correctly configured
+
+### Skill 4: Documentation Guardian
+After accepting changes, propose updates to:
+- `CLAUDE.md` if architecture changed
+- `SESSION-LOG.md` with problems/solutions
+- `README.md` changelog for significant changes
+
+---
+
+## 7. Slash Commands
+
+Available commands (type `/command-name` in Claude Code):
+
+| Command | Purpose |
+|---------|---------|
+| `/best-practices` | Initialize Best Practice Mode with all skills |
+| `/session-start` | Start session protocol - read context, check status |
+| `/session-end` | End session protocol - update docs, commit, handoff |
+| `/adr` | Create Architectural Decision Record |
+| `/update-docs` | Propose documentation updates after changes |
+| `/validate` | Run validation checks before code changes |
+
+### Usage Examples
+
+```bash
+# Start of session
+/session-start
+
+# Before making architectural decision
+/adr
+
+# After completing feature/fix
+/update-docs
+
+# Before any code changes
+/validate
+
+# End of session
+/session-end
+```
+
+---
+
+## 8. Session Workflow
+
+### 8.1. Starting a Session
 
 1. Read `CLAUDE.md` (this file)
 2. Read `SESSION-LOG.md` for recent context
 3. Check `CLAUDE-INSTRUCTIONS.md` for current priorities
 4. Ask clarifying questions before starting work
 
-### 6.2. During a Session
+### 8.2. During a Session
 
 1. Use TodoWrite to track tasks
 2. Commit atomic changes with conventional commits
 3. Test before proposing code
 4. Document problems and solutions
 
-### 6.3. Ending a Session
+### 8.3. Ending a Session
 
 1. Update `SESSION-LOG.md` with:
    - What was done
@@ -295,7 +361,7 @@ Key high-impact decisions that impact the architecture.
 
 ---
 
-## 7. Storage Locations
+## 9. Storage Locations
 
 | Data | Location |
 |------|----------|
@@ -307,7 +373,7 @@ Key high-impact decisions that impact the architecture.
 
 ---
 
-## 8. Common Commands
+## 10. Common Commands
 
 ```bash
 # Run APPIO frontend
@@ -328,7 +394,7 @@ cd roofio-backend && python test_groq.py
 
 ---
 
-## 9. Prediction Protocol
+## 11. Prediction Protocol
 
 After 5+ confirmed observations:
 - Begin making predictions: "Based on what you've told me..."
