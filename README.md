@@ -1,6 +1,6 @@
 # CAD Observer Repository
 
-> **3 Applications in 1 Repo** | Last Updated: December 12, 2025
+> **3 Applications in 1 Repo** | Last Updated: December 13, 2025
 
 This repository contains three distinct applications for Armand Lefebvre (20+ year journeyman roofer/waterproofer, Local 30):
 
@@ -382,11 +382,8 @@ cad_observer/
 │   ├── architect/                     # Meta-AI orchestration
 │   └── test_*.py                      # Integration tests
 │
-├── drop/                              # Archive/experimental
-│   ├── architect-ai-skill/            # Meta-intelligence docs
-│   ├── roofio-complete-skills/        # Skill reference (14 domains)
-│   ├── security_backend/              # Phase 1 source
-│   └── training-data-collection-skill/
+├── drop/                              # Reference only (cleaned Dec 13)
+│   └── *.png                          # Reference images only
 │
 ├── README.md                          # This file
 ├── CLAUDE.md                          # CAD Observer context
@@ -432,6 +429,19 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 ---
 
 # Changelog
+
+### December 13, 2025 - Database Initialization & Codebase Cleanup
+- **Unified Database Schema**: Created `roofio-backend/database/unified_schema.sql` with 9 tables
+  - agencies, users, clients, projects
+  - form_templates, form_submissions
+  - ai_action_logs, audit_logs, position_configs
+- **Standardized Naming**: All tables use `agency_id` consistently (was mixed: organization_id, company_id)
+- **Standalone DB Init**: Rewrote `init_db.py` to use asyncpg directly (no SQLAlchemy import issues)
+- **Config Hardening**: Removed hardcoded "roofio" defaults from `config.py` - must use .env
+- **Codebase Cleanup**: Removed 9,428 lines of duplicate code from `drop/` folder
+- **Tier 3 Organization**: Moved knowledge.py, master_architect.py, modal_app.py, security.py to `tier3/`
+- **VS Code Integration**: Added "Init Database" debug configuration to launch.json
+- **Supabase Tables**: Successfully created all 9 tables in production database
 
 ### December 12, 2025 - Centralized CSS Form System & UI Fixes
 - **Unified Form System**: All forms now controlled from `styles.css` (lines 2046-2238)
