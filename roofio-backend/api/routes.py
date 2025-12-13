@@ -952,6 +952,160 @@ async def list_form_submissions(
 
 
 # =============================================================================
+# AI GENIE ENDPOINTS (Tier 2 Groq Analysis)
+# =============================================================================
+
+@ai_router.post("/analyze/change-orders/{project_id}")
+async def analyze_change_orders(
+    project_id: UUID,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """
+    Analyze RFIs and Daily Logs to suggest potential Change Orders.
+
+    Uses Groq AI to identify patterns that indicate scope changes,
+    unforeseen conditions, or owner-caused delays requiring formal COs.
+    """
+    from tier2.form_ai_genie import generate_change_order_suggestions
+    from common.database import get_session
+    from common.models import FormSubmission
+    from sqlalchemy import select
+    from datetime import datetime, timedelta
+
+    async with get_session() as session:
+        # Fetch recent RFIs (last 14 days)
+        rfi_query = select(FormSubmission).where(
+            FormSubmission.agency_id == agency_id,
+            FormSubmission.project_id == project_id,
+            FormSubmission.form_type == "rfi",
+            FormSubmission.created_at >= datetime.utcnow() - timedelta(days=14)
+        )
+        rfi_result = await session.execute(rfi_query)
+        rfis = [{"id": str(r.submission_id), "data": r.data, "created_at": str(r.created_at)}
+                for r in rfi_result.scalars()]
+
+        # Fetch recent daily logs (last 7 days)
+        log_query = select(FormSubmission).where(
+            FormSubmission.agency_id == agency_id,
+            FormSubmission.project_id == project_id,
+            FormSubmission.form_type == "daily_report",
+            FormSubmission.created_at >= datetime.utcnow() - timedelta(days=7)
+        )
+        log_result = await session.execute(log_query)
+        logs = [{"id": str(r.submission_id), "data": r.data, "created_at": str(r.created_at)}
+                for r in log_result.scalars()]
+
+    if not rfis and not logs:
+        return {
+            "project_id": str(project_id),
+            "suggestions": [],
+            "analysis_summary": "No RFIs or Daily Logs found in the analysis period.",
+            "risk_level": "LOW"
+        }
+
+    result = await generate_change_order_suggestions(project_id, rfis, logs)
+    return result
+
+
+@ai_router.post("/analyze/safety/{project_id}")
+async def analyze_safety_risks(
+    project_id: UUID,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """
+    Analyze JHA forms and incident reports for safety risk patterns.
+
+    Identifies recurring hazards, PPE gaps, and training needs.
+    """
+    from tier2.form_ai_genie import analyze_safety_risks as analyze_safety
+    from common.database import get_session
+    from common.models import FormSubmission
+    from sqlalchemy import select
+    from datetime import datetime, timedelta
+
+    async with get_session() as session:
+        # Fetch recent JHAs
+        jha_query = select(FormSubmission).where(
+            FormSubmission.agency_id == agency_id,
+            FormSubmission.project_id == project_id,
+            FormSubmission.form_type == "jha",
+            FormSubmission.created_at >= datetime.utcnow() - timedelta(days=7)
+        )
+        jha_result = await session.execute(jha_query)
+        jhas = [{"id": str(r.submission_id), "data": r.data, "created_at": str(r.created_at)}
+                for r in jha_result.scalars()]
+
+    if not jhas:
+        return {
+            "project_id": str(project_id),
+            "risk_level": "LOW",
+            "findings": [],
+            "analysis_summary": "No JHA forms found in the analysis period."
+        }
+
+    result = await analyze_safety(project_id, jhas, [])
+    return result
+
+
+@ai_router.post("/analyze/weekly-summary/{project_id}")
+async def generate_weekly_summary(
+    project_id: UUID,
+    agency_id: UUID = Depends(get_agency_id),
+    days: int = Query(7, ge=1, le=30)
+):
+    """
+    Generate a weekly progress summary from Daily Logs.
+
+    Creates a professional report suitable for owner/GC reporting.
+    """
+    from tier2.form_ai_genie import summarize_daily_logs
+    from common.database import get_session
+    from common.models import FormSubmission
+    from sqlalchemy import select
+    from datetime import datetime, timedelta
+
+    async with get_session() as session:
+        log_query = select(FormSubmission).where(
+            FormSubmission.agency_id == agency_id,
+            FormSubmission.project_id == project_id,
+            FormSubmission.form_type == "daily_report",
+            FormSubmission.created_at >= datetime.utcnow() - timedelta(days=days)
+        ).order_by(FormSubmission.created_at)
+
+        log_result = await session.execute(log_query)
+        logs = [{"id": str(r.submission_id), "data": r.data, "created_at": str(r.created_at)}
+                for r in log_result.scalars()]
+
+    if not logs:
+        return {
+            "project_id": str(project_id),
+            "error": f"No daily logs found in the last {days} days."
+        }
+
+    result = await summarize_daily_logs(project_id, logs, days)
+    return result
+
+
+@ai_router.post("/analyze/full/{project_id}")
+async def run_full_project_analysis(
+    project_id: UUID,
+    agency_id: UUID = Depends(get_agency_id)
+):
+    """
+    Run all AI analyzers for a project.
+
+    Returns combined results from:
+    - Change Order suggestions
+    - Safety risk analysis
+    - Weekly summary
+    """
+    from tier2.form_ai_genie import run_project_analysis
+
+    result = await run_project_analysis(agency_id, project_id)
+    return result
+
+
+# =============================================================================
 # EXPORTS
 # =============================================================================
 
