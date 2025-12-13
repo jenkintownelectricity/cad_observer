@@ -803,7 +803,259 @@ INSERT INTO form_templates (
     NOW()
 );
 
-RAISE NOTICE 'Successfully created 4 form templates for agency %', agency;
+-- -----------------------------------------------------------------------------
+-- 5. CHANGE ORDER (AI-Suggested from Form AI Genie)
+-- -----------------------------------------------------------------------------
+INSERT INTO form_templates (
+    template_id, agency_id, name, form_type, description, is_custom, status, is_default,
+    fields, roofio_additions, created_at, updated_at
+) VALUES (
+    gen_random_uuid(),
+    agency,
+    'Change Order Request',
+    'change_order',
+    'Formal request for contract modification due to scope changes, unforeseen conditions, or owner-directed changes',
+    false,
+    'active',
+    true,
+    '[
+        {
+            "id": "coNumber",
+            "name": "co_number",
+            "label": "Change Order Number",
+            "type": "text",
+            "required": true,
+            "placeholder": "CO-001",
+            "section": "Change Order Details"
+        },
+        {
+            "id": "projectLookup",
+            "name": "project",
+            "label": "Project",
+            "type": "lookup",
+            "required": true,
+            "section": "Change Order Details"
+        },
+        {
+            "id": "dateSubmitted",
+            "name": "date_submitted",
+            "label": "Date Submitted",
+            "type": "date",
+            "required": true,
+            "section": "Change Order Details"
+        },
+        {
+            "id": "changeType",
+            "name": "change_type",
+            "label": "Type of Change",
+            "type": "select",
+            "options": [
+                "Owner-Directed Change",
+                "Design Change/Clarification",
+                "Unforeseen Condition",
+                "Code/Regulatory Requirement",
+                "Value Engineering",
+                "Schedule Acceleration",
+                "Scope Addition",
+                "Scope Deletion"
+            ],
+            "required": true,
+            "section": "Change Order Details"
+        },
+        {
+            "id": "priority",
+            "name": "priority",
+            "label": "Priority",
+            "type": "select",
+            "options": ["Standard", "Urgent", "Critical - Work Stopped"],
+            "required": true,
+            "section": "Change Order Details"
+        },
+        {
+            "id": "relatedRfi",
+            "name": "related_rfi",
+            "label": "Related RFI Number(s)",
+            "type": "text",
+            "placeholder": "e.g., RFI-007, RFI-012",
+            "section": "Reference Documents"
+        },
+        {
+            "id": "specSection",
+            "name": "spec_section",
+            "label": "Specification Section",
+            "type": "text",
+            "placeholder": "e.g., 07 54 13",
+            "section": "Reference Documents"
+        },
+        {
+            "id": "drawingReference",
+            "name": "drawing_reference",
+            "label": "Drawing Reference",
+            "type": "text",
+            "placeholder": "e.g., A-501 Detail 3",
+            "section": "Reference Documents"
+        },
+        {
+            "id": "description",
+            "name": "description",
+            "label": "Description of Change",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Detailed description of the scope change, including what work is added, deleted, or modified",
+            "section": "Scope Description"
+        },
+        {
+            "id": "justification",
+            "name": "justification",
+            "label": "Justification / Reason for Change",
+            "type": "textarea",
+            "required": true,
+            "placeholder": "Explain why this change is necessary and who directed/caused it",
+            "section": "Scope Description"
+        },
+        {
+            "id": "laborCost",
+            "name": "labor_cost",
+            "label": "Labor Cost ($)",
+            "type": "number",
+            "required": true,
+            "section": "Cost Breakdown"
+        },
+        {
+            "id": "materialCost",
+            "name": "material_cost",
+            "label": "Material Cost ($)",
+            "type": "number",
+            "required": true,
+            "section": "Cost Breakdown"
+        },
+        {
+            "id": "equipmentCost",
+            "name": "equipment_cost",
+            "label": "Equipment Cost ($)",
+            "type": "number",
+            "section": "Cost Breakdown"
+        },
+        {
+            "id": "subcontractorCost",
+            "name": "subcontractor_cost",
+            "label": "Subcontractor Cost ($)",
+            "type": "number",
+            "section": "Cost Breakdown"
+        },
+        {
+            "id": "overhead",
+            "name": "overhead",
+            "label": "Overhead & Profit (%)",
+            "type": "number",
+            "placeholder": "Typically 15-20%",
+            "section": "Cost Breakdown"
+        },
+        {
+            "id": "totalAmount",
+            "name": "total_amount",
+            "label": "Total Change Order Amount ($)",
+            "type": "number",
+            "required": true,
+            "section": "Cost Breakdown"
+        },
+        {
+            "id": "scheduleImpact",
+            "name": "schedule_impact",
+            "label": "Schedule Impact (Days)",
+            "type": "number",
+            "required": true,
+            "placeholder": "0 if no impact, positive for extension",
+            "section": "Schedule Impact"
+        },
+        {
+            "id": "newCompletionDate",
+            "name": "new_completion_date",
+            "label": "Revised Completion Date",
+            "type": "date",
+            "section": "Schedule Impact"
+        },
+        {
+            "id": "scheduleNarrative",
+            "name": "schedule_narrative",
+            "label": "Schedule Impact Explanation",
+            "type": "textarea",
+            "placeholder": "Explain how this change affects the project schedule",
+            "section": "Schedule Impact"
+        },
+        {
+            "id": "supportingDocs",
+            "name": "supporting_docs",
+            "label": "Supporting Documentation",
+            "type": "photo",
+            "section": "Attachments"
+        },
+        {
+            "id": "proposalAttachment",
+            "name": "proposal_attachment",
+            "label": "Detailed Cost Proposal",
+            "type": "photo",
+            "section": "Attachments"
+        },
+        {
+            "id": "preparedBy",
+            "name": "prepared_by",
+            "label": "Prepared By",
+            "type": "text",
+            "required": true,
+            "section": "Signatures"
+        },
+        {
+            "id": "preparedBySignature",
+            "name": "prepared_by_signature",
+            "label": "Signature",
+            "type": "signature",
+            "required": true,
+            "section": "Signatures"
+        },
+        {
+            "id": "approvalStatus",
+            "name": "approval_status",
+            "label": "Approval Status",
+            "type": "select",
+            "options": ["Pending", "Approved", "Approved with Modifications", "Rejected", "Withdrawn"],
+            "section": "Approval (GC/Owner Use)"
+        },
+        {
+            "id": "approvedAmount",
+            "name": "approved_amount",
+            "label": "Approved Amount ($)",
+            "type": "number",
+            "section": "Approval (GC/Owner Use)"
+        },
+        {
+            "id": "approvedDays",
+            "name": "approved_days",
+            "label": "Approved Schedule Days",
+            "type": "number",
+            "section": "Approval (GC/Owner Use)"
+        },
+        {
+            "id": "approverSignature",
+            "name": "approver_signature",
+            "label": "Approver Signature",
+            "type": "signature",
+            "section": "Approval (GC/Owner Use)"
+        },
+        {
+            "id": "approvalDate",
+            "name": "approval_date",
+            "label": "Approval Date",
+            "type": "date",
+            "section": "Approval (GC/Owner Use)"
+        }
+    ]'::jsonb,
+    '{"logo": true, "timestamp": true, "tracking_number": true, "ai_generated": true}'::jsonb,
+    NOW(),
+    NOW()
+);
+
+RAISE NOTICE 'Successfully created 5 form templates for agency %', agency;
 
 END $$;
 
