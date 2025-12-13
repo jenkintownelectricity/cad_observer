@@ -41,16 +41,25 @@ UPSTASH_VECTOR_REST_TOKEN = os.environ.get("UPSTASH_VECTOR_REST_TOKEN", "")
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 # Individual components (fallback if DATABASE_URL not set)
+# NO DEFAULTS for user/password/database - must be explicitly set
 PGHOST = os.environ.get("PGHOST", "localhost")
 PGPORT = int(os.environ.get("PGPORT", "5432"))
-PGUSER = os.environ.get("PGUSER", "roofio")
+PGUSER = os.environ.get("PGUSER", "")
 PGPASSWORD = os.environ.get("PGPASSWORD", "")
-PGDATABASE = os.environ.get("PGDATABASE", "roofio")
+PGDATABASE = os.environ.get("PGDATABASE", "")
 
 def get_database_url() -> str:
     """Build database URL from components if not directly provided"""
     if DATABASE_URL:
         return DATABASE_URL
+
+    # Validate required components if using fallback
+    if not PGUSER or not PGPASSWORD or not PGDATABASE:
+        raise ValueError(
+            "DATABASE_URL not set and missing required components. "
+            "Either set DATABASE_URL or set PGUSER, PGPASSWORD, PGHOST, PGDATABASE in .env file."
+        )
+
     return f"postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
 
 # =============================================================================
