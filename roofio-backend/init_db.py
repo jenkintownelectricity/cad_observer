@@ -15,6 +15,17 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Load .env file BEFORE importing anything that reads environment variables
+from dotenv import load_dotenv
+
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+    print(f"Loaded environment from: {env_path}")
+else:
+    print(f"WARNING: No .env file found at {env_path}")
+    print("Make sure environment variables are set!")
+
 from common.database import get_engine, Base
 from common.models import (
     Agency,
