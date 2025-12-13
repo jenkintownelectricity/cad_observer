@@ -2,7 +2,7 @@
 Base Parser Framework with Learning Feedback Loop
 
 Core concept:
-1. Parse document ’ Extract data ’ Generate suggestions
+1. Parse document -> Extract data -> Generate suggestions
 2. User confirms or corrects suggestions
 3. Corrections are stored for model improvement
 4. Over time, accuracy improves for this company's document patterns
