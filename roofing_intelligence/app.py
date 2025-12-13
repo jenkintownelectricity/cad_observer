@@ -1218,6 +1218,105 @@ import re
 
 
 # =============================================================================
+# ROUTES - Form Templates API (Proxy to FastAPI Backend)
+# =============================================================================
+
+@app.route('/api/forms/templates', methods=['GET'])
+def get_form_templates():
+    """Get all form templates from backend API."""
+    if API_AVAILABLE and api_client:
+        try:
+            form_type = request.args.get('form_type')
+            status = request.args.get('status', 'active')
+            result = api_client.list_form_templates(form_type=form_type, status=status)
+            return jsonify(result)
+        except Exception as e:
+            print(f"API error fetching form templates: {e}")
+            return jsonify({'error': str(e)}), 500
+    return jsonify({'error': 'Backend API not available'}), 503
+
+
+@app.route('/api/forms/templates', methods=['POST'])
+def create_form_template():
+    """Create a new form template."""
+    if API_AVAILABLE and api_client:
+        try:
+            data = request.json
+            result = api_client.create_form_template(
+                name=data['name'],
+                form_type=data['form_type'],
+                is_custom=data.get('is_custom', True),
+                description=data.get('description'),
+                fields=data.get('fields'),
+                roofio_additions=data.get('roofio_additions')
+            )
+            return jsonify(result), 201
+        except Exception as e:
+            print(f"API error creating form template: {e}")
+            return jsonify({'error': str(e)}), 500
+    return jsonify({'error': 'Backend API not available'}), 503
+
+
+@app.route('/api/forms/templates/<template_id>', methods=['GET'])
+def get_form_template(template_id):
+    """Get a specific form template."""
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.get_form_template(template_id)
+            if result:
+                return jsonify(result)
+            return jsonify({'error': 'Template not found'}), 404
+        except Exception as e:
+            print(f"API error: {e}")
+            return jsonify({'error': str(e)}), 500
+    return jsonify({'error': 'Backend API not available'}), 503
+
+
+@app.route('/api/forms/types', methods=['GET'])
+def get_form_types():
+    """Get available form types."""
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.list_form_types()
+            return jsonify(result)
+        except Exception as e:
+            print(f"API error: {e}")
+            return jsonify({'error': str(e)}), 500
+    # Return default form types if API unavailable
+    return jsonify({
+        'form_types': [
+            {'id': 'daily_report', 'name': 'Daily Report', 'category': 'Field'},
+            {'id': 'jha', 'name': 'Job Hazard Analysis', 'category': 'Safety'},
+            {'id': 'rfi', 'name': 'Request for Information', 'category': 'Documentation'},
+            {'id': 'moisture_survey', 'name': 'Moisture Survey', 'category': 'Inspection'},
+            {'id': 'change_order', 'name': 'Change Order', 'category': 'Documentation'}
+        ]
+    })
+
+
+@app.route('/api/forms/preference/<form_type>', methods=['GET'])
+def get_form_preference(form_type):
+    """Get user's preference for a form type."""
+    if API_AVAILABLE and api_client:
+        try:
+            result = api_client.get_form_preference(form_type)
+            return jsonify(result)
+        except Exception as e:
+            print(f"API error: {e}")
+            # Return default preference
+            return jsonify({
+                'first_time_setup': True,
+                'has_preference': False,
+                'use_custom': False
+            })
+    return jsonify({
+        'first_time_setup': True,
+        'has_preference': False,
+        'use_custom': False
+    })
+
+
+# =============================================================================
 # Run App
 # =============================================================================
 
