@@ -127,6 +127,7 @@ curl -s http://127.0.0.1:5000/projects | head -20
 | File | Purpose |
 |------|---------|
 | `README.md` | Full project documentation |
+| `SESSION-LOG.md` | **Detailed session history - successes, failures, learnings** |
 | `CLAUDE.md` | CAD Observer context (original project) |
 | `NEXT-SESSION-BACKEND-MASTERPLAN.md` | Detailed backend implementation plan |
 | `roofio/platform/ROOFIO-PLATFORM-SPEC-v2.md` | UPO architecture |
@@ -205,26 +206,32 @@ $env:OPENAI_API_KEY='sk-...'
 When ending a session, update this section:
 
 ### Last Session Summary
-**Date:** December 12, 2025
+**Date:** December 13, 2025
 **Completed:**
-- ✅ Backend Phase 1 - Security Foundation (all 4 files)
-- ✅ Upstash Redis - Account created, tested, working
-- ✅ Upstash Vector - Hybrid index (384 dim), tested, working
-- ✅ Groq API - Key obtained, tested (~395ms response)
-- ✅ Supabase PostgreSQL - Connected via pooler (port 6543)
-- ✅ Backend Phase 2 - Database tables (users, agencies, projects, forms)
-- ✅ Backend Phase 3 - REST API + Custom Form System
-- ✅ Custom Form Templates - Format toggle, scanner, mobile upload
-- ✅ Flask-FastAPI Bridge - Frontend connected to backend API
-- ✅ Test scripts for all services
-- ✅ .env.example template
-- ✅ Updated README with full documentation
+- ✅ **Database Cleanup & Build** - Unified schema created
+- ✅ **Codebase Cleanup** - Removed 9,428 lines of duplicate code from drop folder
+- ✅ **Fixed config.py** - Removed hardcoded "roofio" defaults
+- ✅ **Fixed init_db.py** - Standalone script with raw SQL (no import issues)
+- ✅ **Created unified_schema.sql** - 9 tables, standardized `agency_id` naming
+- ✅ **Moved tier3 files** - knowledge.py, master_architect.py, modal_app.py, security.py
+- ✅ **VS Code debug config** - "Init Database" added to launch.json
+- ✅ **Supabase tables created** - All 9 tables successfully initialized:
+  - agencies, users, clients, projects
+  - form_templates, form_submissions
+  - ai_action_logs, audit_logs, position_configs
 
 **Next Session Should:**
-1. Phase 4: Tier 2 Groq + RAG integration
-2. Connect Digital Foreman to form submission API
-3. Connect Inspector page to form submission API
-4. Add file upload handling for scan endpoint
+1. **Test the Dashboard UI** - Verify new backend tables work with UI
+2. Phase 4: Tier 2 Groq + RAG integration
+3. Connect Digital Foreman to form submission API
+4. Connect Inspector page to form submission API
+5. Add file upload handling for scan endpoint
+
+**Key Files Changed:**
+- `roofio-backend/database/unified_schema.sql` - Authoritative DB schema
+- `roofio-backend/init_db.py` - Standalone DB init script
+- `roofio-backend/common/config.py` - No more hardcoded defaults
+- `roofio-backend/tier3/` - Moved master_architect, knowledge, modal_app, security
 
 ---
 
