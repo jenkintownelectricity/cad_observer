@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roofio - Data Central (Project Documents Hub)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    .glass { background: rgba(26, 26, 46, 0.9); backdrop-filter: blur(10px); }
+    .doc-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+    .glow-blue { box-shadow: 0 0 30px rgba(30, 64, 175, 0.3); }
+    .glow-orange { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+    .glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .version-line { position: relative; }
+    .version-line::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 24px;
+      bottom: -8px;
+      width: 2px;
+      background: linear-gradient(to bottom, #1E40AF, transparent);
+    }
+    .diff-add { background: rgba(34, 197, 94, 0.2); border-left: 3px solid #22c55e; }
+    .diff-remove { background: rgba(239, 68, 68, 0.2); border-left: 3px solid #ef4444; text-decoration: line-through; }
+    .diff-change { background: rgba(249, 115, 22, 0.2); border-left: 3px solid #F97316; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1a1a2e; }
+    ::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 3px; }
+    .role-chip.active { background: #1E40AF; color: white; }
+    .event-pulse {
+      animation: eventPulse 0.5s ease-out;
+    }
+    @keyframes eventPulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+  </style>
+</head>
+<body class="bg-[#0f0f1a] text-white min-h-screen">
+  
+  <!-- Top Navigation -->
+  <nav class="bg-[#1a1a2e] border-b border-gray-800 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-8">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+          <span class="text-xl">🏠</span>
+        </div>
+        <span class="font-bold text-lg">ROOFIO</span>
+      </div>
+      
+      <div class="flex gap-1">
+        <a href="#" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">Dashboard</a>
+        <a href="#" class="px-4 py-2 rounded-lg bg-[#1E40AF] text-white">Data Central</a>
+        <a href="#" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">Control</a>
+        <a href="#" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">Foreman</a>
+        <a href="#" class="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">Integrations</a>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <!-- Project Selector -->
+      <select class="bg-[#2a2a4a] border border-gray-700 rounded-lg px-4 py-2 text-sm">
+        <option>JHU Sheridan Libraries</option>
+        <option>UMass Amherst</option>
+        <option>Boston Medical</option>
+      </select>
+      
+      <!-- Live Events Indicator -->
+      <div class="flex items-center gap-2 bg-green-900/30 px-3 py-1.5 rounded-full">
+        <span class="w-2 h-2 bg-green-500 rounded-full pulse"></span>
+        <span class="text-xs text-green-400">Live Sync</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="flex h-[calc(100vh-60px)]">
+    
+    <!-- Left Sidebar - Role Filter & Document Types -->
+    <aside class="w-72 bg-[#1a1a2e] border-r border-gray-800 flex flex-col">
+      
+      <!-- Search -->
+      <div class="p-4">
+        <div class="relative">
+          <input type="text" placeholder="Search documents & data..." 
+                 class="w-full bg-[#2a2a4a] border border-gray-700 rounded-lg px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-blue-500">
+          <span class="absolute left-3 top-3 text-gray-500">🔍</span>
+        </div>
+      </div>
+      
+      <!-- Role-Based Filter -->
+      <div class="px-4 mb-4">
+        <div class="text-xs font-semibold text-gray-500 uppercase mb-2">View As Role</div>
+        <div class="flex flex-wrap gap-2">
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">All</button>
+          <button class="role-chip active px-3 py-1.5 rounded-full text-xs">PM</button>
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">Super</button>
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">Estimator</button>
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">Accounts</button>
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">Safety</button>
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">QC</button>
+          <button class="role-chip px-3 py-1.5 rounded-full text-xs bg-[#2a2a4a] text-gray-400 hover:bg-gray-700">Detailer</button>
+        </div>
+      </div>
+      
+      <!-- Document Categories -->
+      <div class="flex-1 overflow-y-auto px-4">
+        <div class="text-xs font-semibold text-gray-500 uppercase mb-3">Document Categories</div>
+        
+        <!-- Contract Documents -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between p-3 bg-[#2a2a4a] rounded-lg cursor-pointer hover:bg-[#3a3a5a]">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">📜</span>
+              <div>
+                <div class="font-medium text-sm">Contract Documents</div>
+                <div class="text-xs text-gray-500">4 of 5 uploaded</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+              <span class="text-gray-400">▼</span>
+            </div>
+          </div>
+          <div class="ml-4 mt-2 space-y-1">
+            <div class="flex items-center gap-2 p-2 rounded hover:bg-[#2a2a4a] cursor-pointer">
+              <span class="text-green-400">✓</span>
+              <span class="text-sm">Prime Contract</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded hover:bg-[#2a2a4a] cursor-pointer">
+              <span class="text-green-400">✓</span>
+              <span class="text-sm">Scope of Work</span>
+              <span class="ml-auto text-xs bg-blue-600 px-1.5 py-0.5 rounded">Rev 2</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded hover:bg-[#2a2a4a] cursor-pointer">
+              <span class="text-green-400">✓</span>
+              <span class="text-sm">Schedule of Values</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded hover:bg-[#2a2a4a] cursor-pointer">
+              <span class="text-green-400">✓</span>
+              <span class="text-sm">Insurance Certificates</span>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded bg-red-900/20 border border-red-800/50 cursor-pointer">
+              <span class="text-red-400">⚠</span>
+              <span class="text-sm text-red-300">Bond (MISSING)</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Architectural Drawings -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between p-3 bg-green-900/20 border border-green-800/30 rounded-lg cursor-pointer">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">📐</span>
+              <div>
+                <div class="font-medium text-sm">Architectural Drawings</div>
+                <div class="text-xs text-green-400">12 of 12 uploaded</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              <span class="text-gray-400">▶</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Specifications -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between p-3 bg-[#2a2a4a] rounded-lg cursor-pointer hover:bg-[#3a3a5a]">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">📋</span>
+              <div>
+                <div class="font-medium text-sm">Specifications (Div 07)</div>
+                <div class="text-xs text-gray-500">3 sections</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              <span class="text-gray-400">▶</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Assembly Letters -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between p-3 bg-[#2a2a4a] rounded-lg cursor-pointer hover:bg-[#3a3a5a]">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">🏭</span>
+              <div>
+                <div class="font-medium text-sm">Assembly Letters</div>
+                <div class="text-xs text-gray-500">2 manufacturers</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+              <span class="text-gray-400">▶</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Submittals -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between p-3 bg-[#2a2a4a] rounded-lg cursor-pointer hover:bg-[#3a3a5a]">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">📁</span>
+              <div>
+                <div class="font-medium text-sm">Submittals</div>
+                <div class="text-xs text-gray-500">8 approved, 2 pending</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+              <span class="text-gray-400">▶</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Upload Button -->
+      <div class="p-4 border-t border-gray-800">
+        <button class="w-full bg-[#1E40AF] hover:bg-blue-700 text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition">
+          <span>📤</span> Upload Documents
+        </button>
+      </div>
+      
+    </aside>
+
+    <!-- Main Content - Document Viewer with Extracted Data -->
+    <main class="flex-1 overflow-y-auto bg-[#12121f]">
+      
+      <!-- Header Bar -->
+      <div class="bg-[#1a1a2e] border-b border-gray-800 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+        <div>
+          <h1 class="text-xl font-bold">Contract Documents</h1>
+          <p class="text-sm text-gray-400">Viewing as: <span class="text-blue-400">Project Manager</span> • Last sync: 2 min ago</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2 bg-[#2a2a4a] rounded-lg text-sm hover:bg-[#3a3a5a] flex items-center gap-2">
+            <span>🔄</span> Compare Versions
+          </button>
+          <button class="px-4 py-2 bg-[#F97316] rounded-lg text-sm hover:bg-orange-600 flex items-center gap-2">
+            <span>🧞</span> AI Analyze All
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 space-y-8">
+        
+        <!-- Document 1: Scope of Work (with Version History) -->
+        <div class="doc-card bg-[#1a1a2e] rounded-2xl border border-gray-800 overflow-hidden transition">
+          
+          <!-- Document Header -->
+          <div class="bg-gradient-to-r from-blue-900/30 to-transparent px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-2xl">
+                📄
+              </div>
+              <div>
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                  Scope of Work
+                  <span class="text-xs bg-blue-600 px-2 py-0.5 rounded-full">Rev 2</span>
+                  <span class="text-xs bg-green-600 px-2 py-0.5 rounded-full">CURRENT</span>
+                </h2>
+                <p class="text-sm text-gray-400">JHU_SOW_Rev2.pdf • Uploaded Dec 10, 2025 • 847 KB</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button class="p-2 bg-[#2a2a4a] rounded-lg hover:bg-[#3a3a5a]" title="View Full PDF">
+                <span>👁️</span>
+              </button>
+              <button class="p-2 bg-[#2a2a4a] rounded-lg hover:bg-[#3a3a5a]" title="Download">
+                <span>⬇️</span>
+              </button>
+              <button class="p-2 bg-[#2a2a4a] rounded-lg hover:bg-[#3a3a5a]" title="Version History">
+                <span>📚</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex">
+            
+            <!-- Document Preview (Left) -->
+            <div class="w-1/2 border-r border-gray-800 p-4">
+              <div class="bg-white rounded-lg shadow-2xl overflow-hidden" style="aspect-ratio: 8.5/11;">
+                <!-- Simulated PDF Preview -->
+                <div class="h-full p-6 text-black text-xs" style="font-family: 'Times New Roman', serif;">
+                  <div class="text-center mb-4">
+                    <div class="text-sm font-bold">SCOPE OF WORK</div>
+                    <div class="text-xs text-gray-600">JHU Sheridan Libraries - Roofing Replacement</div>
+                    <div class="text-xs text-gray-500">Revision 2 - December 10, 2025</div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <div class="font-bold text-xs mb-1">1. PROJECT DESCRIPTION</div>
+                    <div class="text-[10px] leading-relaxed">
+                      Complete removal and replacement of existing EPDM roofing system on the main building 
+                      and annex structures at Johns Hopkins University Sheridan Libraries facility located at 
+                      3400 N. Charles Street, Baltimore, MD 21218.
+                    </div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <div class="font-bold text-xs mb-1">2. SCOPE INCLUDES</div>
+                    <ul class="text-[10px] list-disc ml-4 space-y-0.5">
+                      <li>Remove existing EPDM membrane system: <span class="bg-yellow-200">32,450 SF</span></li>
+                      <li>Install new TPO 60mil membrane system</li>
+                      <li>Replace polyiso insulation (R-30 min)</li>
+                      <li>Install new metal edge details</li>
+                      <li>Flash all penetrations per manufacturer specs</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <div class="font-bold text-xs mb-1">3. CONTRACT SUM</div>
+                    <div class="text-[10px]">
+                      Base Bid: <span class="bg-green-200 font-bold">$1,247,500.00</span><br>
+                      Alternate 1 (Extended Warranty): +$45,000.00<br>
+                      Alternate 2 (Additional Drains): +$12,500.00
+                    </div>
+                  </div>
+                  
+                  <div class="text-[9px] text-gray-400 mt-4 pt-2 border-t">
+                    Page 1 of 8 • AI Confidence: 98%
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Version Comparison Toggle -->
+              <div class="mt-4 flex items-center gap-4">
+                <button class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                  <span>📚</span> Show Rev 1 comparison
+                </button>
+                <button class="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1">
+                  <span>📄</span> View all 8 pages
+                </button>
+              </div>
+            </div>
+            
+            <!-- Extracted Data (Right) -->
+            <div class="w-1/2 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-lg flex items-center gap-2">
+                  <span class="text-[#F97316]">🧞</span> AI Extracted Data
+                </h3>
+                <span class="text-xs bg-green-600/20 text-green-400 px-2 py-1 rounded-full">98% Confidence</span>
+              </div>
+              
+              <!-- Role-Specific Data Cards -->
+              <div class="space-y-4">
+                
+                <!-- PM Priority Data -->
+                <div class="bg-blue-900/20 border border-blue-800/30 rounded-xl p-4">
+                  <div class="text-xs font-semibold text-blue-400 uppercase mb-3 flex items-center gap-2">
+                    <span>📋</span> Project Manager Priority
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <div class="text-xs text-gray-500">Contract Sum</div>
+                      <div class="text-xl font-bold text-green-400">$1,247,500</div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-gray-500">Total Area</div>
+                      <div class="text-xl font-bold">32,450 SF</div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-gray-500">Alternates</div>
+                      <div class="text-sm">2 options (+$57,500)</div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-gray-500">Retainage</div>
+                      <div class="text-sm">10% until substantial</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Key Milestones -->
+                <div class="bg-[#2a2a4a] rounded-xl p-4">
+                  <div class="text-xs font-semibold text-gray-400 uppercase mb-3 flex items-center gap-2">
+                    <span>📅</span> Payment Milestones (for Accounts)
+                  </div>
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <span>Mobilization (5%)</span>
+                      <span class="text-green-400">$62,375</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span>Tear-off Complete (25%)</span>
+                      <span>$311,875</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span>Membrane Install (50%)</span>
+                      <span>$623,750</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span>Final Completion (20%)</span>
+                      <span>$249,500</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Linked Data Points -->
+                <div class="bg-[#2a2a4a] rounded-xl p-4">
+                  <div class="text-xs font-semibold text-gray-400 uppercase mb-3 flex items-center gap-2">
+                    <span>🔗</span> Linked to Other Documents
+                  </div>
+                  <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span>Schedule of Values → 12 line items created</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span>Assembly Letter → TPO 60mil verified</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                      <span>Drawings → Area matches (32,450 SF)</span>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Version Diff Section (Expandable) -->
+          <div class="border-t border-gray-800 bg-gradient-to-r from-orange-900/10 to-transparent">
+            <div class="px-6 py-3 flex items-center justify-between cursor-pointer hover:bg-[#2a2a4a]">
+              <div class="flex items-center gap-3">
+                <span class="text-xl">🔄</span>
+                <div>
+                  <span class="font-medium">Version Diff: Rev 1 → Rev 2</span>
+                  <span class="ml-2 text-xs bg-orange-600/30 text-orange-400 px-2 py-0.5 rounded-full">3 Changes Detected</span>
+                </div>
+              </div>
+              <span class="text-gray-400">▼</span>
+            </div>
+            
+            <!-- Expanded Diff View -->
+            <div class="px-6 pb-6 pt-2 border-t border-gray-800">
+              <div class="grid grid-cols-3 gap-4">
+                
+                <!-- Change 1 -->
+                <div class="diff-change rounded-lg p-3">
+                  <div class="text-xs text-orange-400 font-semibold mb-1">📝 MODIFIED</div>
+                  <div class="text-sm font-medium mb-2">Contract Sum</div>
+                  <div class="text-xs">
+                    <div class="line-through text-gray-500">$1,185,000</div>
+                    <div class="text-green-400">$1,247,500</div>
+                    <div class="text-gray-400 mt-1">+$62,500 (5.3%)</div>
+                  </div>
+                </div>
+                
+                <!-- Change 2 -->
+                <div class="diff-add rounded-lg p-3">
+                  <div class="text-xs text-green-400 font-semibold mb-1">➕ ADDED</div>
+                  <div class="text-sm font-medium mb-2">Alternate 2</div>
+                  <div class="text-xs text-gray-300">
+                    Additional Drains - 4 locations<br>
+                    +$12,500.00
+                  </div>
+                </div>
+                
+                <!-- Change 3 -->
+                <div class="diff-change rounded-lg p-3">
+                  <div class="text-xs text-orange-400 font-semibold mb-1">📝 MODIFIED</div>
+                  <div class="text-sm font-medium mb-2">Insulation Spec</div>
+                  <div class="text-xs">
+                    <div class="line-through text-gray-500">R-25 minimum</div>
+                    <div class="text-green-400">R-30 minimum</div>
+                  </div>
+                </div>
+                
+              </div>
+              
+              <!-- AI Summary -->
+              <div class="mt-4 bg-[#2a2a4a] rounded-lg p-4 flex items-start gap-3">
+                <span class="text-xl">🧞</span>
+                <div>
+                  <div class="font-medium text-sm mb-1">AI Summary of Changes</div>
+                  <p class="text-sm text-gray-400">
+                    Rev 2 increases the contract sum by 5.3% primarily due to the R-30 insulation upgrade 
+                    (was R-25). A new Alternate 2 for additional drains has been added. These changes affect 
+                    the <span class="text-blue-400">Estimator</span> budget and <span class="text-blue-400">Accounts</span> SOV calculations.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Document 2: Schedule of Values -->
+        <div class="doc-card bg-[#1a1a2e] rounded-2xl border border-gray-800 overflow-hidden transition">
+          <div class="bg-gradient-to-r from-green-900/30 to-transparent px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-2xl">
+                📊
+              </div>
+              <div>
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                  Schedule of Values
+                  <span class="text-xs bg-green-600 px-2 py-0.5 rounded-full">APPROVED</span>
+                </h2>
+                <p class="text-sm text-gray-400">JHU_SOV_Final.xlsx • 12 line items • $1,247,500 total</p>
+              </div>
+            </div>
+            <button class="px-4 py-2 bg-[#2a2a4a] rounded-lg text-sm hover:bg-[#3a3a5a]">
+              Expand
+            </button>
+          </div>
+          
+          <!-- Quick Preview of Extracted Data -->
+          <div class="px-6 py-4 border-t border-gray-800 bg-[#12121f]">
+            <div class="grid grid-cols-4 gap-4 text-center">
+              <div>
+                <div class="text-2xl font-bold text-green-400">$1,247,500</div>
+                <div class="text-xs text-gray-500">Contract Sum</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold">12</div>
+                <div class="text-xs text-gray-500">Line Items</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-blue-400">$0</div>
+                <div class="text-xs text-gray-500">Billed to Date</div>
+              </div>
+              <div>
+                <div class="text-2xl font-bold">$1,247,500</div>
+                <div class="text-xs text-gray-500">Balance to Finish</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Missing Document Alert -->
+        <div class="doc-card bg-red-900/10 rounded-2xl border-2 border-dashed border-red-800 overflow-hidden">
+          <div class="px-6 py-8 text-center">
+            <div class="w-16 h-16 bg-red-900/30 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+              ⚠️
+            </div>
+            <h3 class="text-lg font-bold text-red-400 mb-2">Bond Document Required</h3>
+            <p class="text-sm text-gray-400 mb-4">
+              This document is required before Pay Application #1 can be processed.<br>
+              The Accounts system is waiting for this document.
+            </p>
+            <button class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition">
+              📤 Upload Bond
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </main>
+
+    <!-- Right Sidebar - Real-Time Event Stream -->
+    <aside class="w-80 bg-[#1a1a2e] border-l border-gray-800 flex flex-col">
+      
+      <div class="p-4 border-b border-gray-800">
+        <h2 class="font-bold flex items-center gap-2">
+          <span class="text-green-400">⚡</span> Live Event Stream
+        </h2>
+        <p class="text-xs text-gray-500">Real-time data propagation</p>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto p-4 space-y-3">
+        
+        <!-- Event 1 - Just happened -->
+        <div class="event-pulse bg-green-900/20 border border-green-800/50 rounded-xl p-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full pulse"></span>
+            <span class="text-xs text-green-400">Just now</span>
+          </div>
+          <div class="text-sm font-medium">SOV_Updated Event</div>
+          <div class="text-xs text-gray-400 mt-1">
+            Scope of Work Rev 2 synced → SOV recalculated
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1">
+            <span class="text-xs bg-blue-600/30 text-blue-400 px-2 py-0.5 rounded">→ Accounts</span>
+            <span class="text-xs bg-purple-600/30 text-purple-400 px-2 py-0.5 rounded">→ Estimator</span>
+          </div>
+        </div>
+        
+        <!-- Event 2 -->
+        <div class="bg-[#2a2a4a] rounded-xl p-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <span class="text-xs text-gray-500">5 min ago</span>
+          </div>
+          <div class="text-sm font-medium">Document_Uploaded Event</div>
+          <div class="text-xs text-gray-400 mt-1">
+            Scope of Work Rev 2 uploaded by jsmith@contractor.com
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1">
+            <span class="text-xs bg-orange-600/30 text-orange-400 px-2 py-0.5 rounded">→ AI Parser</span>
+          </div>
+        </div>
+        
+        <!-- Event 3 -->
+        <div class="bg-[#2a2a4a] rounded-xl p-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+            <span class="text-xs text-gray-500">5 min ago</span>
+          </div>
+          <div class="text-sm font-medium">Version_Diff_Complete Event</div>
+          <div class="text-xs text-gray-400 mt-1">
+            AI detected 3 changes between Rev 1 and Rev 2
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1">
+            <span class="text-xs bg-indigo-600/30 text-indigo-400 px-2 py-0.5 rounded">→ PM</span>
+            <span class="text-xs bg-yellow-600/30 text-yellow-400 px-2 py-0.5 rounded">→ Detailer</span>
+          </div>
+        </div>
+        
+        <!-- Event 4 -->
+        <div class="bg-[#2a2a4a] rounded-xl p-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+            <span class="text-xs text-gray-500">1 hour ago</span>
+          </div>
+          <div class="text-sm font-medium">Document_Missing Alert</div>
+          <div class="text-xs text-gray-400 mt-1">
+            Bond document required - blocking Pay App #1
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1">
+            <span class="text-xs bg-red-600/30 text-red-400 px-2 py-0.5 rounded">⚠ Accounts blocked</span>
+          </div>
+        </div>
+        
+        <!-- Event 5 -->
+        <div class="bg-[#2a2a4a] rounded-xl p-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+            <span class="text-xs text-gray-500">Yesterday</span>
+          </div>
+          <div class="text-sm font-medium">Submittal_Approved Event</div>
+          <div class="text-xs text-gray-400 mt-1">
+            TPO Membrane submittal approved by architect
+          </div>
+          <div class="mt-2 flex flex-wrap gap-1">
+            <span class="text-xs bg-green-600/30 text-green-400 px-2 py-0.5 rounded">→ Procurement</span>
+            <span class="text-xs bg-cyan-600/30 text-cyan-400 px-2 py-0.5 rounded">→ Detailer</span>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Data Integrity Status -->
+      <div class="p-4 border-t border-gray-800">
+        <div class="bg-gradient-to-r from-green-900/30 to-blue-900/30 rounded-xl p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+              ✓
+            </div>
+            <div>
+              <div class="font-semibold">Data Integrity</div>
+              <div class="text-xs text-gray-400">All systems synced</div>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-gray-400">Project Database</span>
+              <span class="text-green-400">✓ Valid</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-gray-400">SOV Calculations</span>
+              <span class="text-green-400">✓ Matched</span>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-gray-400">Document Links</span>
+              <span class="text-yellow-400">1 Missing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </aside>
+
+  </div>
+
+</body>
+</html>
