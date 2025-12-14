@@ -1118,6 +1118,9 @@
             }
         }
 
+        // Current form template being edited
+        let currentTemplate = null;
+
         // Open a form template for filling
         async function openFormTemplate(templateId) {
             try {
@@ -1129,15 +1132,179 @@
                     return;
                 }
 
-                // For now, show an alert with form info
-                // In production, this would open a form filling modal
-                const fieldsCount = template.fields ? template.fields.length : 0;
-                alert(`Opening Form: ${template.name}\n\nType: ${template.form_type}\nFields: ${fieldsCount}\n\nForm filling UI coming soon!`);
+                currentTemplate = template;
+                renderFormModal(template);
 
             } catch (error) {
                 console.error('Error opening form template:', error);
                 alert('Error loading form: ' + error.message);
             }
+        }
+
+        // Render the form modal with fields
+        function renderFormModal(template) {
+            const fields = template.fields || [];
+
+            // Group fields by section
+            const sections = {};
+            fields.forEach(field => {
+                const section = field.section || 'General';
+                if (!sections[section]) sections[section] = [];
+                sections[section].push(field);
+            });
+
+            let formHtml = '';
+            for (const [sectionName, sectionFields] of Object.entries(sections)) {
+                formHtml += `<div class="form-section" style="margin-bottom: 20px;">
+                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">${sectionName}</h4>`;
+
+                sectionFields.forEach(field => {
+                    formHtml += renderField(field);
+                });
+
+                formHtml += '</div>';
+            }
+
+            // Create modal HTML
+            const modalHtml = `
+                <div id="formFillingModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                    <div style="background: #1e293b; border-radius: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 style="font-size: 18px; font-weight: 600;">${template.name}</h2>
+                                <p style="font-size: 12px; color: var(--text-secondary);">${template.description || ''}</p>
+                            </div>
+                            <button onclick="closeFormModal()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+                        </div>
+                        <div style="padding: 20px; max-height: 60vh; overflow-y: auto;">
+                            <form id="dynamicForm">
+                                ${formHtml}
+                            </form>
+                        </div>
+                        <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 12px; justify-content: flex-end;">
+                            <button onclick="closeFormModal()" style="padding: 10px 20px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: white; cursor: pointer;">Cancel</button>
+                            <button onclick="saveDraft()" style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer;">Save Draft</button>
+                            <button onclick="submitForm()" style="padding: 10px 20px; border-radius: 8px; border: none; background: var(--success); color: white; cursor: pointer;">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // Render a single field based on type
+        function renderField(field) {
+            const required = field.required ? '<span style="color: var(--danger);">*</span>' : '';
+            const fieldId = field.id || field.name.toLowerCase().replace(/\s+/g, '_');
+
+            let inputHtml = '';
+
+            switch (field.type) {
+                case 'textarea':
+                    inputHtml = `<textarea id="${fieldId}" name="${fieldId}" rows="3" placeholder="${field.placeholder || ''}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; resize: vertical;"
+                        ${field.required ? 'required' : ''}></textarea>`;
+                    break;
+
+                case 'select':
+                case 'dropdown':
+                    const options = (field.options || []).map(opt =>
+                        `<option value="${opt}">${opt}</option>`
+                    ).join('');
+                    inputHtml = `<select id="${fieldId}" name="${fieldId}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;"
+                        ${field.required ? 'required' : ''}>
+                        <option value="">Select...</option>
+                        ${options}
+                    </select>`;
+                    break;
+
+                case 'checkbox':
+                    inputHtml = `<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="${fieldId}" name="${fieldId}" style="width: 18px; height: 18px;">
+                        <span>${field.label || field.name}</span>
+                    </label>`;
+                    return `<div style="margin-bottom: 12px;">${inputHtml}</div>`;
+
+                case 'date':
+                    inputHtml = `<input type="date" id="${fieldId}" name="${fieldId}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;"
+                        ${field.required ? 'required' : ''}>`;
+                    break;
+
+                case 'time':
+                    inputHtml = `<input type="time" id="${fieldId}" name="${fieldId}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;"
+                        ${field.required ? 'required' : ''}>`;
+                    break;
+
+                case 'number':
+                    inputHtml = `<input type="number" id="${fieldId}" name="${fieldId}" placeholder="${field.placeholder || ''}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;"
+                        ${field.required ? 'required' : ''}>`;
+                    break;
+
+                case 'signature':
+                    inputHtml = `<div style="border: 2px dashed rgba(255,255,255,0.3); border-radius: 8px; padding: 30px; text-align: center; color: var(--text-secondary);">
+                        <span style="font-size: 24px;">✍️</span><br>
+                        <span>Tap to sign</span>
+                        <input type="hidden" id="${fieldId}" name="${fieldId}">
+                    </div>`;
+                    break;
+
+                case 'photo':
+                    inputHtml = `<div style="border: 2px dashed rgba(255,255,255,0.3); border-radius: 8px; padding: 30px; text-align: center; color: var(--text-secondary); cursor: pointer;">
+                        <span style="font-size: 24px;">📷</span><br>
+                        <span>Tap to capture photo</span>
+                        <input type="file" accept="image/*" capture="environment" id="${fieldId}" name="${fieldId}" style="display: none;">
+                    </div>`;
+                    break;
+
+                default: // text
+                    inputHtml = `<input type="text" id="${fieldId}" name="${fieldId}" placeholder="${field.placeholder || ''}"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white;"
+                        ${field.required ? 'required' : ''}>`;
+            }
+
+            return `<div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px;">${field.label || field.name} ${required}</label>
+                ${inputHtml}
+            </div>`;
+        }
+
+        // Close the form modal
+        function closeFormModal() {
+            const modal = document.getElementById('formFillingModal');
+            if (modal) modal.remove();
+            currentTemplate = null;
+        }
+
+        // Save form as draft
+        function saveDraft() {
+            const formData = getFormData();
+            console.log('Saving draft:', formData);
+            alert('Draft saved locally!');
+        }
+
+        // Submit the form
+        function submitForm() {
+            const formData = getFormData();
+            console.log('Submitting form:', formData);
+            alert('Form submitted!\n\nIn production, this would save to the database.');
+            closeFormModal();
+        }
+
+        // Get form data as object
+        function getFormData() {
+            const form = document.getElementById('dynamicForm');
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            return data;
         }
 
         // Theme Toggle
