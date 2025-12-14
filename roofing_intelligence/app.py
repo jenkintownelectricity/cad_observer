@@ -150,6 +150,12 @@ def control_center():
     return render_template('control_center.html')
 
 
+@app.route('/data-central')
+def data_central():
+    """Data Central - Project documents hub with AI extraction and version diff."""
+    return render_template('data_central.html')
+
+
 @app.route('/integrations')
 def integrations():
     """Integrations Hub - Connect email, storage, accounting, and construction platforms."""

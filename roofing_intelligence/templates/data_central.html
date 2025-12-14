@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Central | ROOFIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { margin: 0; background: #0f0f1a; color: white; min-height: 100vh; }
+
+        .glass { background: rgba(26, 26, 46, 0.9); backdrop-filter: blur(10px); }
+        .doc-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+        .glow-blue { box-shadow: 0 0 30px rgba(30, 64, 175, 0.3); }
+        .glow-orange { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        .diff-add { background: rgba(34, 197, 94, 0.2); border-left: 3px solid #22c55e; }
+        .diff-remove { background: rgba(239, 68, 68, 0.2); border-left: 3px solid #ef4444; text-decoration: line-through; }
+        .diff-change { background: rgba(249, 115, 22, 0.2); border-left: 3px solid #F97316; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: #4a4a6a; border-radius: 3px; }
+
+        .role-chip { padding: 6px 12px; border-radius: 99px; font-size: 11px; background: #2a2a4a; color: #9ca3af; border: none; cursor: pointer; }
+        .role-chip:hover { background: #3a3a5a; }
+        .role-chip.active { background: #1E40AF; color: white; }
+
+        .main-nav { background: #1a1a2e; border-bottom: 1px solid #2a2a4a; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .nav-brand { display: flex; align-items: center; gap: 8px; }
+        .nav-brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .nav-brand-text { font-weight: 700; font-size: 18px; }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-link { padding: 8px 16px; border-radius: 8px; color: #9ca3af; text-decoration: none; font-size: 14px; transition: all 0.2s; }
+        .nav-link:hover { color: white; background: #2a2a4a; }
+        .nav-link.active { background: #1E40AF; color: white; }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .project-select { background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; padding: 8px 16px; color: white; font-size: 14px; }
+        .live-indicator { display: flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.15); padding: 6px 12px; border-radius: 99px; }
+        .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; }
+        .live-text { font-size: 11px; color: #22c55e; }
+
+        .content-wrapper { display: flex; height: calc(100vh - 60px); }
+
+        /* Left Sidebar */
+        .docs-sidebar { width: 280px; background: #1a1a2e; border-right: 1px solid #2a2a4a; display: flex; flex-direction: column; }
+        .sidebar-search { padding: 16px; }
+        .sidebar-search input { width: 100%; background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; padding: 10px 12px 10px 36px; color: white; font-size: 13px; }
+        .sidebar-search input:focus { outline: none; border-color: #1E40AF; }
+        .sidebar-search-icon { position: absolute; left: 28px; top: 26px; color: #6b7280; }
+
+        .role-filter { padding: 0 16px 16px; }
+        .role-filter-title { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px; }
+        .role-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 0 16px; }
+        .doc-category { margin-bottom: 16px; }
+        .doc-category-header { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #2a2a4a; border-radius: 10px; cursor: pointer; }
+        .doc-category-header:hover { background: #3a3a5a; }
+        .doc-category-header.complete { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .doc-category-left { display: flex; align-items: center; gap: 12px; }
+        .doc-category-icon { font-size: 20px; }
+        .doc-category-name { font-size: 13px; font-weight: 500; }
+        .doc-category-meta { font-size: 11px; color: #6b7280; }
+        .doc-category-meta.complete { color: #22c55e; }
+        .doc-category-status { display: flex; align-items: center; gap: 8px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-dot.green { background: #22c55e; }
+        .status-dot.yellow { background: #f59e0b; }
+        .status-dot.red { background: #ef4444; }
+
+        .doc-list { margin-top: 8px; margin-left: 16px; }
+        .doc-item { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+        .doc-item:hover { background: #2a2a4a; }
+        .doc-item-check { color: #22c55e; }
+        .doc-item-warning { color: #ef4444; }
+        .doc-item-badge { margin-left: auto; font-size: 10px; background: #1E40AF; padding: 2px 6px; border-radius: 4px; }
+        .doc-item.missing { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+        .sidebar-upload { padding: 16px; border-top: 1px solid #2a2a4a; }
+        .upload-btn { width: 100%; padding: 12px; background: #1E40AF; border: none; border-radius: 10px; color: white; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .upload-btn:hover { background: #1e3a8a; }
+
+        /* Main Content */
+        .main-content { flex: 1; overflow-y: auto; background: #12121f; }
+        .content-header { background: #1a1a2e; border-bottom: 1px solid #2a2a4a; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 40; }
+        .content-header-left h1 { font-size: 20px; font-weight: 700; margin: 0; }
+        .content-header-left p { font-size: 13px; color: #9ca3af; margin: 4px 0 0; }
+        .content-header-right { display: flex; gap: 12px; }
+        .header-btn { padding: 8px 16px; background: #2a2a4a; border: none; border-radius: 8px; color: white; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .header-btn:hover { background: #3a3a5a; }
+        .header-btn.primary { background: #f97316; }
+        .header-btn.primary:hover { background: #ea580c; }
+
+        .content-body { padding: 24px; }
+
+        /* Document Card */
+        .doc-card { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 16px; overflow: hidden; margin-bottom: 24px; transition: all 0.2s; }
+        .doc-card:hover { border-color: #3a3a5a; }
+        .doc-card-header { background: linear-gradient(90deg, rgba(30, 64, 175, 0.2), transparent); padding: 16px 24px; border-bottom: 1px solid #2a2a4a; display: flex; align-items: center; justify-content: space-between; }
+        .doc-card-header-left { display: flex; align-items: center; gap: 16px; }
+        .doc-card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .doc-card-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .doc-card-title-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; }
+        .doc-card-title-badge.blue { background: #1E40AF; }
+        .doc-card-title-badge.green { background: #22c55e; }
+        .doc-card-meta { font-size: 12px; color: #9ca3af; }
+        .doc-card-actions { display: flex; gap: 8px; }
+        .doc-action-btn { padding: 8px 12px; background: #2a2a4a; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .doc-action-btn:hover { background: #3a3a5a; }
+
+        .doc-card-body { display: flex; }
+        .doc-preview { width: 50%; border-right: 1px solid #2a2a4a; padding: 16px; }
+        .doc-preview-inner { background: white; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); overflow: hidden; }
+        .doc-preview-content { padding: 24px; color: #1f2937; font-size: 11px; font-family: 'Times New Roman', serif; min-height: 300px; }
+        .doc-preview-content h3 { font-size: 14px; text-align: center; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #1f2937; }
+        .doc-preview-content .highlight { background: #fef08a; padding: 1px 4px; }
+        .doc-preview-content .highlight-green { background: #bbf7d0; font-weight: 600; }
+        .doc-preview-footer { display: flex; gap: 8px; margin-top: 16px; }
+        .preview-footer-btn { font-size: 11px; color: #1E40AF; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .preview-footer-btn:hover { text-decoration: underline; }
+
+        .doc-extracted { width: 50%; padding: 24px; }
+        .extracted-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .extracted-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .extracted-title-icon { color: #f97316; }
+        .confidence-badge { font-size: 11px; background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 4px 10px; border-radius: 99px; }
+
+        .extracted-card { background: rgba(30, 64, 175, 0.1); border: 1px solid rgba(30, 64, 175, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .extracted-card-title { font-size: 11px; font-weight: 600; color: #3b82f6; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .extracted-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .extracted-item-label { font-size: 11px; color: #6b7280; }
+        .extracted-item-value { font-size: 20px; font-weight: 700; }
+        .extracted-item-value.green { color: #22c55e; }
+        .extracted-item-value.small { font-size: 14px; font-weight: 400; }
+
+        .extracted-card.neutral { background: #2a2a4a; border-color: #3a3a5a; }
+        .extracted-card.neutral .extracted-card-title { color: #9ca3af; }
+
+        .linked-item { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+        .linked-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .linked-dot.green { background: #22c55e; }
+        .linked-dot.yellow { background: #f59e0b; }
+
+        /* Version Diff */
+        .version-diff { border-top: 1px solid #2a2a4a; background: linear-gradient(90deg, rgba(249, 115, 22, 0.05), transparent); }
+        .version-diff-header { padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .version-diff-header:hover { background: rgba(255,255,255,0.02); }
+        .version-diff-left { display: flex; align-items: center; gap: 12px; }
+        .version-diff-title { font-size: 14px; font-weight: 500; }
+        .changes-badge { font-size: 11px; background: rgba(249, 115, 22, 0.2); color: #f97316; padding: 2px 8px; border-radius: 99px; }
+        .version-diff-body { padding: 0 24px 24px; border-top: 1px solid #2a2a4a; }
+        .diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+        .diff-card { border-radius: 8px; padding: 12px; }
+        .diff-card-type { font-size: 10px; font-weight: 600; margin-bottom: 4px; }
+        .diff-card-type.add { color: #22c55e; }
+        .diff-card-type.change { color: #f97316; }
+        .diff-card-field { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+        .diff-old { font-size: 12px; color: #9ca3af; text-decoration: line-through; }
+        .diff-new { font-size: 12px; color: #22c55e; }
+        .diff-note { font-size: 11px; color: #6b7280; margin-top: 4px; }
+
+        .ai-summary { background: #2a2a4a; border-radius: 10px; padding: 16px; margin-top: 16px; display: flex; gap: 12px; }
+        .ai-summary-icon { font-size: 20px; }
+        .ai-summary-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .ai-summary-text { font-size: 12px; color: #9ca3af; line-height: 1.5; }
+        .ai-summary-text .role-link { color: #3b82f6; }
+
+        /* Missing Doc Alert */
+        .missing-doc-card { background: rgba(239, 68, 68, 0.05); border: 2px dashed rgba(239, 68, 68, 0.5); border-radius: 16px; padding: 48px; text-align: center; }
+        .missing-doc-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; }
+        .missing-doc-title { font-size: 18px; font-weight: 600; color: #fca5a5; margin-bottom: 8px; }
+        .missing-doc-text { font-size: 13px; color: #9ca3af; margin-bottom: 24px; }
+        .missing-doc-btn { padding: 12px 24px; background: #dc2626; border: none; border-radius: 10px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .missing-doc-btn:hover { background: #b91c1c; }
+
+        /* Right Panel - Event Stream */
+        .events-panel { width: 300px; background: #1a1a2e; border-left: 1px solid #2a2a4a; display: flex; flex-direction: column; }
+        .events-header { padding: 16px; border-bottom: 1px solid #2a2a4a; }
+        .events-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .events-title-icon { color: #22c55e; }
+        .events-subtitle { font-size: 11px; color: #6b7280; }
+        .events-content { flex: 1; overflow-y: auto; padding: 16px; }
+        .event-item { background: #2a2a4a; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+        .event-item.new { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .event-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .event-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .event-dot.green { background: #22c55e; }
+        .event-dot.blue { background: #3b82f6; }
+        .event-dot.orange { background: #f97316; }
+        .event-dot.red { background: #ef4444; }
+        .event-time { font-size: 10px; color: #6b7280; }
+        .event-title { font-size: 13px; font-weight: 500; }
+        .event-description { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+        .event-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+        .event-tag { font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+        .event-tag.blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .event-tag.purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .event-tag.orange { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+        .event-tag.red { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .event-tag.green { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .event-tag.cyan { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
+        .event-tag.indigo { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .event-tag.yellow { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+
+        .events-footer { padding: 16px; border-top: 1px solid #2a2a4a; }
+        .integrity-card { background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(59, 130, 246, 0.15)); border-radius: 12px; padding: 16px; }
+        .integrity-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .integrity-icon { width: 40px; height: 40px; background: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .integrity-title { font-size: 14px; font-weight: 600; }
+        .integrity-subtitle { font-size: 11px; color: #9ca3af; }
+        .integrity-item { display: flex; align-items: center; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+        .integrity-label { color: #9ca3af; }
+        .integrity-value { color: #22c55e; }
+        .integrity-value.warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="main-nav">
+        <div style="display: flex; align-items: center; gap: 32px;">
+            <div class="nav-brand">
+                <div class="nav-brand-icon">🏠</div>
+                <span class="nav-brand-text">ROOFIO</span>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('data_central') }}" class="nav-link active">Data Central</a>
+                <a href="{{ url_for('control_center') }}" class="nav-link">Control</a>
+                <a href="{{ url_for('digital_foreman') }}" class="nav-link">Foreman</a>
+                <a href="{{ url_for('integrations') }}" class="nav-link">Integrations</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <select class="project-select">
+                <option>JHU Sheridan Libraries</option>
+                <option>UMass Amherst</option>
+                <option>Boston Medical</option>
+            </select>
+            <div class="live-indicator">
+                <span class="live-dot pulse"></span>
+                <span class="live-text">Live Sync</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <!-- Left Sidebar - Documents -->
+        <aside class="docs-sidebar">
+            <div class="sidebar-search" style="position: relative;">
+                <span class="sidebar-search-icon">🔍</span>
+                <input type="text" placeholder="Search documents & data...">
+            </div>
+
+            <div class="role-filter">
+                <div class="role-filter-title">View As Role</div>
+                <div class="role-chips">
+                    <button class="role-chip">All</button>
+                    <button class="role-chip active">PM</button>
+                    <button class="role-chip">Super</button>
+                    <button class="role-chip">Estimator</button>
+                    <button class="role-chip">Accounts</button>
+                    <button class="role-chip">Safety</button>
+                    <button class="role-chip">QC</button>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <!-- Contract Documents -->
+                <div class="doc-category">
+                    <div class="doc-category-header">
+                        <div class="doc-category-left">
+                            <span class="doc-category-icon">📜</span>
+                            <div>
+                                <div class="doc-category-name">Contract Documents</div>
+                                <div class="doc-category-meta">4 of 5 uploaded</div>
+                            </div>
+                        </div>
+                        <div class="doc-category-status">
+                            <span class="status-dot yellow"></span>
+                            <span style="color: #6b7280;">▼</span>
+                        </div>
+                    </div>
+                    <div class="doc-list">
+                        <div class="doc-item"><span class="doc-item-check">✓</span> Prime Contract</div>
+                        <div class="doc-item"><span class="doc-item-check">✓</span> Scope of Work <span class="doc-item-badge">Rev 2</span></div>
+                        <div class="doc-item"><span class="doc-item-check">✓</span> Schedule of Values</div>
+                        <div class="doc-item"><span class="doc-item-check">✓</span> Insurance Certificates</div>
+                        <div class="doc-item missing"><span class="doc-item-warning">⚠</span> Bond (MISSING)</div>
+                    </div>
+                </div>
+
+                <!-- Architectural Drawings -->
+                <div class="doc-category">
+                    <div class="doc-category-header complete">
+                        <div class="doc-category-left">
+                            <span class="doc-category-icon">📐</span>
+                            <div>
+                                <div class="doc-category-name">Architectural Drawings</div>
+                                <div class="doc-category-meta complete">12 of 12 uploaded</div>
+                            </div>
+                        </div>
+                        <div class="doc-category-status">
+                            <span class="status-dot green"></span>
+                            <span style="color: #6b7280;">▶</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Specifications -->
+                <div class="doc-category">
+                    <div class="doc-category-header">
+                        <div class="doc-category-left">
+                            <span class="doc-category-icon">📋</span>
+                            <div>
+                                <div class="doc-category-name">Specifications (Div 07)</div>
+                                <div class="doc-category-meta">3 sections</div>
+                            </div>
+                        </div>
+                        <div class="doc-category-status">
+                            <span class="status-dot green"></span>
+                            <span style="color: #6b7280;">▶</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assembly Letters -->
+                <div class="doc-category">
+                    <div class="doc-category-header">
+                        <div class="doc-category-left">
+                            <span class="doc-category-icon">🏭</span>
+                            <div>
+                                <div class="doc-category-name">Assembly Letters</div>
+                                <div class="doc-category-meta">2 manufacturers</div>
+                            </div>
+                        </div>
+                        <div class="doc-category-status">
+                            <span class="status-dot green"></span>
+                            <span style="color: #6b7280;">▶</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submittals -->
+                <div class="doc-category">
+                    <div class="doc-category-header">
+                        <div class="doc-category-left">
+                            <span class="doc-category-icon">📁</span>
+                            <div>
+                                <div class="doc-category-name">Submittals</div>
+                                <div class="doc-category-meta">8 approved, 2 pending</div>
+                            </div>
+                        </div>
+                        <div class="doc-category-status">
+                            <span class="status-dot yellow"></span>
+                            <span style="color: #6b7280;">▶</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-upload">
+                <button class="upload-btn">📤 Upload Documents</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <div class="content-header-left">
+                    <h1>Contract Documents</h1>
+                    <p>Viewing as: <span style="color: #3b82f6;">Project Manager</span> • Last sync: 2 min ago</p>
+                </div>
+                <div class="content-header-right">
+                    <button class="header-btn">🔄 Compare Versions</button>
+                    <button class="header-btn primary">🧞 AI Analyze All</button>
+                </div>
+            </div>
+
+            <div class="content-body">
+                <!-- Scope of Work Document -->
+                <div class="doc-card">
+                    <div class="doc-card-header">
+                        <div class="doc-card-header-left">
+                            <div class="doc-card-icon" style="background: #1E40AF;">📄</div>
+                            <div>
+                                <h2 class="doc-card-title">
+                                    Scope of Work
+                                    <span class="doc-card-title-badge blue">Rev 2</span>
+                                    <span class="doc-card-title-badge green">CURRENT</span>
+                                </h2>
+                                <p class="doc-card-meta">JHU_SOW_Rev2.pdf • Uploaded Dec 10, 2025 • 847 KB</p>
+                            </div>
+                        </div>
+                        <div class="doc-card-actions">
+                            <button class="doc-action-btn" title="View Full PDF">👁️</button>
+                            <button class="doc-action-btn" title="Download">⬇️</button>
+                            <button class="doc-action-btn" title="Version History">📚</button>
+                        </div>
+                    </div>
+
+                    <div class="doc-card-body">
+                        <div class="doc-preview">
+                            <div class="doc-preview-inner">
+                                <div class="doc-preview-content">
+                                    <h3>SCOPE OF WORK</h3>
+                                    <p style="text-align: center; font-size: 10px; color: #6b7280;">JHU Sheridan Libraries - Roofing Replacement<br>Revision 2 - December 10, 2025</p>
+
+                                    <p style="margin-top: 16px;"><strong>1. PROJECT DESCRIPTION</strong></p>
+                                    <p>Complete removal and replacement of existing EPDM roofing system on the main building and annex structures at Johns Hopkins University Sheridan Libraries facility located at 3400 N. Charles Street, Baltimore, MD 21218.</p>
+
+                                    <p style="margin-top: 12px;"><strong>2. SCOPE INCLUDES</strong></p>
+                                    <ul style="margin-left: 16px;">
+                                        <li>Remove existing EPDM membrane system: <span class="highlight">32,450 SF</span></li>
+                                        <li>Install new TPO 60mil membrane system</li>
+                                        <li>Replace polyiso insulation (R-30 min)</li>
+                                        <li>Install new metal edge details</li>
+                                    </ul>
+
+                                    <p style="margin-top: 12px;"><strong>3. CONTRACT SUM</strong></p>
+                                    <p>Base Bid: <span class="highlight-green">$1,247,500.00</span><br>
+                                    Alt 1 - Extended Warranty: +$45,000.00<br>
+                                    Alt 2 - Additional Drains: +$12,500.00</p>
+
+                                    <p style="margin-top: 12px; font-size: 9px; color: #9ca3af;">Page 1 of 8 • AI Confidence: 98%</p>
+                                </div>
+                            </div>
+                            <div class="doc-preview-footer">
+                                <button class="preview-footer-btn">📚 Show Rev 1 comparison</button>
+                                <button class="preview-footer-btn">📄 View all 8 pages</button>
+                            </div>
+                        </div>
+
+                        <div class="doc-extracted">
+                            <div class="extracted-header">
+                                <h3 class="extracted-title"><span class="extracted-title-icon">🧞</span> AI Extracted Data</h3>
+                                <span class="confidence-badge">98% Confidence</span>
+                            </div>
+
+                            <div class="extracted-card">
+                                <div class="extracted-card-title">📋 Project Manager Priority</div>
+                                <div class="extracted-grid">
+                                    <div>
+                                        <div class="extracted-item-label">Contract Sum</div>
+                                        <div class="extracted-item-value green">$1,247,500</div>
+                                    </div>
+                                    <div>
+                                        <div class="extracted-item-label">Total Area</div>
+                                        <div class="extracted-item-value">32,450 SF</div>
+                                    </div>
+                                    <div>
+                                        <div class="extracted-item-label">Alternates</div>
+                                        <div class="extracted-item-value small">2 options (+$57,500)</div>
+                                    </div>
+                                    <div>
+                                        <div class="extracted-item-label">Retainage</div>
+                                        <div class="extracted-item-value small">10% until substantial</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="extracted-card neutral">
+                                <div class="extracted-card-title">📅 Payment Milestones (for Accounts)</div>
+                                <div style="font-size: 13px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Mobilization (5%)</span>
+                                        <span style="color: #22c55e;">$62,375</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Tear-off Complete (25%)</span>
+                                        <span>$311,875</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                        <span>Membrane Install (50%)</span>
+                                        <span>$623,750</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Final Completion (20%)</span>
+                                        <span>$249,500</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="extracted-card neutral">
+                                <div class="extracted-card-title">🔗 Linked to Other Documents</div>
+                                <div class="linked-item"><span class="linked-dot green"></span> Schedule of Values → 12 line items created</div>
+                                <div class="linked-item"><span class="linked-dot green"></span> Assembly Letter → TPO 60mil verified</div>
+                                <div class="linked-item"><span class="linked-dot yellow"></span> Drawings → Area matches (32,450 SF)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Version Diff -->
+                    <div class="version-diff">
+                        <div class="version-diff-header">
+                            <div class="version-diff-left">
+                                <span>🔄</span>
+                                <span class="version-diff-title">Version Diff: Rev 1 → Rev 2</span>
+                                <span class="changes-badge">3 Changes Detected</span>
+                            </div>
+                            <span style="color: #6b7280;">▼</span>
+                        </div>
+                        <div class="version-diff-body">
+                            <div class="diff-grid">
+                                <div class="diff-card diff-change">
+                                    <div class="diff-card-type change">📝 MODIFIED</div>
+                                    <div class="diff-card-field">Contract Sum</div>
+                                    <div class="diff-old">$1,185,000</div>
+                                    <div class="diff-new">$1,247,500</div>
+                                    <div class="diff-note">+$62,500 (5.3%)</div>
+                                </div>
+                                <div class="diff-card diff-add">
+                                    <div class="diff-card-type add">➕ ADDED</div>
+                                    <div class="diff-card-field">Alternate 2</div>
+                                    <div class="diff-new">Additional Drains - 4 locations<br>+$12,500.00</div>
+                                </div>
+                                <div class="diff-card diff-change">
+                                    <div class="diff-card-type change">📝 MODIFIED</div>
+                                    <div class="diff-card-field">Insulation Spec</div>
+                                    <div class="diff-old">R-25 minimum</div>
+                                    <div class="diff-new">R-30 minimum</div>
+                                </div>
+                            </div>
+                            <div class="ai-summary">
+                                <span class="ai-summary-icon">🧞</span>
+                                <div>
+                                    <div class="ai-summary-title">AI Summary of Changes</div>
+                                    <p class="ai-summary-text">Rev 2 increases the contract sum by 5.3% primarily due to the R-30 insulation upgrade (was R-25). A new Alternate 2 for additional drains has been added. These changes affect the <span class="role-link">Estimator</span> budget and <span class="role-link">Accounts</span> SOV calculations.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SOV Document (Collapsed) -->
+                <div class="doc-card">
+                    <div class="doc-card-header" style="background: linear-gradient(90deg, rgba(34, 197, 94, 0.2), transparent);">
+                        <div class="doc-card-header-left">
+                            <div class="doc-card-icon" style="background: #22c55e;">📊</div>
+                            <div>
+                                <h2 class="doc-card-title">
+                                    Schedule of Values
+                                    <span class="doc-card-title-badge green">APPROVED</span>
+                                </h2>
+                                <p class="doc-card-meta">JHU_SOV_Final.xlsx • 12 line items • $1,247,500 total</p>
+                            </div>
+                        </div>
+                        <button class="header-btn">Expand</button>
+                    </div>
+                    <div style="padding: 16px 24px; background: #12121f; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: 700; color: #22c55e;">$1,247,500</div>
+                            <div style="font-size: 11px; color: #6b7280;">Contract Sum</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: 700;">12</div>
+                            <div style="font-size: 11px; color: #6b7280;">Line Items</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: 700; color: #3b82f6;">$0</div>
+                            <div style="font-size: 11px; color: #6b7280;">Billed to Date</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: 700;">$1,247,500</div>
+                            <div style="font-size: 11px; color: #6b7280;">Balance to Finish</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Document Alert -->
+                <div class="missing-doc-card">
+                    <div class="missing-doc-icon">⚠️</div>
+                    <h3 class="missing-doc-title">Bond Document Required</h3>
+                    <p class="missing-doc-text">This document is required before Pay Application #1 can be processed.<br>The Accounts system is waiting for this document.</p>
+                    <button class="missing-doc-btn">📤 Upload Bond</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel - Event Stream -->
+        <aside class="events-panel">
+            <div class="events-header">
+                <h2 class="events-title"><span class="events-title-icon">⚡</span> Live Event Stream</h2>
+                <p class="events-subtitle">Real-time data propagation</p>
+            </div>
+
+            <div class="events-content">
+                <div class="event-item new">
+                    <div class="event-header">
+                        <span class="event-dot green pulse"></span>
+                        <span class="event-time">Just now</span>
+                    </div>
+                    <div class="event-title">SOV_Updated Event</div>
+                    <div class="event-description">Scope of Work Rev 2 synced → SOV recalculated</div>
+                    <div class="event-tags">
+                        <span class="event-tag blue">→ Accounts</span>
+                        <span class="event-tag purple">→ Estimator</span>
+                    </div>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-dot blue"></span>
+                        <span class="event-time">5 min ago</span>
+                    </div>
+                    <div class="event-title">Document_Uploaded Event</div>
+                    <div class="event-description">Scope of Work Rev 2 uploaded by jsmith@contractor.com</div>
+                    <div class="event-tags">
+                        <span class="event-tag orange">→ AI Parser</span>
+                    </div>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-dot orange"></span>
+                        <span class="event-time">5 min ago</span>
+                    </div>
+                    <div class="event-title">Version_Diff_Complete Event</div>
+                    <div class="event-description">AI detected 3 changes between Rev 1 and Rev 2</div>
+                    <div class="event-tags">
+                        <span class="event-tag indigo">→ PM</span>
+                        <span class="event-tag yellow">→ Detailer</span>
+                    </div>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-dot red"></span>
+                        <span class="event-time">1 hour ago</span>
+                    </div>
+                    <div class="event-title">Document_Missing Alert</div>
+                    <div class="event-description">Bond document required - blocking Pay App #1</div>
+                    <div class="event-tags">
+                        <span class="event-tag red">⚠ Accounts blocked</span>
+                    </div>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-header">
+                        <span class="event-dot green"></span>
+                        <span class="event-time">Yesterday</span>
+                    </div>
+                    <div class="event-title">Submittal_Approved Event</div>
+                    <div class="event-description">TPO Membrane submittal approved by architect</div>
+                    <div class="event-tags">
+                        <span class="event-tag green">→ Procurement</span>
+                        <span class="event-tag cyan">→ Detailer</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="events-footer">
+                <div class="integrity-card">
+                    <div class="integrity-header">
+                        <div class="integrity-icon">✓</div>
+                        <div>
+                            <div class="integrity-title">Data Integrity</div>
+                            <div class="integrity-subtitle">All systems synced</div>
+                        </div>
+                    </div>
+                    <div class="integrity-item">
+                        <span class="integrity-label">Project Database</span>
+                        <span class="integrity-value">✓ Valid</span>
+                    </div>
+                    <div class="integrity-item">
+                        <span class="integrity-label">SOV Calculations</span>
+                        <span class="integrity-value">✓ Matched</span>
+                    </div>
+                    <div class="integrity-item">
+                        <span class="integrity-label">Document Links</span>
+                        <span class="integrity-value warning">1 Missing</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
