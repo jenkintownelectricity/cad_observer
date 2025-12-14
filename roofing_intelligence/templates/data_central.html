@@ -680,5 +680,392 @@
             </div>
         </aside>
     </div>
+
+    <script>
+        // Role filter chips
+        document.querySelectorAll('.role-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                const role = this.textContent;
+                showNotification(`Viewing as: ${role}`, 'info');
+
+                // Update header
+                document.querySelector('.content-header-left p').innerHTML =
+                    `Viewing as: <span style="color: #3b82f6;">${role}</span> • Last sync: just now`;
+            });
+        });
+
+        // Document category expand/collapse
+        document.querySelectorAll('.doc-category-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const category = this.closest('.doc-category');
+                const docList = category.querySelector('.doc-list');
+                const arrow = this.querySelector('span[style*="color: #6b7280"]');
+
+                if (docList) {
+                    if (docList.style.display === 'none') {
+                        docList.style.display = 'block';
+                        if (arrow) arrow.textContent = '▼';
+                    } else {
+                        docList.style.display = 'none';
+                        if (arrow) arrow.textContent = '▶';
+                    }
+                } else {
+                    const catName = this.querySelector('.doc-category-name').textContent;
+                    showNotification(`Opening ${catName}...`, 'info');
+                }
+            });
+        });
+
+        // Document items
+        document.querySelectorAll('.doc-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const docName = this.textContent.replace('✓', '').replace('⚠', '').trim();
+
+                if (this.classList.contains('missing')) {
+                    openUploadModal(docName.replace('(MISSING)', '').trim());
+                } else {
+                    showNotification(`Loading: ${docName}`, 'info');
+                }
+            });
+        });
+
+        // Upload Documents button
+        document.querySelector('.upload-btn')?.addEventListener('click', function() {
+            openUploadModal();
+        });
+
+        // Compare Versions button
+        document.querySelector('.header-btn:not(.primary)')?.addEventListener('click', function() {
+            showNotification('Opening version comparison...', 'info');
+            openCompareModal();
+        });
+
+        // AI Analyze All button
+        document.querySelector('.header-btn.primary')?.addEventListener('click', function() {
+            this.textContent = '🔄 Analyzing...';
+            this.disabled = true;
+            showNotification('AI analyzing all documents...', 'info');
+
+            setTimeout(() => {
+                this.textContent = '🧞 AI Analyze All';
+                this.disabled = false;
+                showNotification('AI analysis complete! 3 insights found.', 'success');
+            }, 3000);
+        });
+
+        // Doc action buttons
+        document.querySelectorAll('.doc-action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const action = this.title || this.textContent;
+
+                if (action.includes('View') || this.textContent === '👁️') {
+                    showNotification('Opening full PDF viewer...', 'info');
+                    openPDFViewer();
+                } else if (action.includes('Download') || this.textContent === '⬇️') {
+                    showNotification('Downloading document...', 'info');
+                    setTimeout(() => showNotification('Download complete!', 'success'), 1500);
+                } else if (action.includes('Version') || this.textContent === '📚') {
+                    showNotification('Loading version history...', 'info');
+                    openVersionHistory();
+                }
+            });
+        });
+
+        // Preview footer buttons
+        document.querySelectorAll('.preview-footer-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const text = this.textContent;
+                if (text.includes('comparison')) {
+                    openCompareModal();
+                } else if (text.includes('pages')) {
+                    openPDFViewer();
+                }
+            });
+        });
+
+        // Version diff header expand/collapse
+        document.querySelector('.version-diff-header')?.addEventListener('click', function() {
+            const body = document.querySelector('.version-diff-body');
+            const arrow = this.querySelector('span[style*="color: #6b7280"]');
+
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                if (arrow) arrow.textContent = '▼';
+            } else {
+                body.style.display = 'none';
+                if (arrow) arrow.textContent = '▶';
+            }
+        });
+
+        // Expand button on SOV card
+        document.querySelectorAll('.doc-card .header-btn').forEach(btn => {
+            if (btn.textContent === 'Expand') {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showNotification('Expanding Schedule of Values...', 'info');
+                    openSOVModal();
+                });
+            }
+        });
+
+        // Upload Bond button
+        document.querySelector('.missing-doc-btn')?.addEventListener('click', function() {
+            openUploadModal('Bond');
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 16px 24px;
+                border-radius: 12px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+                background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#1E40AF'};
+                color: white;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Upload Modal
+        function openUploadModal(docType = '') {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: #1a1a2e; border-radius: 16px; width: 500px; border: 1px solid #2a2a4a;">
+                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0;">📤 Upload ${docType || 'Document'}</h2>
+                        <button onclick="this.closest('.modal-overlay').remove()" style="background: #374151; border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div style="border: 2px dashed #3a3a5a; border-radius: 12px; padding: 48px; text-align: center; margin-bottom: 16px;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
+                            <p style="color: #9ca3af; margin-bottom: 16px;">Drag & drop files here or click to browse</p>
+                            <input type="file" id="fileInput" style="display: none;">
+                            <button onclick="document.getElementById('fileInput').click()" style="padding: 10px 24px; background: #1E40AF; border: none; border-radius: 8px; color: white; cursor: pointer;">Browse Files</button>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <button onclick="this.closest('.modal-overlay').remove(); showNotification('Document uploaded!', 'success');" style="flex: 1; padding: 14px; background: #22c55e; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Upload</button>
+                            <button onclick="this.closest('.modal-overlay').remove();" style="flex: 1; padding: 14px; background: #374151; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        // Compare Modal
+        function openCompareModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: #1a1a2e; border-radius: 16px; width: 800px; max-height: 80vh; overflow: auto; border: 1px solid #2a2a4a;">
+                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0;">🔄 Version Comparison</h2>
+                        <button onclick="this.closest('.modal-overlay').remove()" style="background: #374151; border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                    </div>
+                    <div style="padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div>
+                            <h3 style="font-size: 14px; color: #9ca3af; margin-bottom: 12px;">Rev 1 (Previous)</h3>
+                            <div style="background: #2a2a4a; padding: 16px; border-radius: 8px; font-size: 13px;">
+                                <p><strong>Contract Sum:</strong> <span style="text-decoration: line-through; color: #ef4444;">$1,185,000</span></p>
+                                <p><strong>Insulation:</strong> <span style="text-decoration: line-through; color: #ef4444;">R-25 minimum</span></p>
+                                <p><strong>Alternates:</strong> 1 option</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 14px; color: #9ca3af; margin-bottom: 12px;">Rev 2 (Current)</h3>
+                            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 16px; border-radius: 8px; font-size: 13px;">
+                                <p><strong>Contract Sum:</strong> <span style="color: #22c55e;">$1,247,500 (+5.3%)</span></p>
+                                <p><strong>Insulation:</strong> <span style="color: #22c55e;">R-30 minimum</span></p>
+                                <p><strong>Alternates:</strong> <span style="color: #22c55e;">2 options (+$12,500)</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 0 24px 24px;">
+                        <button onclick="this.closest('.modal-overlay').remove();" style="width: 100%; padding: 14px; background: #1E40AF; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Close</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        // PDF Viewer Modal
+        function openPDFViewer() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: #1a1a2e; border-radius: 16px; width: 90%; height: 90%; display: flex; flex-direction: column; border: 1px solid #2a2a4a;">
+                    <div style="padding: 16px 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; font-size: 16px;">📄 Scope of Work - Rev 2</h2>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <span style="color: #9ca3af; font-size: 13px;">Page 1 of 8</span>
+                            <button onclick="this.closest('.modal-overlay').remove()" style="background: #374151; border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                        </div>
+                    </div>
+                    <div style="flex: 1; display: flex; align-items: center; justify-content: center; background: #12121f;">
+                        <div style="background: white; width: 600px; height: 800px; border-radius: 4px; padding: 48px; color: #1f2937; font-family: 'Times New Roman', serif; font-size: 12px; overflow: auto;">
+                            <h2 style="text-align: center; margin-bottom: 24px;">SCOPE OF WORK</h2>
+                            <p style="text-align: center; margin-bottom: 32px;">JHU Sheridan Libraries - Roofing Replacement<br>Revision 2 - December 10, 2025</p>
+                            <p><strong>1. PROJECT DESCRIPTION</strong></p>
+                            <p>Complete removal and replacement of existing EPDM roofing system on the main building and annex structures at Johns Hopkins University Sheridan Libraries facility located at 3400 N. Charles Street, Baltimore, MD 21218.</p>
+                            <p style="margin-top: 16px;"><strong>2. SCOPE INCLUDES</strong></p>
+                            <ul>
+                                <li>Remove existing EPDM membrane system: 32,450 SF</li>
+                                <li>Install new TPO 60mil membrane system</li>
+                                <li>Replace polyiso insulation (R-30 min)</li>
+                                <li>Install new metal edge details</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        // Version History Modal
+        function openVersionHistory() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: #1a1a2e; border-radius: 16px; width: 500px; border: 1px solid #2a2a4a;">
+                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0;">📚 Version History</h2>
+                        <button onclick="this.closest('.modal-overlay').remove()" style="background: #374151; border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                    </div>
+                    <div style="padding: 24px;">
+                        <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600;">Rev 2 (Current)</div>
+                                    <div style="font-size: 12px; color: #9ca3af;">Dec 10, 2025 • jsmith@contractor.com</div>
+                                </div>
+                                <span style="color: #22c55e; font-size: 12px;">✓ Active</span>
+                            </div>
+                        </div>
+                        <div style="background: #2a2a4a; padding: 16px; border-radius: 8px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600;">Rev 1</div>
+                                    <div style="font-size: 12px; color: #9ca3af;">Dec 5, 2025 • jsmith@contractor.com</div>
+                                </div>
+                                <button style="padding: 6px 12px; background: #374151; border: none; border-radius: 6px; color: white; font-size: 11px; cursor: pointer;">Restore</button>
+                            </div>
+                        </div>
+                        <div style="background: #2a2a4a; padding: 16px; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600;">Original</div>
+                                    <div style="font-size: 12px; color: #9ca3af;">Nov 28, 2025 • architect@jhu.edu</div>
+                                </div>
+                                <button style="padding: 6px 12px; background: #374151; border: none; border-radius: 6px; color: white; font-size: 11px; cursor: pointer;">Restore</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        // SOV Modal
+        function openSOVModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: #1a1a2e; border-radius: 16px; width: 800px; max-height: 80vh; overflow: auto; border: 1px solid #2a2a4a;">
+                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0;">📊 Schedule of Values</h2>
+                        <button onclick="this.closest('.modal-overlay').remove()" style="background: #374151; border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+                    </div>
+                    <div style="padding: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <thead>
+                                <tr style="background: #2a2a4a;">
+                                    <th style="padding: 12px; text-align: left; border-radius: 8px 0 0 0;">Item</th>
+                                    <th style="padding: 12px; text-align: left;">Description</th>
+                                    <th style="padding: 12px; text-align: right;">Value</th>
+                                    <th style="padding: 12px; text-align: right; border-radius: 0 8px 0 0;">%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid #2a2a4a;"><td style="padding: 12px;">1</td><td>Mobilization</td><td style="text-align: right;">$62,375</td><td style="text-align: right;">5%</td></tr>
+                                <tr style="border-bottom: 1px solid #2a2a4a;"><td style="padding: 12px;">2</td><td>Tear-off & Disposal</td><td style="text-align: right;">$186,500</td><td style="text-align: right;">15%</td></tr>
+                                <tr style="border-bottom: 1px solid #2a2a4a;"><td style="padding: 12px;">3</td><td>Insulation</td><td style="text-align: right;">$249,500</td><td style="text-align: right;">20%</td></tr>
+                                <tr style="border-bottom: 1px solid #2a2a4a;"><td style="padding: 12px;">4</td><td>TPO Membrane</td><td style="text-align: right;">$374,250</td><td style="text-align: right;">30%</td></tr>
+                                <tr style="border-bottom: 1px solid #2a2a4a;"><td style="padding: 12px;">5</td><td>Metal Edge & Flashing</td><td style="text-align: right;">$124,750</td><td style="text-align: right;">10%</td></tr>
+                                <tr><td style="padding: 12px;">6</td><td>Final Completion</td><td style="text-align: right;">$249,500</td><td style="text-align: right;">20%</td></tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: rgba(34, 197, 94, 0.1);">
+                                    <td colspan="2" style="padding: 12px; font-weight: 700;">Total</td>
+                                    <td style="padding: 12px; text-align: right; font-weight: 700; color: #22c55e;">$1,247,500</td>
+                                    <td style="padding: 12px; text-align: right; font-weight: 700;">100%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
