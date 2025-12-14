@@ -9,6 +9,7 @@ Features:
 - Multi-tenant query scoping
 - Transaction management
 - Health checks
+- Graceful startup (doesn't crash if DB unavailable)
 
 CRITICAL: All queries MUST be scoped to agency_id for multi-tenancy!
 """
@@ -35,9 +36,15 @@ from .config import get_database_url, DEBUG
 # Global engine instance
 _engine: Optional[AsyncEngine] = None
 _session_factory: Optional[async_sessionmaker] = None
+_db_available: bool = False  # Track if database is available
 
 # SQLAlchemy Base for models
 Base = declarative_base()
+
+
+def is_database_available() -> bool:
+    """Check if database connection is available"""
+    return _db_available
 
 
 def get_async_database_url() -> str:
@@ -226,15 +233,32 @@ async def check_database_health() -> dict:
 # LIFECYCLE MANAGEMENT
 # =============================================================================
 
-async def init_database():
+async def init_database() -> bool:
     """
     Initialize database connection pool.
     Call this on application startup.
+
+    Returns:
+        True if database is available, False otherwise.
+
+    Note: This function is GRACEFUL - it will not crash the app if DB is unavailable.
+    The app can still run in demo/degraded mode without database.
     """
-    engine = get_engine()
-    # Test connection
-    async with engine.begin() as conn:
-        await conn.execute(text("SELECT 1"))
+    global _db_available
+
+    try:
+        engine = get_engine()
+        # Test connection with timeout
+        async with engine.begin() as conn:
+            await conn.execute(text("SELECT 1"))
+        _db_available = True
+        return True
+    except Exception as e:
+        _db_available = False
+        print(f"⚠️  Database connection failed: {e}")
+        print("   Backend will run in DEMO MODE (no database operations)")
+        print("   To fix: Check DATABASE_URL in .env and ensure network connectivity")
+        return False
 
 
 async def close_database():
@@ -242,12 +266,13 @@ async def close_database():
     Close database connections.
     Call this on application shutdown.
     """
-    global _engine, _session_factory
+    global _engine, _session_factory, _db_available
 
     if _engine:
         await _engine.dispose()
         _engine = None
         _session_factory = None
+    _db_available = False
 
 
 # =============================================================================
@@ -312,6 +337,7 @@ __all__ = [
 
     # Health
     "check_database_health",
+    "is_database_available",
 
     # Lifecycle
     "init_database",

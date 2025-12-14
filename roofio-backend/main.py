@@ -17,7 +17,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from common.database import init_database, close_database
+from common.database import init_database, close_database, is_database_available
 from api.routes import (
     health_router,
     agency_router,
@@ -39,15 +39,18 @@ async def lifespan(app: FastAPI):
     """Manage startup and shutdown"""
     # Startup
     print("Starting ROOFIO Backend...")
-    await init_database()
-    print("Database connection established")
+    db_connected = await init_database()
+    if db_connected:
+        print("✓ Database connection established")
+    else:
+        print("⚠️  Running in DEMO MODE (database unavailable)")
 
     yield
 
     # Shutdown
     print("Shutting down ROOFIO Backend...")
     await close_database()
-    print("Database connection closed")
+    print("✓ Shutdown complete")
 
 
 # =============================================================================
