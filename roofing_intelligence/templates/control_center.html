@@ -322,7 +322,34 @@
                 </div>
 
                 <!-- Admin & Sales -->
-                <div class="sidebar-section-title" style="margin-top: 16px;">▶ Admin & Sales</div>
+                <div class="sidebar-section-title" style="margin-top: 16px;">▼ Admin & Sales</div>
+
+                <div class="position-sidebar-item" onclick="selectPosition('admin')">
+                    <div class="position-sidebar-icon" style="background: #ec4899;">📎</div>
+                    <div class="position-sidebar-info">
+                        <div class="position-sidebar-name">Admin Assistant</div>
+                        <div class="position-sidebar-meta">6 forms • Full AI</div>
+                    </div>
+                    <span class="position-sidebar-score high">97%</span>
+                </div>
+
+                <div class="position-sidebar-item" onclick="selectPosition('sales')">
+                    <div class="position-sidebar-icon" style="background: #f59e0b;">🤝</div>
+                    <div class="position-sidebar-info">
+                        <div class="position-sidebar-name">Sales Rep</div>
+                        <div class="position-sidebar-meta">5 forms • Full AI</div>
+                    </div>
+                    <span class="position-sidebar-score high">94%</span>
+                </div>
+
+                <div class="position-sidebar-item" onclick="selectPosition('owner')">
+                    <div class="position-sidebar-icon" style="background: #8b5cf6;">👔</div>
+                    <div class="position-sidebar-info">
+                        <div class="position-sidebar-name">Owner/Principal</div>
+                        <div class="position-sidebar-meta">8 forms • AI Assist</div>
+                    </div>
+                    <span class="position-sidebar-score medium">88%</span>
+                </div>
             </div>
 
             <div class="sidebar-footer">
@@ -618,7 +645,7 @@
     </div>
 
     <script>
-        // Position data for dynamic updates
+        // Position data for all 11 positions
         const positionsData = {
             superintendent: { name: 'Superintendent', icon: '👷', color: '#ca8a04', forms: 9, mode: 'assist', confidence: 89 },
             foreman: { name: 'Foreman', icon: '🔧', color: '#2563eb', forms: 7, mode: 'full', confidence: 94 },
@@ -627,21 +654,19 @@
             estimator: { name: 'Estimator', icon: '📊', color: '#7c3aed', forms: 10, mode: 'full', confidence: 96 },
             pm: { name: 'Project Manager', icon: '📋', color: '#6366f1', forms: 11, mode: 'assist', confidence: 91 },
             detailer: { name: 'Detailer', icon: '📐', color: '#06b6d4', forms: 7, mode: 'full', confidence: 93 },
-            accounts: { name: 'Accounts', icon: '💰', color: '#10b981', forms: 11, mode: 'full', confidence: 99 }
+            accounts: { name: 'Accounts', icon: '💰', color: '#10b981', forms: 11, mode: 'full', confidence: 99 },
+            admin: { name: 'Admin Assistant', icon: '📎', color: '#ec4899', forms: 6, mode: 'full', confidence: 97 },
+            sales: { name: 'Sales Rep', icon: '🤝', color: '#f59e0b', forms: 5, mode: 'full', confidence: 94 },
+            owner: { name: 'Owner/Principal', icon: '👔', color: '#8b5cf6', forms: 8, mode: 'assist', confidence: 88 }
         };
 
         let currentPosition = 'estimator';
 
         function selectPosition(positionId) {
-            // Remove active class from all items
-            document.querySelectorAll('.position-sidebar-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            // Add active class to clicked item
+            document.querySelectorAll('.position-sidebar-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');
             currentPosition = positionId;
 
-            // Update header with position data
             const pos = positionsData[positionId];
             if (pos) {
                 document.querySelector('.position-header-icon').style.background = pos.color;
@@ -650,8 +675,7 @@
                 document.querySelector('.position-header-meta').textContent = `${pos.forms} forms • 4 functions • ${pos.mode === 'full' ? 'Full AI' : 'AI Assist'} Mode`;
                 document.querySelector('.confidence-value').textContent = pos.confidence + '%';
 
-                // Update mode toggle
-                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active', 'assist'));
                 if (pos.mode === 'full') {
                     document.querySelector('.mode-btn:last-child').classList.add('active');
                 } else {
@@ -661,37 +685,26 @@
             showNotification(`Switched to ${pos.name}`, 'info');
         }
 
-        // Mode Toggle functionality
+        // Mode Toggle
         document.querySelectorAll('.mode-btn').forEach((btn, index) => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active', 'assist'));
                 this.classList.add('active');
                 if (index === 1) this.classList.add('assist');
-
-                const modes = ['OFF', 'AI ASSIST', 'FULL AI'];
-                showNotification(`Mode changed to ${modes[index]}`, 'success');
+                showNotification(`Mode: ${['OFF', 'AI ASSIST', 'FULL AI'][index]}`, 'success');
             });
         });
 
         // Function card buttons
         document.querySelectorAll('.function-card-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const card = this.closest('.function-card');
-                const title = card.querySelector('.function-card-title').textContent;
-                const isRun = this.classList.contains('run');
-
-                if (isRun) {
+                const title = this.closest('.function-card').querySelector('.function-card-title').textContent;
+                if (this.classList.contains('run')) {
                     this.textContent = 'Running...';
                     this.disabled = true;
                     showNotification(`Running: ${title}`, 'info');
-
-                    setTimeout(() => {
-                        this.textContent = 'Run';
-                        this.disabled = false;
-                        showNotification(`Completed: ${title}`, 'success');
-                    }, 2000);
+                    setTimeout(() => { this.textContent = 'Run'; this.disabled = false; showNotification(`Completed: ${title}`, 'success'); }, 2000);
                 } else {
-                    showNotification(`Opening review for: ${title}`, 'info');
                     openReviewModal(title);
                 }
             });
@@ -699,66 +712,16 @@
 
         // Form card buttons
         document.querySelectorAll('.form-card').forEach(card => {
-            const openBtn = card.querySelector('.form-card-btn.primary');
-            const aiBtn = card.querySelector('.form-card-btn.secondary');
-
-            if (openBtn) {
-                openBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const title = card.querySelector('.form-card-title').textContent;
-                    openFormModal(title);
-                });
-            }
-
-            if (aiBtn) {
-                aiBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const title = card.querySelector('.form-card-title').textContent;
-                    showNotification(`AI auto-filling: ${title}`, 'info');
-
-                    setTimeout(() => {
-                        showNotification(`${title} auto-filled successfully!`, 'success');
-                    }, 1500);
-                });
-            }
-        });
-
-        // +5 more forms card
-        document.querySelector('.form-card-more')?.addEventListener('click', function() {
-            showNotification('Loading additional forms...', 'info');
-        });
-
-        // Form Preview buttons
-        document.querySelectorAll('.form-preview-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const action = this.textContent.includes('Edit') ? 'edit' :
-                               this.textContent.includes('PDF') ? 'pdf' : 'send';
-
-                if (action === 'edit') {
-                    openFormModal('Bid Proposal');
-                } else if (action === 'pdf') {
-                    showNotification('Generating PDF...', 'info');
-                    setTimeout(() => showNotification('PDF ready for download', 'success'), 1500);
-                } else {
-                    openSendModal();
-                }
+            card.querySelector('.form-card-btn.primary')?.addEventListener('click', e => {
+                e.stopPropagation();
+                openFormModal(card.querySelector('.form-card-title').textContent);
             });
-        });
-
-        // Genie suggestions
-        document.querySelectorAll('.genie-suggestion').forEach(sug => {
-            sug.addEventListener('click', function() {
-                const text = this.querySelector('.genie-suggestion-text').textContent;
-                showNotification(`Genie executing: ${text}`, 'info');
+            card.querySelector('.form-card-btn.secondary')?.addEventListener('click', e => {
+                e.stopPropagation();
+                const title = card.querySelector('.form-card-title').textContent;
+                showNotification(`AI auto-filling: ${title}`, 'info');
+                setTimeout(() => showNotification(`${title} auto-filled!`, 'success'), 1500);
             });
-        });
-
-        // Genie input
-        document.querySelector('.genie-input')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && this.value.trim()) {
-                showNotification(`Genie processing: "${this.value}"`, 'info');
-                this.value = '';
-            }
         });
 
         // Export buttons
@@ -770,7 +733,22 @@
             });
         });
 
-        // Search functionality
+        // Genie input
+        document.querySelector('.genie-input')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && this.value.trim()) {
+                showNotification(`Genie processing: "${this.value}"`, 'info');
+                this.value = '';
+            }
+        });
+
+        // Genie suggestions
+        document.querySelectorAll('.genie-suggestion').forEach(sug => {
+            sug.addEventListener('click', function() {
+                showNotification(`Genie executing: ${this.querySelector('.genie-suggestion-text').textContent}`, 'info');
+            });
+        });
+
+        // Search
         document.getElementById('positionSearch').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase();
             document.querySelectorAll('.position-sidebar-item').forEach(item => {
@@ -779,85 +757,23 @@
             });
         });
 
-        // Favorites click handlers
-        document.querySelectorAll('.sidebar-fav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const formName = this.textContent.trim();
-                openFormModal(formName);
-            });
-        });
-
         // Notification system
         function showNotification(message, type = 'info') {
-            const existing = document.querySelector('.notification');
-            if (existing) existing.remove();
-
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 24px;
-                right: 24px;
-                padding: 16px 24px;
-                border-radius: 12px;
-                font-size: 14px;
-                font-weight: 500;
-                z-index: 1000;
-                animation: slideIn 0.3s ease;
-                background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#1E40AF'};
-                color: white;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => notification.remove(), 3000);
+            document.querySelector('.notification')?.remove();
+            const n = document.createElement('div');
+            n.className = 'notification';
+            n.style.cssText = `position:fixed;bottom:24px;right:24px;padding:16px 24px;border-radius:12px;font-size:14px;font-weight:500;z-index:1000;animation:slideIn .3s ease;background:${type==='success'?'#22c55e':type==='error'?'#ef4444':'#1E40AF'};color:white;box-shadow:0 8px 32px rgba(0,0,0,.3);`;
+            n.textContent = message;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 3000);
         }
 
         // Form Modal
         function openFormModal(formName) {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0,0,0,0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-            `;
-
-            modal.innerHTML = `
-                <div style="background: #1a1a2e; border-radius: 16px; width: 600px; max-height: 80vh; overflow: auto; border: 1px solid #2a2a4a;">
-                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a; display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="margin: 0; font-size: 20px;">📋 ${formName}</h2>
-                        <button onclick="this.closest('.modal-overlay').remove()" style="background: #374151; border: none; color: white; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
-                    </div>
-                    <div style="padding: 24px;">
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px;">Project Name</label>
-                            <input type="text" value="JHU Sheridan Libraries" style="width: 100%; padding: 12px; background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; color: white; font-size: 14px;">
-                        </div>
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px;">Date</label>
-                            <input type="date" value="2025-12-14" style="width: 100%; padding: 12px; background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; color: white; font-size: 14px;">
-                        </div>
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px;">Description</label>
-                            <textarea rows="4" style="width: 100%; padding: 12px; background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; color: white; font-size: 14px; resize: none;">AI-generated content will appear here...</textarea>
-                        </div>
-                        <div style="display: flex; gap: 12px;">
-                            <button onclick="this.closest('.modal-overlay').remove(); showNotification('Form saved!', 'success');" style="flex: 1; padding: 14px; background: #22c55e; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Save Form</button>
-                            <button onclick="this.closest('.modal-overlay').remove();" style="flex: 1; padding: 14px; background: #374151; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:1000;';
+            modal.innerHTML = `<div style="background:#1a1a2e;border-radius:16px;width:600px;max-height:80vh;overflow:auto;border:1px solid #2a2a4a;"><div style="padding:24px;border-bottom:1px solid #2a2a4a;display:flex;justify-content:space-between;align-items:center;"><h2 style="margin:0;font-size:20px;">📋 ${formName}</h2><button onclick="this.closest('.modal-overlay').remove()" style="background:#374151;border:none;color:white;width:32px;height:32px;border-radius:8px;cursor:pointer;">✕</button></div><div style="padding:24px;"><div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:#9ca3af;margin-bottom:6px;">Project Name</label><input type="text" value="JHU Sheridan Libraries" style="width:100%;padding:12px;background:#2a2a4a;border:1px solid #3a3a5a;border-radius:8px;color:white;font-size:14px;"></div><div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:#9ca3af;margin-bottom:6px;">Date</label><input type="date" value="2025-12-14" style="width:100%;padding:12px;background:#2a2a4a;border:1px solid #3a3a5a;border-radius:8px;color:white;font-size:14px;"></div><div style="margin-bottom:16px;"><label style="display:block;font-size:12px;color:#9ca3af;margin-bottom:6px;">Description</label><textarea rows="4" style="width:100%;padding:12px;background:#2a2a4a;border:1px solid #3a3a5a;border-radius:8px;color:white;font-size:14px;resize:none;">AI-generated content...</textarea></div><div style="display:flex;gap:12px;"><button onclick="this.closest('.modal-overlay').remove();showNotification('Form saved!','success');" style="flex:1;padding:14px;background:#22c55e;border:none;border-radius:10px;color:white;font-weight:600;cursor:pointer;">Save Form</button><button onclick="this.closest('.modal-overlay').remove();" style="flex:1;padding:14px;background:#374151;border:none;border-radius:10px;color:white;font-weight:600;cursor:pointer;">Cancel</button></div></div></div>`;
             document.body.appendChild(modal);
             modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
         }
@@ -866,72 +782,15 @@
         function openReviewModal(title) {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
-            modal.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
-            `;
-
-            modal.innerHTML = `
-                <div style="background: #1a1a2e; border-radius: 16px; width: 500px; border: 1px solid #2a2a4a;">
-                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a;">
-                        <h2 style="margin: 0;">⚠️ Review Required: ${title}</h2>
-                    </div>
-                    <div style="padding: 24px;">
-                        <p style="color: #9ca3af; margin-bottom: 16px;">AI confidence is below 95%. Please review the following items:</p>
-                        <div style="background: #2a2a4a; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                            <div style="color: #f59e0b; font-size: 13px;">• Labor rates may need adjustment</div>
-                            <div style="color: #f59e0b; font-size: 13px; margin-top: 8px;">• Material quantities require verification</div>
-                        </div>
-                        <div style="display: flex; gap: 12px;">
-                            <button onclick="this.closest('.modal-overlay').remove(); showNotification('Approved!', 'success');" style="flex: 1; padding: 14px; background: #22c55e; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Approve</button>
-                            <button onclick="this.closest('.modal-overlay').remove();" style="flex: 1; padding: 14px; background: #374151; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Edit</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:1000;';
+            modal.innerHTML = `<div style="background:#1a1a2e;border-radius:16px;width:500px;border:1px solid #2a2a4a;"><div style="padding:24px;border-bottom:1px solid #2a2a4a;"><h2 style="margin:0;">⚠️ Review: ${title}</h2></div><div style="padding:24px;"><p style="color:#9ca3af;margin-bottom:16px;">AI confidence below 95%. Please review:</p><div style="background:#2a2a4a;padding:16px;border-radius:8px;margin-bottom:16px;"><div style="color:#f59e0b;font-size:13px;">• Labor rates may need adjustment</div><div style="color:#f59e0b;font-size:13px;margin-top:8px;">• Material quantities require verification</div></div><div style="display:flex;gap:12px;"><button onclick="this.closest('.modal-overlay').remove();showNotification('Approved!','success');" style="flex:1;padding:14px;background:#22c55e;border:none;border-radius:10px;color:white;font-weight:600;cursor:pointer;">Approve</button><button onclick="this.closest('.modal-overlay').remove();" style="flex:1;padding:14px;background:#374151;border:none;border-radius:10px;color:white;font-weight:600;cursor:pointer;">Edit</button></div></div></div>`;
             document.body.appendChild(modal);
             modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
         }
 
-        // Send Modal
-        function openSendModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-            modal.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
-            `;
-
-            modal.innerHTML = `
-                <div style="background: #1a1a2e; border-radius: 16px; width: 500px; border: 1px solid #2a2a4a;">
-                    <div style="padding: 24px; border-bottom: 1px solid #2a2a4a;">
-                        <h2 style="margin: 0;">📧 Send Document</h2>
-                    </div>
-                    <div style="padding: 24px;">
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px;">Recipient Email</label>
-                            <input type="email" placeholder="client@example.com" style="width: 100%; padding: 12px; background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; color: white; font-size: 14px;">
-                        </div>
-                        <div style="margin-bottom: 16px;">
-                            <label style="display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px;">Message (optional)</label>
-                            <textarea rows="3" placeholder="Add a message..." style="width: 100%; padding: 12px; background: #2a2a4a; border: 1px solid #3a3a5a; border-radius: 8px; color: white; font-size: 14px; resize: none;"></textarea>
-                        </div>
-                        <div style="display: flex; gap: 12px;">
-                            <button onclick="this.closest('.modal-overlay').remove(); showNotification('Email sent!', 'success');" style="flex: 1; padding: 14px; background: #1E40AF; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Send</button>
-                            <button onclick="this.closest('.modal-overlay').remove();" style="flex: 1; padding: 14px; background: #374151; border: none; border-radius: 10px; color: white; font-weight: 600; cursor: pointer;">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(modal);
-            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-        }
-
-        // Add CSS animation
+        // Animation CSS
         const style = document.createElement('style');
-        style.textContent = `@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
+        style.textContent = '@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}';
         document.head.appendChild(style);
     </script>
 </body>
