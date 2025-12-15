@@ -206,32 +206,38 @@ $env:OPENAI_API_KEY='sk-...'
 When ending a session, update this section:
 
 ### Last Session Summary
-**Date:** December 13, 2025
+**Date:** December 14, 2025
 **Completed:**
-- ✅ **Database Cleanup & Build** - Unified schema created
-- ✅ **Codebase Cleanup** - Removed 9,428 lines of duplicate code from drop folder
-- ✅ **Fixed config.py** - Removed hardcoded "roofio" defaults
-- ✅ **Fixed init_db.py** - Standalone script with raw SQL (no import issues)
-- ✅ **Created unified_schema.sql** - 9 tables, standardized `agency_id` naming
-- ✅ **Moved tier3 files** - knowledge.py, master_architect.py, modal_app.py, security.py
-- ✅ **VS Code debug config** - "Init Database" added to launch.json
-- ✅ **Supabase tables created** - All 9 tables successfully initialized:
-  - agencies, users, clients, projects
-  - form_templates, form_submissions
-  - ai_action_logs, audit_logs, position_configs
+- ✅ **Control Center Redesign** - Complete rewrite with sidebar + detail panel layout
+  - 11 positions (added Admin Assistant, Sales Rep, Owner/Principal)
+  - All buttons functional (mode toggle, function cards, form cards, export, genie)
+  - Dynamic position selection updates header, forms, and confidence
+- ✅ **Data Central Page** - New document hub with AI extraction
+  - Role-based filtering, document categories, upload modal
+  - Compare versions, PDF viewer, version history, SOV modal
+  - AI Analyze All with loading states
+- ✅ **Backend Graceful Startup** - Database connection no longer crashes app
+  - `init_database()` returns bool, prints helpful errors
+  - Backend runs in demo mode when DB unavailable
+- ✅ **Button Functionality** - 30+ buttons now working across both pages
+  - Modals for forms, reviews, uploads, comparisons
+  - Notification system for user feedback
+  - Loading states and completion messages
 
 **Next Session Should:**
-1. **Test the Dashboard UI** - Verify new backend tables work with UI
-2. Phase 4: Tier 2 Groq + RAG integration
-3. Connect Digital Foreman to form submission API
-4. Connect Inspector page to form submission API
-5. Add file upload handling for scan endpoint
+1. **Connect forms to database** - Save/load from form_submissions table
+2. **Implement document upload** - Backend endpoint + frontend integration
+3. **Add Groq AI chat** - Real responses in Genie panel
+4. **Test all 3 pages end-to-end** - Control Center, Data Central, Digital Foreman
+5. Phase 4: Tier 2 Groq + RAG integration
 
 **Key Files Changed:**
-- `roofio-backend/database/unified_schema.sql` - Authoritative DB schema
-- `roofio-backend/init_db.py` - Standalone DB init script
-- `roofio-backend/common/config.py` - No more hardcoded defaults
-- `roofio-backend/tier3/` - Moved master_architect, knowledge, modal_app, security
+- `roofing_intelligence/templates/control_center.html` - Full redesign with 11 positions + JS
+- `roofing_intelligence/templates/data_central.html` - New page with full functionality
+- `roofing_intelligence/app.py` - Added /data-central route
+- `roofio-backend/common/database.py` - Graceful init_database()
+- `roofio-backend/main.py` - Handle graceful startup
+- `SESSION-LOG.md` - Full session log with outstanding items
 
 ---
 

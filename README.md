@@ -1,6 +1,6 @@
 # CAD Observer Repository
 
-> **3 Applications in 1 Repo** | Last Updated: December 13, 2025
+> **3 Applications in 1 Repo** | Last Updated: December 14, 2025
 
 This repository contains three distinct applications for Armand Lefebvre (20+ year journeyman roofer/waterproofer, Local 30):
 
@@ -147,18 +147,24 @@ python app.py
             ╱────────────────╲
 ```
 
-### 8-Position System
+### 11-Position System
 
 | Position | AI Modes | Description |
 |----------|----------|-------------|
+| **Field Operations** | | |
+| Superintendent | Full/Assist/Off | Field operations, crew management |
+| Foreman | Full/Assist/Off | Daily crew supervision |
+| QC Inspector | Full/Assist/Off | Quality control, inspections |
+| Safety Officer | Full/Assist/Off | JHA, compliance, training |
+| **Office Operations** | | |
 | Estimator | Full/Assist/Off | Takeoffs, pricing, proposals |
 | Project Manager | Full/Assist/Off | Scheduling, coordination |
-| QC Manager | Full/Assist/Off | Quality control, inspections |
-| Safety Director | Full/Assist/Off | JHA, compliance, training |
-| Superintendent | Full/Assist/Off | Field operations |
-| Shop Drawings | Full/Assist/Off | CAD details, submittals |
-| Accounting | Full/Assist/Off | Invoicing, payroll |
-| Operations | Full/Assist/Off | Logistics, resources |
+| Detailer | Full/Assist/Off | CAD details, submittals |
+| Accounts | Full/Assist/Off | Invoicing, payroll |
+| **Admin & Sales** | | |
+| Admin Assistant | Full/Assist/Off | Documentation, coordination |
+| Sales Rep | Full/Assist/Off | Client relations, proposals |
+| Owner/Principal | Full/Assist/Off | Executive oversight |
 
 ### UX Utilities (2025 Best Practices)
 
@@ -429,6 +435,29 @@ pip install upstash-redis upstash-vector asyncpg sqlalchemy python-jose cryptogr
 ---
 
 # Changelog
+
+### December 14, 2025 - UI Button Functionality & Page Redesigns
+- **Control Center Redesign**: Complete rewrite with sidebar + detail panel layout
+  - 11 positions now (added Admin Assistant, Sales Rep, Owner/Principal)
+  - Mode toggle (OFF/AI Assist/Full AI) functional
+  - Function cards with Run/Review buttons and loading states
+  - Form cards with Open/AI-fill buttons and modals
+  - AI Genie panel with input and suggestions
+  - Export buttons (PDF, Word, Excel)
+  - Position-specific header updates on selection
+- **Data Central Page**: New document hub with AI extraction
+  - Document categories with expand/collapse
+  - Role-based filtering (PM, Super, QC, Safety, Estimator, All)
+  - Upload modal with drag & drop UI
+  - Compare versions modal with side-by-side diff
+  - PDF viewer modal
+  - Version history modal
+  - Schedule of Values (SOV) modal
+  - AI Analyze All with loading states
+- **Backend Graceful Startup**: Database connection no longer crashes if unavailable
+  - `init_database()` returns bool instead of throwing
+  - Helpful error messages when DB unreachable
+  - Backend runs in demo mode when no database
 
 ### December 13, 2025 - Database Initialization & Codebase Cleanup
 - **Unified Database Schema**: Created `roofio-backend/database/unified_schema.sql` with 9 tables
